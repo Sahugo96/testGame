@@ -11,16 +11,17 @@
 @.cursor/rules/core-always.mdc
 @.cursor/rules/unity-csharp.mdc
 @.cursor/rules/ui-system.mdc
+@.cursor/rules/player-system.mdc
 
 Тематические документы — читать по задаче (карта «тема → файл» в `00_INDEX.md`):
 - `docs/02_OVERLAY_UI.md` — оверлей/HUD, окна, панели быстрого доступа, настройки (7.13, 7.7, 7.6)
 - `docs/03_CLASSES_COMBAT.md` — двойная мана, навыки Shift/Ctrl, классы, бой, статусы, зелья (7.1, 7.2, 7.3, 7.12)
-- `docs/04_ITEMS_EQUIPMENT.md` — предметы, экипировка, легендарные (7.9, 7.9.1, 7.11, 7.14.1) — **ещё не загружен в репо**
+- `docs/04_ITEMS_EQUIPMENT.md` — предметы, экипировка, легендарные (7.9, 7.9.1, 7.11, 7.14.1)
 - `docs/05_ECONOMY_PROFESSIONS.md` — профессии, крафт, кошелёк, магазины, рынок, почта (7.4, 7.14.2, 7.14.3)
 - `docs/06_GROUPS_DUNGEONS.md` — группы, лут и голосование, рейд, подземелье на 50 (7.8, 7.5)
 
 Нюансы репо:
-- `.cursor/rules/player-system.mdc` — **старая** версия (путь `Gameplay/Player/`); действует `01_DEV_PLAN.md` §6.1 (`Client/Player/`, `Server/Player/`, `Shared/`). Новой версии файла пока нет.
+- `.cursor/rules/*.mdc` — производные от документов (см. `.cursor/rules/README.md`); при расхождении прав документ, правки сначала в документ.
 - `.cursor/rules/ecs-code-standards.mdc` и `transcript-analysis.mdc` — в набор не входят (журнал решений v3), ECS не применять.
 
 ---
