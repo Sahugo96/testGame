@@ -1,0 +1,24 @@
+---
+description: UI — view, меню и HUD
+globs: "Assets/**/UI/**"
+alwaysApply: false
+---
+
+# Система UI
+
+## Критично следовать
+
+- UI-скрипты — в `Assets/_Project/Scripts/UI/`.
+
+## Важно
+
+- View отображает состояние; gameplay-правила в UI не живут. Привязка к системам через events или presenters.
+- Не использовать `FindObjectOfType` в UI в runtime; serialized references или задокументированный service locator.
+
+## Умеренно
+
+- По возможности отделять UI-строки и layout от core gameplay-сборок.
+
+## Было бы хорошо
+
+- (дополняется по мере разбора уроков)

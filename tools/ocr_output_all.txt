@@ -1,0 +1,117 @@
+﻿
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-02.png =====
+Skillbox Примеры компонентов г 5 usages д Алексей Лукьянов pubtic struct MoveByInputData : [2 6 usages д Алексей Лукьянов pub1ic struct MoveDirect1yData pubtic f10at3 Position; pubtic f10at Speed; IComponentData : IComponentData
+
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-03.png =====
+Skillbox Примеры Алексей Лукьянов protected override void 0nCreate() _query = GetEntityQuery( систем params componentTypes: ComponentType. ) , ComponentType. ) ) ; д Алексей Лукьянов protected override void 0nUpdate() = (ftoat)Time.De1taTime; var dt Entities . ForEach( (Entity entity, TimerComponent timer) for (var :int = timer.TimedActions. Count—1; д > var timerAction = timer. TimedActions [Х] ; timerAction.De1ay dt; timer. TimedActions [Х] = timerAction; if с 0f)) continue; timer. TimedActions [Х] . Act. Invoke( ) ; timer. TimedActions. RemoveAt (Х) ;
+
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-04.png =====
+Skillbox Примеры [BurstCompi1e] Е 1 usage д Алексей Лукьянов систем private struct P1ayerMovementJob : IJobForEach<P1ayerInputData, ActorMovementData> а Алексей Лукьянов pubtic void Execute( ref P1ayerInputData input, ref ActorMovementData movement) movement. Input = MathUti1s.RotateVector(input.Move, angle: О — input.CompensateAng1e) ; [BurstCompite] а Алексей Лукьянов protected override JobHand1e 0nUpdate(JobHand1e inputDeps) var job = new P1ayerMovementJob() ; return job.Schedu1e( system: this, inputDeps);
+
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-05.png =====
+Skillbox А вот так делать нельзя, но иногда приходится д Алексей Лукьянов private detegate void SetComponent0bjectDe1egate(EntityManager п, Entity entity, object componentObject); private static readon1y SetComponentObjectDe1egate SetComponentObject = (SetComponentObjectDe1egate) typeof(EntityManager) . GetMethod( пате: “SetComponentObject” , bindingAttr: BindingF1ags. Instance callConvention: CaUingConventions. Апу, types: new[] binder: ЛИИ, typeof(Entity), typeof(ComponentType) , typeof(object) у, modifiers: пиИ) Н Methodlnfo ?. CreateDe1egate ( typeof ( SetComponentObj ectDe tegate) ) ; ComponentType componentType, BindingF1ags. NonPub1ic,
+
+===== D:\UnityGameDev\testGame\references\slides\13.2\page-01.png =====
+Основы разработки сетевых игр Сетевое взаимодействие Р2Р vs Client-Server Real Time и не совсем реальное время Симуляция на клиенте vs авторитарный сервер Мета- и профиль-серверы Куча готовых решений
+
+===== D:\UnityGameDev\testGame\references\slides\13.3\page-01.png =====
+Основы разработки сетевых игр Что под «капотом» Client 1 р = (10, 10) Smooth movement р = (11, 10) Smooth movement р = (12, 10) Reconciliation result р = (12,10) р = (12, 10) р = (10, 10) Опе Vnit n9ht р = (11, 10) опе Qnit р = (12, 10) 10) Client 2 р = 10, 10) Sudden јитр 11, 10) Sudden јитр р = (12, 10)
+
+===== D:\UnityGameDev\testGame\references\slides\13.4\page-01.png =====
+Основы разработки сетевых игр В реальной жизни ТСР и UDP. Reliable UDP Prediction и misprediction Интерполяция и экстраполяция Детерминированность Коррекция ошибок Борьба с читерами
+
+===== D:\UnityGameDev\testGame\references\slides\14.3\page-01.png =====
+Оптимизация игр на Unity Основные проблемы и решения GPU vs СРИ Update (и Fixed Update) Find и GetComponent (и Camera.main) Кеширование GC и 0bject Pools
+
+===== D:\UnityGameDev\testGame\references\slides\14.3\page-02.png =====
+Оптимизация игр на Unity Основные проблемы и решения Оптимизация сцены Батчинг Осторожность с оптимизацией GPU Материалы и, особенно, прозрачность
+
+===== D:\UnityGameDev\testGame\references\slides\14.4\page-01.png =====
+Оптимизация игр на Unity е Канвасы и организация объектов е Атласы спрайтов е Обновляем только то, что нужно е Pixel Perfect е SetActive е Raycast Target е Color Tint е Screen Space
+
+===== D:\UnityGameDev\testGame\references\slides\14.4\page-02.png =====
+Оптимизация игр на Unity Настройки проекта Уровни качества lL2CPP и Мопо Debug.Log FrameRate Отключаем всё лишнее Ставим эксперименты
+
+===== D:\UnityGameDev\testGame\references\slides\15.2\page-01.png =====
+Монетизация компьютерных игр Виды монетизации Paid/Shareware и Free То Play (F2P) Реклама: lnterstitial, баннеры и Rewarded Внутриигровые ПОКУПКИ: хард-валюта и предметы Стимулируем пользователя тратить
+
+===== D:\UnityGameDev\testGame\references\slides\15.3\page-01.png =====
+Монетизация компьютерных игр Аналитика поведения пользователей Нативные данные в сторах Yandex AppMetrica Техническая воронка Пользовательская воронка Пуши и диплинки А/В-тестирование
+
+===== D:\UnityGameDev\testGame\references\slides\18.2\page-01.png =====
+Тестирование игровых проектов Методы тестирования Функциональное тестирование Комбинаторное тестирование Исследовательское тестирование Тестирование совместимости Методология «чистой комнаты» Р'ау-тестирование Регрессионное тестирование
+
+===== D:\UnityGameDev\testGame\references\slides\18.2\page-02.png =====
+Тестирование игровых проектов Если нет QA TDD — Test Driven Development Тестирование на аутсорсе
+
+===== D:\UnityGameDev\testGame\references\slides\3.2\page-01.png =====
+Skillbox Обработка физики в компьютерных играх Дорогие вычисления Упрощённые модели объектов (коллайдеры) Выбор физических движков ' З йес_то11 ['mnrterj лг..т_в
+
+===== D:\UnityGameDev\testGame\references\slides\3.2\page-02.png =====
+Skillbox Физические движки в Unity о Старый Unity Physics Unity Physics Havok
+
+===== D:\UnityGameDev\testGame\references\slides\4.4\page-01.png =====
+Skillbox Основные решения для хранения данных • Google Docs Собственный сервер Photon Облачные сервисы (Amazon, Azure, etc.)
+
+===== D:\UnityGameDev\testGame\references\slides\5.2\page-01.png =====
+Skillbox Задачи АИ в играх о Принятие решений Поиск путей Гибкость Человекоподобность и адекватность
+
+===== D:\UnityGameDev\testGame\references\slides\5.3\page-01.png =====
+Skillbox Решения и алгоритмы AI в играх о Finite-state machines / Hierarchical state machines Behaviour tree Utility system Сторонние решения learning
+
+===== D:\UnityGameDev\testGame\references\slides\6.2\page-01.png =====
+Skillbox Паттерны проектирования Типичные способы решения типовых задач Экономия времени Снижают вероятность ошибок Опасно увлекаться
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-01.png =====
+Skillbox Основные паттерны проектирования игр • • • MVC ECS Command FSM Factory 0bject pool Singleton Event bus Dependency injection / loC Service locator
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-02.png =====
+Skillbox ModeI-View-ControIIer MODEL UPDATES VIEW MANIPULATES CONTROLLER USER
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-03.png =====
+Skillbox Entity Component System L2W = Т * R Entity А Translation Rotation LocalToWorld nenderer Entity В TransIation Rotation LocalToWorld nenderer Entity С TransIation Rotation LocalToWorld Components System Components
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-04.png =====
+Skillbox Command Save Command 2Code 4, + execute() Ореп Command Ь Code Print Command BCode е,
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-05.png =====
+Skillbox 0bserver 0bserver +updat ) Subject +0bser-verCol 1ection •unregisterObserver(observer) +noti fyObseryers{ notifyObservers() fcr observer in 0bserverCoLtect10n сап observer, update( ) ConcreteObserverA +update( ) ConcreteObserverB +update( )
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-06.png =====
+Skillbox Finite- Start Transition 1 State 1 Machine Transition 2 State 2 Transition З Transition 4 State п
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-07.png =====
+Skillbox Factory «interface» Transport + detiver0 Detiver by land in а Ьох. Truck = + deliver() Ship + deliver() Deliver by sea in а container.
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-08.png =====
+Skillbox 0bject Роо1 Destroy lnstantiate No 0bject pooling 0ff screen Reuse 0bject pobling
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-09.png =====
+Skillbox Singleton Ctient Singteton - instance: Sinqteton - Singleton() + ge!lD5tange0Sggteton if (instance пиШ) { // Note: if you're creating ап арр with // multithreading support, уои should // ptace а thread lock here. instance = new Singleton0 return instance
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-10.png =====
+Skillbox Event Bus Event Processor Event Processor DB 0perations Metrics Event EVENT Event Processor
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-11.png =====
+Skillbox Dependency lnjection lnjects Client lnjector Service uses
+
+===== D:\UnityGameDev\testGame\references\slides\6.3\page-12.png =====
+Skillbox Service Locator CWent Uses Uses Uses BustnessService ServteLocator looks ир or creates Uses Creates InttialContext looksup ServteFactory Uses
+
+===== D:\UnityGameDev\testGame\references\slides\7.2\page-01.png =====
+Skillbox Стандартный pipeline Input geometry + attributes Compute Frame buffers Memory Stream output Ceometry Texture Bufers Vertex processing Vertex TesseIation Vertex Primitive processing Primitive nasterization Fragment Fragment processing Pixel PixeI processing
+
+===== D:\UnityGameDev\testGame\references\slides\7.3\page-01.png =====
+Skillbox Модели освещения Blinn Strauss MetaI 0ren-Nayar-Blinn Anisotropic Multi-Layer
+
+===== D:\UnityGameDev\testGame\references\slides\7.3\page-02.png =====
+Skillbox типы текстур ВМС FOR ТЕХПЛЕ МАР TYPES ву YANkO STEFANO DIFFUSE А diffuse тор contains the color informotion of the texture. It defnes whot original color the texture wiII hove ot о certain position. SPECULAR А speculority тор defines how strong the textured surfoce will “shine• 0t о certain position. Most render engines use this infor- motion to define the oppearonce 0f specular highlights : DISPLACEMENT , Displocement mops аге similor to bump but store height informotion ond generates 'reol' depth бу odding geometry when rendered АМВ'ЕГЧТ OCCLUSION Ambient occhJsion is о method to approximate how bright light should be shining оп опу specific port 0f о surface. Ploce it оп top 0f the Diffuse in • 'MultipIay mode” in Photoshop NORMAL The red. green, ond blue chonnels 0f the imoge ore used to control the direction 0f each pixel's normol. Normol тор simulotes the direction the normal is focing os weIl os the height. giving а more reolistic effect. 0riginal miodel by. Ze1jk0 Mihajbvic - 3D Artist
+
+===== D:\UnityGameDev\testGame\references\slides\8.2\page-01.png =====
+Skillbox Освещение и рендеринг How to light а project? Render Pipelines Built-in Render Pipeline Universal Render Pipeline Pick а Render Pipeline Scriptable nender High-Definition Render Pipeline Pipelines (SQPs) Custom SQP
+
+===== D:\UnityGameDev\testGame\references\slides\8.2\page-02.png =====
+Skillbox Освещение и рендеринг Lighting Settings Baked Gl aealtime Gl Pick а Global lllumination mode Baked & Realtime Gl None Baked lndirect Subtractive Pick а Lighting Mode Shadowmask Distance Shadowmask
+
+===== D:\UnityGameDev\testGame\references\slides\8.2\page-03.png =====
+Skillbox Освещение и рендеринг Lighting Add Lights Add Emissive Surfaces Add Reflection Probes Ва ked Realtime М ixed Baked Realtime GI None Ва ked Realtime Custom Add Light Probes Add LPPVs (optional)

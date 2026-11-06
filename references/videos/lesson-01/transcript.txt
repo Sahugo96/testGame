@@ -1,0 +1,2 @@
+# Paste or generate transcript for lesson 01 here.
+# Optional: use Whisper or manual notes from the video audio.

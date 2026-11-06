@@ -1,0 +1,14 @@
+---
+description: Базовые стандарты проекта — vision, стек и общие соглашения
+alwaysApply: true
+---
+
+# Базовые стандарты
+
+- Перед архитектурными решениями читать `docs/vision.md` и `docs/architecture.md`.
+- Версия Unity и пакеты — как в `docs/vision.md` (обновлять vision при смене стека).
+- Весь код проекта — в `Assets/_Project/` согласно `docs/architecture.md`.
+- При реализации фичи из курса следовать соответствующему `docs/lessons/XX-*.md` и связанным rules.
+- При конфликте урока с architecture или более новым rule — приоритет у `docs/architecture.md`; конфликт зафиксировать в lesson doc.
+- Не вводить паттерны из раздела deprecated в `docs/architecture.md`.
+- При разборе транскриптов следовать `transcript-analysis.mdc`: tier на каждый вывод; senior-review (подвохи/слабости каждого правила); проверка противоречий; только анализ, пока пользователь явно не попросит записать rules.

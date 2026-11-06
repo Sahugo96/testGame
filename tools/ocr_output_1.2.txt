@@ -1,0 +1,12 @@
+﻿
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-02.png =====
+Skillbox Примеры компонентов г 5 usages д Алексей Лукьянов pubtic struct MoveByInputData : [2 6 usages д Алексей Лукьянов pub1ic struct MoveDirect1yData pubtic f10at3 Position; pubtic f10at Speed; IComponentData : IComponentData
+
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-03.png =====
+Skillbox Примеры Алексей Лукьянов protected override void 0nCreate() _query = GetEntityQuery( систем params componentTypes: ComponentType. ) , ComponentType. ) ) ; д Алексей Лукьянов protected override void 0nUpdate() = (ftoat)Time.De1taTime; var dt Entities . ForEach( (Entity entity, TimerComponent timer) for (var :int = timer.TimedActions. Count—1; д > var timerAction = timer. TimedActions [Х] ; timerAction.De1ay dt; timer. TimedActions [Х] = timerAction; if с 0f)) continue; timer. TimedActions [Х] . Act. Invoke( ) ; timer. TimedActions. RemoveAt (Х) ;
+
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-04.png =====
+Skillbox Примеры [BurstCompi1e] Е 1 usage д Алексей Лукьянов систем private struct P1ayerMovementJob : IJobForEach<P1ayerInputData, ActorMovementData> а Алексей Лукьянов pubtic void Execute( ref P1ayerInputData input, ref ActorMovementData movement) movement. Input = MathUti1s.RotateVector(input.Move, angle: О — input.CompensateAng1e) ; [BurstCompite] а Алексей Лукьянов protected override JobHand1e 0nUpdate(JobHand1e inputDeps) var job = new P1ayerMovementJob() ; return job.Schedu1e( system: this, inputDeps);
+
+===== D:\UnityGameDev\testGame\references\slides\1.2\page-05.png =====
+Skillbox А вот так делать нельзя, но иногда приходится д Алексей Лукьянов private detegate void SetComponent0bjectDe1egate(EntityManager п, Entity entity, object componentObject); private static readon1y SetComponentObjectDe1egate SetComponentObject = (SetComponentObjectDe1egate) typeof(EntityManager) . GetMethod( пате: “SetComponentObject” , bindingAttr: BindingF1ags. Instance callConvention: CaUingConventions. Апу, types: new[] binder: ЛИИ, typeof(Entity), typeof(ComponentType) , typeof(object) у, modifiers: пиИ) Н Methodlnfo ?. CreateDe1egate ( typeof ( SetComponentObj ectDe tegate) ) ; ComponentType componentType, BindingF1ags. NonPub1ic,
