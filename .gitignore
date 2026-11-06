@@ -7,12 +7,12 @@
 #
 .utmp/
 /MyGame/[Ll]ibrary/
-/MyGame/[Tt]emp/
-/MyGame/[Oo]bj/
-/MyGame/[Bb]uild/
-/MyGame/[Bb]uilds/
-/MyGame/[Ll]ogs/
-/MyGame/[Uu]ser[Ss]ettings/
+# /MyGame/[Tt]emp/
+# /MyGame/[Oo]bj/
+# /MyGame/[Bb]uild/
+# /MyGame/[Bb]uilds/
+# /MyGame/[Ll]ogs/
+# /MyGame/[Uu]ser[Ss]ettings/
 *.log
 
 # Memory Profiler generated files
