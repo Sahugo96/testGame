@@ -1,162 +1,186 @@
-# MAP — детальная карта проекта
+# MAP — карта проекта для ИИ (навигация с минимальным расходом контекста)
 
-> Вход: `CLAUDE.md`. Здесь — где искать конкретный функционал за 1–2 вызова.
-> Номера строк в больших файлах дрейфуют — искать по заголовкам (`grep -n "^## "`).
+> Вход: `CLAUDE.md`. Источник правды — документы набора; эта карта только указывает, **где** читать.
+> Номера строк (`:NN`) — подсказка на момент составления, документы обновляются после каждого модуля.
+> Если строка «уехала» — `grep -n "^## \|^\*\*" docs/<файл>` и искать по якорю (заголовку).
+> Читать кусок: `sed -n 'A,Bp' docs/<файл>`. Не читать файл целиком без нужды (кроме случаев из §0).
 
-## 1. Рецепты навигации (дешёвые)
+## 0. Когда что читать целиком
 
-| Нужно | Команда / файл |
-|-------|----------------|
-| Какой урок про X | §3 (таблица уроков) или §4 (символ → урок) |
-| Оглавление урока | `grep -n "^## " docs/lessons/<id>-*.md` |
-| Только выводы урока | `sed -n '/^## Выводы/,/^## CODE/p' docs/lessons/<id>-*.md` |
-| Только код урока | `sed -n '/^## CODE STANDARDS/,/^## Не выносить/p' docs/lessons/<id>-*.md` |
-| Чеклист правил урока | `docs/rules-pending/<id>.md` (~1.5 КБ) |
-| Блокеры перед записью rules | `grep -n "^### " docs/rules-contradictions.md` |
-| Стратегические решения A–L | `sed -n '20,57p' docs/approve-questions.md` |
-| Вопросы по модулю N | `grep -n "### Модуль" docs/approve-questions.md` → `sed -n` |
-| Цитата/таймкод из видео | `grep -n "<слово>" "references/transcripts/<id> "*.vtt` (имена с пробелами и кириллицей — в кавычках) |
-| Код со слайдов (OCR) | `grep -n "^## " docs/slides-code-reference.md` |
-| Статус урока | `grep -n "| <id> |" docs/video-index.md` |
+| Ситуация | Читать |
+|----------|--------|
+| Начало модуля (AI_INSTRUCTIONS §4) | `AI_INSTRUCTIONS.md`, `00_INDEX.md`, `01_DEV_PLAN.md` целиком + тематические файлы модуля (§3 ниже) |
+| Точечный вопрос / правка | только нужный раздел по этой карте |
+| Конец модуля | `01_DEV_PLAN.md` §8–§11 + `00_INDEX.md` «Журнал изменений» (обновить, выдать полные версии) |
 
-## 2. Анатомия документов
+Размеры (≈токены): AI_INSTRUCTIONS ~5k · 00_INDEX ~2.5k · 01_DEV_PLAN ~16k · 02 ~7k · 03 ~5k · 04 ~6.5k · 05 ~3.5k · 06 ~3k.
 
-**`docs/lessons/<id>-<slug>.md`** (все одинаковые):
-`## Мета` (VTT-путь, slides, зависит от, статус, следующий) → `## Суть урока` → `## Выводы (на одобрение)`
-(таблица `# | Вывод (ID <id>-NN) | Tier | Источник(таймкод) | → rule file | Обоснование | ⚠️ Подвохи`) →
-`## CODE STANDARDS` (код C# + таблица стандартов) → `## Не выносить в rules` → `## ⚠️ Противоречия` → `## Вопросы на approve` → `## После approve`.
-Модуль 1 (1.2–1.4) — расширенный формат, плюс `## Слайды vs VTT — расхождения`.
+## 1. Документы и их разделы (с якорями)
 
-**`docs/rules-pending/<id>.md`**: заголовки tier (🔴/🟠/🟡/🟢) → подзаголовок целевого `.mdc` → `- [ ] **<id>-NN** текст *(VTT mm:ss)*`.
-ID вывода `<id>-NN` (напр. `3.4-03`) — сквозной ключ между lesson ↔ pending ↔ contradictions.
+### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v2)
+§1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-**Транскрипты**: `references/transcripts/<id> <Название>.vtt`; есть для всех x.2–x.5, кроме 15.2.
-**Слайды**: `references/slides/<id>/page-NN.png` (18 папок: 1.2, 3.2, 4.4, 5.2, 5.3, 6.2, 6.3, 7.2, 7.3, 8.2, 13.2–13.4, 14.3, 14.4, 15.2, 15.3, 18.2) + PDF в `references/`.
+### `docs/00_INDEX.md` — индекс набора (версия набора 12)
+Как пользоваться :6 · Файлы набора :13 · **Карта «тема → файл» :26** · Глоссарий :45 · Как обновлять :55 · Журнал изменений набора :64
 
-## 3. Индекс уроков (62)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v3)
+| § | Якорь | Строка |
+|---|-------|--------|
+| 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
+| 2 | Разработчик → ссылка на AI_INSTRUCTIONS | :21 |
+| 3 | Технические решения (стек) | :28 |
+| 4 | **Архитектурные принципы 1–12** | :49 |
+| 5 | Структура `Assets/_Project/` | :66 |
+| 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :125) | :89 |
+| 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :133 |
+| 8 | **План модулей 0–21** (таблица :175, описания+критерии :200) | :171 |
+| 9 | Реестр готовых модулей (пусто) | :248 |
+| 10 | Проблемы и долги (пусто) | :256 |
+| 11 | Журнал решений | :262 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :287 |
+| 13 | **Заморожено :297 / Гибко :308 / Отложено + крючки :313** | :293 |
+| — | Открытые вопросы 29, 39 | :328 |
+| — | Рекомендации 1,5–10,17–19 | :335 |
 
-| id | Тема | Файл урока | Slides | → целевые .mdc | Ключевые типы / API |
-|----|------|-----------|--------|----------------|---------------------|
-| 1.2 | ECS vs ООП | `1.2-ecs-vs-oop.md` | pdf/png | dots-ecs, ecs-code-standards, optimization | IJobForEach, EntityManager, SetComponentObject, GetEntityQuery, EntityQuery, TimerComponent |
-| 1.3 | Pure / Hybrid | `1.3-pure-hybrid.md` | pdf/png | dots-ecs, ecs-code-standards, development-process | DynamicBuffer, PlayerMovementJob, SetComponentObject, TimerComponent |
-| 1.4 | Практика ECS | `1.4-practical-ecs.md` | — | dots-ecs, ecs-code-standards, development-process | ComponentSystemBase, DogMoveComponent, DogMoveSystem, ISystem, SystemBase, Translation, GetEntityQuery, LocalTransform, EntityQuery |
-| 2.2 | Типы ввода | `2.2-input-types.md` | — | input-system, dots-ecs, ui-system | InputAction |
-| 2.3 | Input System setup | `2.3-input-system-setup.md` | — | input-system, dots-ecs, ecs-code-standards | InputActions |
-| 2.4 | Ввод → движение | `2.4-input-movement.md` | — | ecs-code-standards, input-system, dots-ecs | CharacterMoveSystem, MoveData, UserInputData, UserInputSystem, GetEntityQuery, InputAction, InputData, LocalTransform, EntityQuery |
-| 2.5 | Ввод → стрельба | `2.5-input-shooting.md` | — | input-system, ecs-code-standards, gameplay-interactions | AbilityDispatchSystem, CharacterShootSystem, IInputAbility, SerializeReference, ShootData, MoveData, ShootAbility, UserInputData, UserInputSystem |
-| 3.2 | Теория физики | `3.2-physics-theory.md` | pdf/png | physics-system, dots-ecs, development-process |  |
-| 3.3 | Физика ECS | `3.3-physics-ecs.md` | — | ecs-code-standards, physics-system, unity-csharp | ActorColliderData, CapsuleCollider, CollisionSystem, EnumColliderType, CollisionAbility, LocalTransform, EntityQuery, IAbility, IConvertGameObjectToEntity |
-| 3.4 | Урон | `3.4-collision-damage.md` | — | gameplay-interactions, dots-ecs, unity-csharp | CollisionContext, DamageRequest, TrapAbility, ICollisionAbility, CharacterHealth, IAbility |
-| 3.5 | Collision actions | `3.5-collision-actions.md` | — | gameplay-interactions, physics-system, unity-csharp | CollisionActions, CollisionActionsAbilities, ICollisionContext, IAbilityTarget, TrapAbility, CollisionAbility, ICollisionAbility, IAbility |
-| 4.2 | ScriptableObject | `4.2-serialization-scriptable-object.md` | — | save-data, unity-csharp, development-process | CharacterHealth |
-| 4.3 | JSON / PlayerPrefs | `4.3-serialization-json.md` | — | save-data, architecture-patterns, unity-csharp | GameSessionState, JsonUtility, PlayerStats, ShootAbility, CharacterHealth |
-| 4.4 | Remote storage | `4.4-remote-data-storage.md` | pdf/png | save-data, development-process |  |
-| 4.5 | Google Drive | `4.5-google-drive.md` | — | save-data, development-process, architecture-patterns | GoogleDriveTools, IRemoteSaveProvider |
-| 5.2 | Введение AI | `5.2-ai-intro.md` | pdf/png | gameplay-ai, development-process |  |
-| 5.3 | Алгоритмы AI | `5.3-ai-algorithms.md` | pdf/png | gameplay-ai, development-process |  |
-| 5.4 | Utility System | `5.4-utility-system.md` | — | gameplay-ai, dots-ecs, ecs-code-standards | AIAgent, AI_BehaveSystem, AI_EvaluateSystem, BehaviorManager, IBehaviour, RotateBehaviour, WaitBehaviour, FindObjectOfType, IConvertGameObjectToEntity |
-| 5.5 | Asset Store AI | `5.5-ai-asset-store.md` | — | gameplay-ai, development-process |  |
-| 6.2 | Понятие паттернов | `6.2-design-patterns-intro.md` | pdf/png | architecture-patterns, development-process |  |
-| 6.3 | Обзор паттернов | `6.3-design-patterns-overview.md` | pdf/png | architecture-patterns, dots-ecs, gameplay-ai |  |
-| 6.4 | DI / Extenject | `6.4-dependency-injection.md` | — | architecture-patterns, development-process | AsSingle, IInitializable, ITickable, InstallBindings, MonoInstaller, MyInstaller, NonLazy, SceneContext |
-| 7.2 | Теория графики 1 | `7.2-graphics-pipeline.md` | pdf/png | graphics, optimization, shaders |  |
-| 7.3 | Теория графики 2 | `7.3-graphics-materials.md` | pdf/png | shaders, graphics, graphics-lighting |  |
-| 7.4 | Shader Graph / URP | `7.4-shader-graph.md` | — | shaders, graphics, optimization |  |
-| 7.5 | VFX / Particles | `7.5-vfx-particles.md` | — | vfx, optimization | ParticleSystem |
-| 8.2 | Теория освещения | `8.2-lighting-theory.md` | pdf/png | graphics-lighting, graphics |  |
-| 8.3 | Lighting window | `8.3-lighting-window.md` | — | graphics-lighting, optimization |  |
-| 8.4 | Rendering Pipelines | `8.4-rendering-pipelines.md` | — | graphics, optimization, graphics-lighting |  |
-| 9.2 | Animator | `9.2-animation-builtin.md` | — | animation-system |  |
-| 9.3 | Animator API + ECS | `9.3-animator-api.md` | — | animation-system, unity-csharp | AnimData, DogAnimSystem, NativeArray |
-| 9.4 | DOTween | `9.4-procedural-animation.md` | — | animation-system | ShrinkAbility |
-| 9.5 | Advanced | `9.5-advanced-animation.md` | — | animation-system, optimization |  |
-| 10.2 | Теория async | `10.2-async-theory.md` | — | async-concurrency, optimization | IJob, IJobParallelFor, NativeArray |
-| 10.3 | Task + Jobs | `10.3-async-jobs.md` | — | async-concurrency, optimization | IJobParallelForTransform, IJob, IJobParallelFor, NativeArray |
-| 10.4 | UniRx | `10.4-reactive-unirx.md` | — | async-concurrency | CompositeDisposable, ObservableWWW, ObserveOnMainThread |
-| 11.2 | Обзор редактора | `11.2-editor-overview.md` | — | editor-extensions |  |
-| 11.3 | Custom inspectors | `11.3-custom-inspectors.md` | — | editor-extensions | ApplyModifiedProperties, AssetDatabase, CanEditMultipleObjects, CustomEditor, EditorWindow, GUIDToAssetPath, LoadAssetAtPath, MenuItem, OnInspectorGUI |
-| 11.4 | Odin Inspector | `11.4-odin-inspector.md` | — | editor-extensions | HideMonoScript, LabelText, ShowInInspector |
-| 12.2 | Прокачка | `12.2-level-up-system.md` | — | gameplay-meta, unity-csharp | CharacterData, ILevelUp, LevelUpActions, LevelUpHealth, CharacterHealth |
-| 12.3 | Инвентарь | `12.3-inventory-system.md` | — | gameplay-meta, ui-system, ecs-code-standards | GiveItemPickupAbility, GiveScorePickup, IItem, InventoryRoot, PickupDestroySystem, StarItemAbility, UiItem, EntityManager, IAbilityTarget |
-| 12.4 | Крафт | `12.4-crafting-system.md` | — | gameplay-meta, ui-system, ecs-code-standards | CraftController, CraftSettings, ICraftable |
-| 12.5 | UI / MVVM | `12.5-ui-game-state-mvvm.md` | — | ui-system | INotifyPropertyChanged, OneWayPropertyBinding, PropertyChanged, FindObjectOfType |
-| 13.2 | Теория сети | `13.2-networking-theory.md` | pdf/png | networking, monetization |  |
-| 13.3 | Low-level | `13.3-networking-low-level.md` | pdf/png | networking |  |
-| 13.4 | Real-world | `13.4-networking-real-world.md` | pdf/png | networking |  |
-| 13.5 | Photon Cloud | `13.5-photon-cloud.md` | — | networking | ConnectUsingSettings, JoinOrCreateRoom, OnConnectedToMaster, PhotonAnimatorView, PhotonServerSettings, PhotonTransformView, PhotonView, RoomOptions, InputData |
-| 14.2 | Profiler | `14.2-profiler.md` | — | optimization, ecs-code-standards |  |
-| 14.3 | CPU / GC | `14.3-optimization-cpu-gc.md` | pdf/png | optimization, unity-csharp, ecs-code-standards | FindObjectOfType |
-| 14.4 | UI perf | `14.4-optimization-ui.md` | pdf/png | ui-system, optimization |  |
-| 15.3 | Аналитика | `15.3-user-analytics.md` | pdf/png | monetization, build-release |  |
-| 15.4 | IAP | `15.4-in-app-purchases.md` | — | monetization, build-release |  |
-| 16.2 | Теория звука | `16.2-audio-theory.md` | — | audio-system, optimization |  |
-| 16.3 | Wwise интеграция | `16.3-wwise-integration.md` | — | audio-system | AkInitializer |
-| 16.4 | Wwise editor | `16.4-wwise-editor.md` | — | audio-system | AkAudioListener, AkBank, AkEvent, AudioEvents |
-| 17.2 | SDK | `17.2-sdk-integration.md` | — | build-release, monetization | SdkBootstrap |
-| 17.3 | Android | `17.3-android-build.md` | — | build-release |  |
-| 17.4 | iOS | `17.4-ios-build.md` | — | build-release |  |
-| 17.5 | Stores | `17.5-store-publishing.md` | — | build-release, monetization |  |
-| 18.2 | Теория тестов | `18.2-testing-theory.md` | pdf/png | testing, build-release, networking |  |
-| 18.3 | NUnit | `18.3-nunit-setup.md` | — | testing |  |
-| 18.4 | Automation | `18.4-test-automation.md` | — | testing, editor-extensions, development-process | CraftRecipeMatcher |
+### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v2)
+- **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
+- **7.7 Панели** :96 — общее :98, А навыки :104, Б расходники :111, В комплекты экипировки :118, Г эмодзи :126
+- **7.6 Настройки** :134 — категории и где хранятся :136, правила (apply/rollback, rebinding, JSON `schemaVersion`) :150
+- Вопросы 10–13, 27, 28 :160 · Рекомендации 13, 14 :171
 
-Целевые `.mdc` (ещё не созданы, кроме `ecs-code-standards`): см. `docs/approve-questions.md` → «Целевые rule-файлы».
+### `docs/03_CLASSES_COMBAT.md` — ресурсы, навыки, классы, бой (v1)
+- **7.1 Ресурсы/двойная мана** :10 — пулы A/B :12, правило списания :22, `CostEntry` :24, атомарная проверка :39, боевое состояние :45, регенерация :47, модификаторы :49
+- **7.2 Навыки Shift/Ctrl** :53 — модификаторы ввода :55, `SkillDefinition`/`SkillVariant` :65, `CmdUseSkill` :83, правила (КД, GCD, баланс вариантов) :85
+- **7.3 Классы** :95 — `ClassDefinition` :97, черновик классов :110
+- **7.12 Боевые характеристики** :122 — оборона/крит/порядок расчёта урона :124, `StatModifier` и порядок применения :131, статус-эффекты :140, зелья :160
+- Вопросы 1–5, 9, 25, 26 :169 · Рекомендации 2–4 :182
 
-## 4. Функционал → где описано
+### `docs/04_ITEMS_EQUIPMENT.md` — предметы и экипировка (v1)
+- **7.9 Предметы** :10 — `ItemDefinition`/`ItemInstance` :12, редкость (6 уровней) :39, слоты/ингредиенты/overcap :52, божественные + «Искра Гефеста» :61
+- **7.9.1 Виды экипировки** :71 — слоты экипировки :75, типы брони :89, виды оружия :91, правила слотов :100, модель данных :105
+- **7.11 Реестр легендарных** :122 (`LegendaryRegistryEntry` :128)
+- **7.14.1 Улучшение (`UpgradeLevel`)** :134 (`CmdUpgradeItem` :141)
+- Вопросы 14–19, 22–24, 30–32, 36–38 :147 · Рекомендации 15, 16, 20 :167
 
-Игровой каркас курса (Hybrid ECS, MonoBehaviour-«Ability» + ECS-системы):
+### `docs/05_ECONOMY_PROFESSIONS.md` — профессии и экономика (v1)
+- **7.4 Профессии** :10 — типы :12, модель данных :17, правила (сервер, лимит 2, шанс крафта, катализаторы, кузнец) :25
+- **7.14.2 Кошелёк** :35 (`CurrencyDefinition`, `Wallet`, `Transact(debits, credits, idempotencyKey)` :44)
+- **7.14.3 Торговля** :50 — личные магазины :52, рынок :58, почта (`MailMessage`) :64, безопасность :76
+- Вопросы 8, 33–35 :84 · Рекомендации 11, 21–23 :93
 
-| Подсистема | Цепочка / ключевые типы | Уроки |
-|------------|-------------------------|-------|
-| ECS-основа | `IComponentData` (tag/data), `ComponentSystemBase`/`SystemBase`, `EntityQuery` в `OnCreate`, Convert and Inject GameObject, `IConvertGameObjectToEntity` | 1.2–1.4; правила: `.cursor/rules/ecs-code-standards.mdc` |
-| Ввод | Input System → `UserInputSystem` пишет `InputData`/`UserInputData` → `CharacterMoveSystem` (`MoveData`) | 2.2–2.4 |
-| Стрельба / abilities | `IAbility`, `ShootAbility`, `ShootData` (tag), `CharacterShootSystem`, `IInputAbility`, `AbilityDispatchSystem` | 2.5 |
-| Коллизии | `CapsuleCollider` → `ActorColliderData` → `CollisionSystem` (`Overlap*NonAlloc`) → `CollisionAbility` | 3.3 |
-| Урон / взаимодействия | `ICollisionAbility : IAbility`, `TrapAbility`, `CharacterHealth` (demo), `DamageRequest` (предложение) | 3.4 |
-| Композиция действий | `CollisionActions` (список `IAbility`), `IAbilityTarget`, `ICollisionContext` — **канон** взамен 3.4 | 3.5 |
-| Настройки / сохранения | `ScriptableObject Settings` → `JsonUtility`/PlayerPrefs (`PlayerStats`, `GameSessionState`) → remote (`IRemoteSaveProvider`, `GoogleDriveTools`) | 4.2–4.5 |
-| AI | FSM/BT/Utility; `IBehaviour` (`Evaluate`/`Behave`), `BehaviorManager`, `AIAgent`, `AI_EvaluateSystem`, `AI_BehaveSystem` | 5.2–5.5 |
-| Паттерны / DI | каталог 11 паттернов; Extenject: `SceneContext`, `MonoInstaller`, `Container.Bind…AsSingle().NonLazy()`, `[Inject]`, `ITickable` | 6.2–6.4 |
-| Графика / свет | pipeline, материалы, Shader Graph (URP), VFX/Particles, Lighting window, URP Asset | 7.2–8.4 |
-| Анимация | Animator FSM; `AnimData : IComponentData` + `DogAnimSystem`; DOTween (`ShrinkAbility`); Timeline/IK обзор | 9.2–9.5 |
-| Async | Coroutines vs Task vs Jobs (`IJob`, `IJobParallelFor`, `NativeArray`) vs UniRx | 10.2–10.4 |
-| Editor | `EditorWindow`+`MenuItem`, `CustomEditor`/`SerializedProperty`, Odin | 11.2–11.4 |
-| Meta-gameplay | level-up (`CharacterData`, `ILevelUp`), инвентарь (`IItem`, `UiItem`, `InventoryRoot`, pickups), крафт (`CraftController`, `ICraftable`, `CraftSettings`) | 12.2–12.4 |
-| UI | MVVM, UnityWeld, `INotifyPropertyChanged`; UI perf (не обновлять Text каждый кадр) | 12.5, 14.4 |
-| Сеть | теория (P2P/client-server, lag, TCP/UDP) → Photon PUN2 (`PhotonView`, RPC, `PhotonNetwork.Instantiate`) | 13.2–13.5 |
-| Оптимизация | Profiler/Frame Debugger, Update overhead, `Find*`/GC, UI rebuild | 14.2–14.4 |
-| Монетизация | аналитика, Unity IAP (Consumable/Non-Consumable/Subscription) | 15.3–15.4 |
-| Аудио | AudioSource/Listener; Wwise (`AkInitializer`, `AkBank`, `AkEvent`) | 16.2–16.4 |
-| Сборка / релиз | SDK (Facebook, AppMetrica, `SdkBootstrap`), Android keystore, iOS Xcode, сторы | 17.2–17.5 |
-| Тесты | типы тестов, Unity Test Framework, asmdef `Tests`, `[UnityTest]`, `CraftRecipeMatcher` | 18.2–18.4 |
+### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v1)
+- **7.8 Группы и лут** :10 — группа/лидер :12, режимы лута :19, голосование (`LootModeVote`, `CmdVoteLootMode`) :27, правила раздачи (`LootEntry` :45) :36
+- **7.5 Подземелье на 50** :49 — структура :51, энкаунтеры :57, лут :62, тех. бюджет (тик 20–30 Гц) :64, UI рейда :69
+- Вопросы 6, 7, 20, 21 :73 · Рекомендация 12 :82
 
-Поиск любого другого символа: `grep -rln "ИмяТипа" docs/lessons/` (имена в документах — в бэктиках).
+### `.cursor/rules/*.mdc` — производные от документов (README там же)
+`core-always` (приоритеты, запрет ECS) · `unity-csharp` (= 01 §6) · `ui-system` (= 02 7.13) · `player-system` (= 01 §6.1).
+Не входят в набор (legacy видеокурса): `ecs-code-standards.mdc`, `transcript-analysis.mdc`.
 
-## 5. Нерешённые вопросы (кратко)
+## 2. Нумерация разделов 7.x → файл
 
-`docs/rules-contradictions.md` — 🔴 Blockers:
-A — ECS strict struct vs Hybrid default · B — `Transform` vs `LocalTransform` в системах ·
-C — `IAbility`/`ICollisionAbility`/композиция · D — `FindObjectOfType` запрет vs one-shot ·
-E — `[SerializeField] private` vs public-поля курса · F — server authority vs Photon PUN demo ·
-G — lifecycle Extenject vs ECS tick · H — Service Locator vs DI vs ui-system · I — Instantiate / Pool / Zenject factory.
+| Раздел | Тема | Файл |
+|--------|------|------|
+| 7.1 | ресурсы, двойная мана | 03 |
+| 7.2 | навыки, варианты Shift/Ctrl | 03 |
+| 7.3 | классы | 03 |
+| 7.4 | профессии | 05 |
+| 7.5 | подземелье на 50 | 06 |
+| 7.6 | настройки пользователя | 02 |
+| 7.7 | панели быстрого доступа | 02 |
+| 7.8 | группы и лут | 06 |
+| 7.9 / 7.9.1 | предметы / виды экипировки | 04 |
+| 7.10 | расширяемость контента | 01 |
+| 7.11 | реестр легендарных | 04 |
+| 7.12 | бой, статусы, зелья | 03 |
+| 7.13 | оверлей (HUD) | 02 |
+| 7.14.1 / .2 / .3 | улучшение / кошелёк / торговля | 04 / 05 / 05 |
 
-`docs/approve-questions.md` — стратегические A–L (рекомендации senior): URP; Input System only; Hybrid ECS (simulation в подпапке);
-Extenject только meta/save/settings; локальный save = файл+JsonUtility; UI = events + plain ViewModel; PUN2 только учебно;
-Task+Jobs, UniRx optional; Odin optional; аудио через `IAudioService`; канон взаимодействий = 3.5. **Ни одно не утверждено.**
+## 3. Модули → что читать
 
-## 6. Unity-проект `MyGame/` (что известно без Assets)
+Описание и критерий готовности модуля N: `01_DEV_PLAN.md` :202 + 2·N (модуль 0 → :202, 5 → :212, 21 → :244).
 
-- `MyGame.sln` + 5 csproj. Сгенерированы Unity **6000.3.19**; в csproj много ссылок на `Library/PackageCache` (не в git).
-- Задуманная сборочная схема (по `Compile Include`): `Assets/_Project/Scripts/{Shared,Client,Server}/` → `Game.Shared`, `Game.Client` (ссылается на Shared), `Game.Server`.
-  Это **расходится** с `docs/architecture.md` (Core/Systems/Gameplay/UI) — при появлении кода уточнить у пользователя.
-- `MyGame/Assets`, `ProjectSettings`, `Packages` **не закоммичены** → открыть/собрать проект из репо нельзя.
-- `.gitignore` исключает `MyGame/{Library,Temp,Obj,Build,Logs,UserSettings}`, но `MyGame/obj/` (нижний регистр) в git попал — мусор.
+| # | Модуль | Зависит | Разделы / файлы |
+|---|--------|---------|-----------------|
+| 0 | Подготовка (asmdef, лог, билды server/client) | — | 01 §3, §5, §6 |
+| 1 | Сеть: Mirror+KCP, dedicated, ID, тики | 0 | 01 §3, §4 |
+| 2 | Персонаж и камера (предсказание, интерполяция) | 1 | 01 §6.1; 02 7.6 (ввод) |
+| 3 | Боты, нагрузка, interest management, замеры CPU | 1–2 | 01 §4, §13 (ECS-крючок); 06 7.5 (бюджет) |
+| 4 | Ядро данных, расширяемость, валидатор, мастера | 0 | 01 7.10 |
+| 5 | Характеристики и ресурсы | 4 | 03 7.1, 7.12 (`StatModifier`) |
+| 6 | Таргет и автоатака | 2, 5 | 03 7.1 (реген за попадание) |
+| 7 | Навыки + каркас оверлея + мин. панель | 5, 6 | 03 7.2; 02 7.13, 7.7А |
+| 8 | Бой: урон, статусы, зелья, угроза, лог | 7 | 03 7.12 |
+| 9 | Классы | 7, 8 | 03 7.3; 01 7.10 |
+| 10 | Мобы и ИИ, лут-таблицы | 8 | 01 7.10; 06 7.8 |
+| 11 | Предметы, инвентарь, кошелёк | 5, 10 | 04 7.9, 7.9.1, 7.14.1; 05 7.14.2 |
+| 12 | Профессии, крафт, улучшение | 4, 11 | 05 7.4; 04 7.9 (слоты), 7.14.1 |
+| 13 | Аккаунты, PostgreSQL, реестр уникальных | 11 | 04 7.9 (божественные), 05 7.14 |
+| 14 | Социалка: чат, группы, голосование лута, рейд | 13 | 06 7.8 |
+| 15 | Подземелье на 50 | 3, 8–14 | 06 7.5 |
+| 16 | Зоны и масштаб | 3, 13, 15 | 01 §4, 7.10 (`ZoneDefinition`) |
+| 17 | Настройки пользователя | 2, 7, 13 | 02 7.6 |
+| 18 | Панели, эмодзи, редактор HUD | 7, 11, 13, 14, 17 | 02 7.7, 7.13 |
+| 19 | Реестр легендарных | 11, 13, 16 | 04 7.11 |
+| 20 | Торговля: магазины, рынок, почта | 11, 13, 14 | 05 7.14.3 |
+| 21 | Полировка | все | — |
 
-## 7. Служебные файлы (обычно не нужны)
+Статус всех модулей на момент карты: **не начат**.
 
-| Файл | Что |
-|------|-----|
-| `scripts/_translate_rules_pending.py` | список пар замен EN→RU (~550 строк данных) + `translate_file()`/`main()` в конце; применяется к pending/lessons/contradictions |
-| `tools/ocr_slides.ps1` | Windows OCR PNG-слайдов → txt; результаты `tools/ocr_output_*.txt` |
-| `docs/rules-memory-audit.md` | размеры/токены lesson-файлов (lessons ~113k ток., pending ~37k, mdc ~5.5k) |
-| корневые `*.png`, `*.webp` | скриншоты (Cursor и пр.), к коду не относятся |
+## 4. Индекс сущностей (тип / команда → где определено)
+
+| Сущность | Где |
+|----------|-----|
+| `CostEntry` (Mana/CombatMana/ReserveMana/Health; Flat/PercentOfMax) | 03 7.1 :24 — ЗАМОРОЖЕНО |
+| `SkillDefinition`, `SkillVariant` (Default/Empowered/Weakened) | 03 7.2 :65 — ЗАМОРОЖЕНО |
+| `ClassDefinition` | 03 7.3 :97 |
+| `StatModifier` (Add/PercentAdd/Multiply, `SourceId`) | 03 7.12 :131 |
+| `StatusEffectDefinition` | 03 7.12 :140 |
+| `EffectDefinition`, `IEffectHandler`, `EffectHandlerRegistry` | 01 7.10 :138–142 |
+| `LegendaryDefinition` | 01 7.10 :157 |
+| `MobDefinition`, `ZoneDefinition` (только упоминание) | 01 7.10 :148–155 |
+| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :317 |
+| `HudWindowDefinition` | 02 7.13 :46 |
+| `HudRoot`, `HudZone`, `WindowManager`, `WindowRegistry`, `MenuBar`, `DragDropService`, `BadgeService` | 02 7.13 :83 |
+| `ItemDefinition`, `ItemInstance` (GUID, `UpgradeLevel`, `Sockets`) | 04 7.9 :12 |
+| `EquipmentSlotDefinition`, `ArmorTypeDefinition`, `WeaponTypeDefinition` | 04 7.9.1 :105 |
+| `LegendaryRegistryEntry` | 04 7.11 :128 |
+| `UpgradeRules` | 04 7.14.1 :136 |
+| `ProfessionDefinition`, `Recipe`, `GatheringNode` | 05 7.4 :17 |
+| `CurrencyDefinition`, `Wallet`, `Transact(...)` | 05 7.14.2 :37–44 |
+| `MailMessage` | 05 7.14.3 :64 |
+| `LootModeVote` | 06 7.8 :33 |
+| `LootEntry` | 06 7.8 :45 |
+
+**Сетевые команды (клиент → сервер):** `CmdUseSkill {skillId,targetId,modifier,clientSeq}` 03 :83 · `CmdUseConsumable` 02 :116 / 03 :165 · `CmdSwapLoadout {loadoutId}` 02 :124 · `CmdEmoji {emojiId}` 02 :130 · `CmdUpgradeItem {itemInstanceId,stationId}` 04 :141 · `CmdVoteLootMode {proposalId,accept}` 06 :33.
+**Rpc:** `RpcDamageApplied` — только пример имени, 01 §6 :116.
+
+Поиск любого другого имени: `grep -n "ИмяТипа" docs/0*.md`.
+
+## 5. Открытые вопросы (сквозные №) → файл
+
+| № | Файл | № | Файл | № | Файл |
+|---|------|---|------|---|------|
+| 1–5 | 03 | 14–19 | 04 | 29 | 01 |
+| 6, 7 | 06 | 20, 21 | 06 | 30–32 | 04 |
+| 8 | 05 | 22–24 | 04 | 33–35 | 05 |
+| 9 | 03 | 25, 26 | 03 | 36–38 | 04 |
+| 10–13 | 02 | 27, 28 | 02 | 39 | 01 |
+
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **39** (новый вопрос = 40). Номера не менять.
+
+**Рекомендации** (тоже сквозные): 1, 5–10, 17–19 → 01 · 2–4 → 03 · 11, 21–23 → 05 · 12 → 06 · 13, 14 → 02 · 15, 16, 20 → 04. Последний номер — 23.
+
+Число пометок «ДЕФОЛТ»: 01 — 10, 02 — 21, 03 — 22, 04 — 33, 05 — 12, 06 — 15 (`grep -n ДЕФОЛТ`).
+
+## 6. Состояние репозитория (фактическое)
+
+- **C#-кода нет** (0 файлов `.cs`). Все модули — «не начат». §9 реестр модулей пуст.
+- `MyGame/` — только `.sln`, `*.csproj` (Unity **6000.3.19**, сборки `Game.Shared`/`Game.Client`/`Game.Server`), `obj/`, `UserSettings/`, `Build/` (~190 МБ билдов, закоммичено из-за закомментированных строк `.gitignore`).
+  **Нет `MyGame/Assets`, `Packages`, `ProjectSettings`** → проект из репо не открыть. Код, на который ссылаются csproj (`Scripts/Shared/Log.cs`, `Client/ClientBootProbe.cs`, `Server/ServerBootProbe.cs`), в репо отсутствует.
+- Корневой `Assets/_Project/Scripts/.gitkeep` — пустая заготовка вне Unity-проекта (`MyGame/`).
+- Структура кода по плану: 01 §5 (`Scripts/Shared|Server|Client|Network|Tools`, `Data/`, `Bots/`).
+
+## 7. Legacy (видеокурс, не относится к игре; не читать без запроса)
+
+`docs/lessons/`, `docs/rules-pending/`, `docs/approve-questions.md`, `docs/rules-contradictions.md`, `docs/rules-memory-audit.md`, `docs/video-index.md`, `docs/slides-code-reference.md`, `docs/vision.md`, `docs/architecture.md` (заменён 01 §4–§5), `references/` (VTT/PDF/PNG), `tools/`, `scripts/`, `.cursor/skills/`, `.cursor/rules/{ecs-code-standards,transcript-analysis}.mdc`, PNG/WEBP в корне.

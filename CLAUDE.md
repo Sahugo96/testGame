@@ -1,104 +1,43 @@
-# CLAUDE.md — точка входа (читать первой)
+# CLAUDE.md — точка входа
 
-## Обязательный контекст проекта (загружается автоматически в каждой сессии)
+Проект: многопользовательская RPG в духе Royal Quest на Unity 6 (URP), авторитарный dedicated server на Mirror (KCP).
+Источник правды — набор документов в `docs/` (`AI_INSTRUCTIONS.md`, `00_INDEX.md`, `01`–`06`).
+**Навигация по документам: `docs/MAP.md`** (разделы со строками, модуль → файлы, тип/команда → место, открытые вопросы → файл).
 
-Документы набора лежат в `docs/` (в тексте документов они упоминаются без префикса `docs/`).
-Приоритет источников — `docs/AI_INSTRUCTIONS.md`, раздел 8. Всё, что ниже раздела «Архив», им подчиняется.
+## Как читать контекст
 
-@docs/AI_INSTRUCTIONS.md
-@docs/00_INDEX.md
-@docs/01_DEV_PLAN.md
+- Начало модуля: прочитать **целиком** `docs/AI_INSTRUCTIONS.md`, `docs/00_INDEX.md`, `docs/01_DEV_PLAN.md` + тематические файлы модуля (`docs/MAP.md` §3). Первый ответ — по шаблону AI_INSTRUCTIONS §3.1.
+- Точечная задача: `docs/MAP.md` → нужный раздел → `sed -n`. Не читать большие файлы целиком без нужды.
+- Конец модуля: обновить и выдать **полные** версии изменённых документов (AI_INSTRUCTIONS §4), поднять «Версию файла».
+
+## Не забывать (выжимка; при сомнении — первоисточник)
+
+Процесс (AI_INSTRUCTIONS):
+- Отвечать по-русски; код, имена и комментарии в коде — на английском.
+- Не трогать ЗАМОРОЖЕННОЕ (01 §13); не нарушать архитектурные принципы (01 §4) и правила кода 🔴; от 🟠 — только по явному решению разработчика.
+- **Не предлагать ECS/DOTS** и код в стиле Unity Entities. Серверное ядро — data-oriented на обычном C#: `struct …Data` + классы `…System`, ссылки по ID.
+- Решения по ДЕФОЛТу помечать «временно (ДЕФОЛТ)». Открытые вопросы модуля задавать **одним сообщением** в начале.
+- Код — целиком, с полными путями и настройками редактора; EditMode-тесты для серверной логики; в конце «как проверить» и «что прислать при ошибке».
+- Не выдумывать API, классы и файлы: если не уверен — пометить «проверить компилятором/документацией».
+- Не менять сквозную нумерацию разделов, модулей, вопросов. Не дублировать информацию между файлами.
+- Приоритет источников (AI_INSTRUCTIONS §8): указание разработчика в чате → 01 §13 «Заморожено» → спецификация 02–06 и план → AI_INSTRUCTIONS → общие знания.
+
+Архитектура (01 §4, §13):
+- Сервер считает всё; клиент шлёт только ввод и рисует. Логика — чистый C# без Mirror. Общий код в `Game.Shared`.
+- Контент — данные (ScriptableObject + JSON/CSV), стабильные ID, обработчики эффектов по ключу (7.10). Без магических чисел.
+- Экземпляры предметов создаёт только сервер (GUID); операции с предметами и валютами транзакционны и пишутся в аудит-лог.
+- Interest management, зоны и инстансы как отдельные процессы, фиксированный тик, симуляция отделена от представления.
+- Ввод только через Input Actions. Строки UI только через ключи локализации.
+
+## Правила кода (производные от 01 §6, §6.1 и 02 7.13; загружаются автоматически)
+
 @.cursor/rules/core-always.mdc
 @.cursor/rules/unity-csharp.mdc
 @.cursor/rules/ui-system.mdc
 @.cursor/rules/player-system.mdc
 
-Тематические документы — читать по задаче (карта «тема → файл» в `00_INDEX.md`):
-- `docs/02_OVERLAY_UI.md` — оверлей/HUD, окна, панели быстрого доступа, настройки (7.13, 7.7, 7.6)
-- `docs/03_CLASSES_COMBAT.md` — двойная мана, навыки Shift/Ctrl, классы, бой, статусы, зелья (7.1, 7.2, 7.3, 7.12)
-- `docs/04_ITEMS_EQUIPMENT.md` — предметы, экипировка, легендарные (7.9, 7.9.1, 7.11, 7.14.1)
-- `docs/05_ECONOMY_PROFESSIONS.md` — профессии, крафт, кошелёк, магазины, рынок, почта (7.4, 7.14.2, 7.14.3)
-- `docs/06_GROUPS_DUNGEONS.md` — группы, лут и голосование, рейд, подземелье на 50 (7.8, 7.5)
+## Состояние репозитория (подробно — `docs/MAP.md` §6)
 
-Нюансы репо:
-- `.cursor/rules/*.mdc` — производные от документов (см. `.cursor/rules/README.md`); при расхождении прав документ, правки сначала в документ.
-- `.cursor/rules/ecs-code-standards.mdc` и `transcript-analysis.mdc` — в набор не входят (журнал решений v3), ECS не применять.
-
----
-
-# Архив: база знаний видеокурса (legacy, справочно; не руководство к действию)
-
-> Подробная карта: **`docs/MAP.md`** (индекс 62 уроков + индекс типов/API → урок).
-> Правило экономии контекста: **не читать целиком** VTT, PDF, PNG, `docs/lessons/*`, `MyGame/*.csproj`, `scripts/_translate_rules_pending.py`. Сначала `docs/MAP.md` → нужная секция → `grep`/`sed -n`.
-
-## Что это за репо
-
-База знаний курса по Unity (ECS/DOTS, 18 модулей) + заготовка Unity-проекта.
-**C#-кода в репозитории нет** (0 файлов `.cs`). Основная ценность — документы `docs/` и правила `.cursor/`.
-
-| Факт | Значение |
-|------|----------|
-| Unity | **6000.3.19** (из define `UNITY_6000_3_19` в `MyGame/*.csproj`) |
-| Unity-проект | `MyGame/` — закоммичены только `.sln`/`.csproj`/`obj/*.cache`; **`MyGame/Assets/` в git нет** |
-| Asmdef-сборки (по csproj) | `Game.Shared` (`Scripts/Shared/Log.cs`), `Game.Client` → Shared (`Scripts/Client/ClientBootProbe.cs`), `Game.Server` (`Scripts/Server/ServerBootProbe.cs`); + шаблонные `Assembly-CSharp(-Editor)` (TutorialInfo Readme) |
-| Корневой `Assets/_Project/Scripts/` | пусто (`.gitkeep`) — целевое место кода по `docs/architecture.md` |
-| Язык документов | русский; идентификаторы/API — латиницей |
-
-## Дерево (что где)
-
-```
-CLAUDE.md                  ← этот файл
-docs/MAP.md                ← детальная карта (уроки, символы, процессы)
-docs/vision.md             шаблон vision (почти всё TBD)
-docs/architecture.md       слои Presentation→Gameplay→Systems→Core→Data, структура Assets/, именование
-docs/video-index.md        каталог курса: урок → slides / lesson / pending / статус (203 стр.)
-docs/approve-questions.md  стратегические решения A–L + вопросы по модулям + целевые .mdc (256 стр.)
-docs/rules-contradictions.md 9 blockers (A–I), 14 ADR, demo vs prod (278 стр.)
-docs/rules-memory-audit.md размеры/токены lesson-файлов (служебное)
-docs/slides-code-reference.md код, распознанный со слайдов (OCR) 1.2–1.4, 6.3
-docs/lessons/{id}-{slug}.md   разбор урока: Мета, Суть, Выводы(tier), CODE STANDARDS, Противоречия, Вопросы (~70 стр., ~1.8k ток.)
-docs/lessons/01-project-setup.md, 02-player-movement.md  — пустые шаблоны
-docs/rules-pending/{id}.md чеклисты [ ] правил на одобрение, сгруппированы по tier и целевому .mdc
-.cursor/rules/*.mdc        действующие правила (6 файлов, см. ниже)
-.cursor/skills/process-lesson/SKILL.md  процесс разбора урока
-references/transcripts/*.vtt  транскрипты (1.5 МБ!) — только grep
-references/*.pdf, references/slides/{id}/page-NN.png  слайды
-references/videos/lesson-01/  пустой шаблон
-tools/ocr_slides.ps1 (+ ocr_output_*.txt)  OCR слайдов через Windows OCR
-scripts/_translate_rules_pending.py  разовый скрипт замены EN→RU фраз в docs
-*.png/*.webp в корне       скриншоты, к проекту не относятся
-```
-
-## Действующие правила `.cursor/rules/`
-
-| Файл | Применение | Суть |
-|------|-----------|------|
-| `core-always.mdc` | всегда | читать vision/architecture; код в `Assets/_Project/`; приоритет architecture над уроком |
-| `unity-csharp.mdc` | `**/*.cs` | файл = имя типа; `[SerializeField] private`; кеш GetComponent; CompareTag |
-| `ecs-code-standards.mdc` | `**/*.cs` | код ECS из 1.2–1.4: query в `OnCreate`, suffix `Component`/`Data`, не `Transform` в системах |
-| `transcript-analysis.mdc` | всегда | разбор VTT: tier на каждый вывод, senior-review, **запись в .mdc только по явной команде** |
-| `player-system.mdc` | `Assets/**/Player/**` | код игрока в `Scripts/Gameplay/Player/`; разделять ввод/движение/анимацию |
-| `ui-system.mdc` | `Assets/**/UI/**` | UI в `Scripts/UI/`; без gameplay-логики; без `FindObjectOfType` |
-
-Tier: 🔴 критично · 🟠 важно · 🟡 умеренно · 🟢 было бы хорошо.
-
-## Ключевые процессные правила (не нарушать)
-
-1. «Разбери урок/VTT» → только анализ (таблица выводов с tier и «⚠️ Подвохи»), **файлы не трогать**.
-2. Писать в `.cursor/rules/*.mdc` — **только** по явной команде («запиши правила …»). «Одобряю» ≠ «запиши».
-3. Перед записью — сверить с `docs/rules-contradictions.md` (9 blockers не решены).
-4. Конфликт урока с `architecture.md` → прав `architecture.md`, конфликт фиксировать в lesson doc.
-
-## Состояние (на момент составления карты)
-
-- 62 урока `extracted` (x.1 — intro, пропущены; 15.2 — нет VTT). В `.mdc` перенесено только `ecs-code-standards`.
-- Стратегические решения A–L в `docs/approve-questions.md` не приняты; `vision.md` не заполнен.
-
-## Быстрый поиск
-
-```bash
-grep -rn "ICollisionAbility" docs/            # где описан тип/API
-grep -n "^## " docs/lessons/3.5-*.md          # оглавление урока
-sed -n '/^## CODE STANDARDS/,/^## Не выносить/p' docs/lessons/2.4-*.md   # только код урока
-grep -n "12:3" "references/transcripts/3.4 "*.vtt                       # таймкод в транскрипте
-```
+- C#-кода нет; все модули 0–21 «не начат».
+- `MyGame/` без `Assets/`, `Packages/`, `ProjectSettings/` — Unity-проект из репо не открыть; закоммичены мусорные `Build/`, `obj/`, `UserSettings/`.
+- Материалы видеокурса (`docs/lessons/`, `references/` и др., см. `docs/MAP.md` §7) — legacy, к игре не относятся.
