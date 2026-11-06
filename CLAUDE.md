@@ -1,5 +1,18 @@
 # CLAUDE.md — точка входа (читать первой)
 
+## Действующие правила проекта (загружаются автоматически, приоритет над остальным текстом этого файла)
+
+@.cursor/rules/core-always.mdc
+@.cursor/rules/unity-csharp.mdc
+@.cursor/rules/ui-system.mdc
+
+Тематические документы (читать по задаче, по карте из `core-always.mdc`):
+- `docs/05_ECONOMY_PROFESSIONS.md` — профессии, крафт, кошелёк валют, магазины, рынок, почта
+- `docs/06_GROUPS_DUNGEONS.md` — группы, режимы лута и голосование, рейд, подземелье на 50 игроков
+- Остальные (`00_INDEX`, `AI_INSTRUCTIONS`, `01_DEV_PLAN`, `02`–`04`) — ещё не загружены в репо.
+
+---
+
 > Подробная карта: **`docs/MAP.md`** (индекс 62 уроков + индекс типов/API → урок).
 > Правило экономии контекста: **не читать целиком** VTT, PDF, PNG, `docs/lessons/*`, `MyGame/*.csproj`, `scripts/_translate_rules_pending.py`. Сначала `docs/MAP.md` → нужная секция → `grep`/`sed -n`.
 

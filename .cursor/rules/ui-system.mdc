@@ -6,19 +6,21 @@ alwaysApply: false
 
 # Система UI
 
+> Производный файл. Источник правды: `docs/02_OVERLAY_UI.md`, раздел 7.13 («Правила UI-кода»).
+
 ## Критично следовать
 
-- UI-скрипты — в `Assets/_Project/Scripts/UI/`.
+- UI-скрипты клиента — в `Assets/_Project/Scripts/Client/UI/`.
 
 ## Важно
 
-- View отображает состояние; gameplay-правила в UI не живут. Привязка к системам через events или presenters.
+- View отображает состояние; gameplay-правила в UI не живут. Привязка к системам через events или presenters (ViewModel).
 - Не использовать `FindObjectOfType` в UI в runtime; serialized references или задокументированный service locator.
 
 ## Умеренно
 
-- По возможности отделять UI-строки и layout от core gameplay-сборок.
+- По возможности отделять UI-строки и layout от core gameplay-сборок; строки только через ключи локализации.
 
 ## Было бы хорошо
 
-- (дополняется по мере разбора уроков)
+- (дополняется по мере разработки модулей)
