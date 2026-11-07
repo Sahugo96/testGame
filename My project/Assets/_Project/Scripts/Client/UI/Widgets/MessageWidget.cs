@@ -1,3 +1,4 @@
+using Game.Shared.Protocol;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,9 +23,20 @@ namespace Game.Client.UI.Widgets
             _text.text = string.Empty;
         }
 
-        public void Show(string key)
+        /// <summary>Error line (command rejected by the server).</summary>
+        public void Show(string key) => ShowText(_ctx.Text.Get(key), HudPalette.Error);
+
+        /// <summary>Server notification: {0} = number, {1} = localized item name.</summary>
+        public void Show(NotificationMessage message)
         {
-            _text.text = _ctx.Text.Get(key);
+            string item = string.IsNullOrEmpty(message.ItemNameKey) ? string.Empty : _ctx.Text.Get(message.ItemNameKey);
+            ShowText(_ctx.Text.Format(message.TextKey, message.Number, item), message.IsPositive ? HudPalette.Positive : HudPalette.Error);
+        }
+
+        private void ShowText(string text, Color color)
+        {
+            _text.text = text;
+            _text.color = color;
             _remaining = HudLayout.MessageSeconds;
         }
 

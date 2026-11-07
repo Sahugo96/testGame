@@ -127,6 +127,11 @@ namespace Game.Client.Input
             Ray ray = _ctx.Camera.ScreenPointToRay(_input.PointerScreenPosition);
             if (Physics.Raycast(ray, out RaycastHit hit, MaxRayDistance) && _views.TryGetEntity(hit.collider, out EntityId id))
             {
+                if (_views.IsStation(id))
+                {
+                    _hud.OpenStation(id);
+                    return;
+                }
                 if (id != _ctx.State.LocalPlayerId)
                 {
                     _ctx.Commands.SelectTarget(id);

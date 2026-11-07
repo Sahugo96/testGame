@@ -683,6 +683,258 @@
   {
    "Key": "ui.map_hint",
    "Value": "Синий — вы, цветные — манекены. Клавиша M закрывает карту."
+  },
+  {
+   "Key": "bag.equipment",
+   "Value": "Экипировка"
+  },
+  {
+   "Key": "bag.consumables",
+   "Value": "Расходники"
+  },
+  {
+   "Key": "bag.loot",
+   "Value": "Лут"
+  },
+  {
+   "Key": "bag.resources",
+   "Value": "Ресурсы"
+  },
+  {
+   "Key": "bag.quest",
+   "Value": "Квестовые"
+  },
+  {
+   "Key": "window.anvil",
+   "Value": "Наковальня"
+  },
+  {
+   "Key": "window.anvil.short",
+   "Value": "Нак."
+  },
+  {
+   "Key": "npc.anvil",
+   "Value": "Наковальня"
+  },
+  {
+   "Key": "mob.cube",
+   "Value": "Куб"
+  },
+  {
+   "Key": "ui.upgrade",
+   "Value": "Улучшить"
+  },
+  {
+   "Key": "ui.anvil_empty",
+   "Value": "Нет предметов, которые можно улучшить."
+  },
+  {
+   "Key": "ui.anvil_max_level",
+   "Value": "Достигнут максимальный уровень улучшения."
+  },
+  {
+   "Key": "ui.anvil_next_level",
+   "Value": "Улучшение: +{0} → +{1}"
+  },
+  {
+   "Key": "ui.anvil_chance",
+   "Value": "Шанс успеха: {0}%"
+  },
+  {
+   "Key": "ui.anvil_material",
+   "Value": "Нужно: {0} — есть {1} из {2}"
+  },
+  {
+   "Key": "ui.anvil_fail_loss",
+   "Value": "При неудаче уровень снизится на {0}"
+  },
+  {
+   "Key": "ui.anvil_stat_bonus",
+   "Value": "Каждый уровень: +{0}% к бонусам предмета"
+  },
+  {
+   "Key": "hud.experience_line",
+   "Value": "опыт {0} / {1}"
+  },
+  {
+   "Key": "hud.experience_max",
+   "Value": "максимальный уровень"
+  },
+  {
+   "Key": "ui.attribute_points",
+   "Value": "Свободные очки: {0}"
+  },
+  {
+   "Key": "ui.class_points",
+   "Value": "Очки класса: {0}"
+  },
+  {
+   "Key": "error.not_near_station",
+   "Value": "Подойдите ближе"
+  },
+  {
+   "Key": "error.no_materials",
+   "Value": "Не хватает материалов"
+  },
+  {
+   "Key": "error.max_upgrade_level",
+   "Value": "Максимальный уровень улучшения"
+  },
+  {
+   "Key": "error.cannot_upgrade",
+   "Value": "Этот предмет нельзя улучшить"
+  },
+  {
+   "Key": "error.no_attribute_points",
+   "Value": "Нет свободных очков"
+  },
+  {
+   "Key": "notify.level_up",
+   "Value": "Новый уровень: {0}!"
+  },
+  {
+   "Key": "notify.experience",
+   "Value": "+{0} опыта"
+  },
+  {
+   "Key": "notify.loot",
+   "Value": "Получено: {1} ×{0}"
+  },
+  {
+   "Key": "notify.upgrade_success",
+   "Value": "{1}: улучшено до +{0}!"
+  },
+  {
+   "Key": "notify.upgrade_failed",
+   "Value": "{1}: неудача, теперь +{0}"
+  },
+  {
+   "Key": "notify.upgrade_broken",
+   "Value": "{1}: предмет разрушен!"
+  },
+  {
+   "Key": "notify.bag_full_lost",
+   "Value": "Отсек рюкзака полон: {1} ×{0} потеряно"
+  },
+  {
+   "Key": "item.swordsman_sword.name",
+   "Value": "Меч мечника"
+  },
+  {
+   "Key": "item.swordsman_sword.desc",
+   "Value": "Надёжный одноручный меч."
+  },
+  {
+   "Key": "item.swordsman_shield.name",
+   "Value": "Щит мечника"
+  },
+  {
+   "Key": "item.swordsman_shield.desc",
+   "Value": "Щит во вторую руку."
+  },
+  {
+   "Key": "item.swordsman_armor.name",
+   "Value": "Доспех мечника"
+  },
+  {
+   "Key": "item.swordsman_armor.desc",
+   "Value": "Латный доспех."
+  },
+  {
+   "Key": "item.swordsman_helm.name",
+   "Value": "Шлем мечника"
+  },
+  {
+   "Key": "item.swordsman_helm.desc",
+   "Value": "Латный шлем."
+  },
+  {
+   "Key": "item.swordsman_gauntlets.name",
+   "Value": "Латные рукавицы мечника"
+  },
+  {
+   "Key": "item.swordsman_gauntlets.desc",
+   "Value": "Защищают руки."
+  },
+  {
+   "Key": "item.swordsman_greaves.name",
+   "Value": "Поножи мечника"
+  },
+  {
+   "Key": "item.swordsman_greaves.desc",
+   "Value": "Латные поножи."
+  },
+  {
+   "Key": "item.swordsman_boots.name",
+   "Value": "Сапоги мечника"
+  },
+  {
+   "Key": "item.swordsman_boots.desc",
+   "Value": "Тяжёлые сапоги, но в них удобно бегать."
+  },
+  {
+   "Key": "item.adept_gloves.name",
+   "Value": "Перчатки адепта"
+  },
+  {
+   "Key": "item.adept_gloves.desc",
+   "Value": "Тканевые перчатки."
+  },
+  {
+   "Key": "item.adept_trousers.name",
+   "Value": "Брюки адепта"
+  },
+  {
+   "Key": "item.adept_trousers.desc",
+   "Value": "Усиливают основную ману."
+  },
+  {
+   "Key": "item.adept_boots.name",
+   "Value": "Туфли адепта"
+  },
+  {
+   "Key": "item.adept_boots.desc",
+   "Value": "Лёгкая обувь."
+  },
+  {
+   "Key": "item.amber_amulet.name",
+   "Value": "Янтарный амулет"
+  },
+  {
+   "Key": "item.amber_amulet.desc",
+   "Value": "Подходит всем классам."
+  },
+  {
+   "Key": "item.philosopher_stone_shard.name",
+   "Value": "Осколок философского камня"
+  },
+  {
+   "Key": "item.philosopher_stone_shard.desc",
+   "Value": "Нужен для улучшения предметов на наковальне."
+  },
+  {
+   "Key": "item.iron_ore.name",
+   "Value": "Железная руда"
+  },
+  {
+   "Key": "item.iron_ore.desc",
+   "Value": "Ресурс для ремесла."
+  },
+  {
+   "Key": "item.cube_fragment.name",
+   "Value": "Обломок куба"
+  },
+  {
+   "Key": "item.cube_fragment.desc",
+   "Value": "Трофей с кубов."
+  },
+  {
+   "Key": "item.smith_letter.name",
+   "Value": "Письмо кузнецу"
+  },
+  {
+   "Key": "item.smith_letter.desc",
+   "Value": "Квестовый предмет."
   }
  ]
 }

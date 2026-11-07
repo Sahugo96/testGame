@@ -20,5 +20,6 @@ namespace Game.Client.Net
         event Action<PlayerStateSnapshot> PlayerStateReceived;
         event Action<CombatEventMessage> CombatEventReceived;
         event Action<CommandRejectedMessage> RejectedReceived;
+        event Action<NotificationMessage> NotificationReceived;
     }
 }

@@ -32,6 +32,7 @@ namespace Game.Host
         public event Action<PlayerStateSnapshot> PlayerStateReceived;
         public event Action<CombatEventMessage> CombatEventReceived;
         public event Action<CommandRejectedMessage> RejectedReceived;
+        public event Action<NotificationMessage> NotificationReceived;
 
         public void Send(IGameCommand command) => _server.Submit(LocalPlayerId, command);
 
@@ -70,6 +71,11 @@ namespace Game.Host
                 RejectedReceived?.Invoke(message);
             }
             outbox.Rejections.Clear();
+            foreach (NotificationMessage message in outbox.Notifications)
+            {
+                NotificationReceived?.Invoke(message);
+            }
+            outbox.Notifications.Clear();
             if (outbox.World != null)
             {
                 WorldReceived?.Invoke(outbox.World);

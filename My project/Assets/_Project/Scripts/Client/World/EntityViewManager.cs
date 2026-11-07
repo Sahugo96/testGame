@@ -13,6 +13,10 @@ namespace Game.Client.World
         private const float TargetMarkerDiameter = 1.6f;
         private const float TargetMarkerThickness = 0.02f;
         private const float TargetMarkerHeight = 0.03f;
+        private const string CubeShape = "Cube";
+        private const float CapsuleHalfHeight = 1f;
+        private static readonly Vector3 CubeScale = new Vector3(1f, 1f, 1f);
+        private static readonly Vector3 AnvilScale = new Vector3(1.4f, 0.8f, 0.8f);
 
         private readonly Dictionary<EntityId, EntityView> _views = new Dictionary<EntityId, EntityView>();
         private readonly Dictionary<Collider, EntityId> _byCollider = new Dictionary<Collider, EntityId>();
@@ -90,22 +94,26 @@ namespace Game.Client.World
         private void OnPlayerChanged()
         {
             EntityId target = _ctx.State.Player.TargetId;
-            bool show = target.IsValid && _views.TryGetValue(target, out EntityView view);
+            bool show = target.IsValid && _views.ContainsKey(target);
             _targetMarker.gameObject.SetActive(show);
             if (show)
             {
-                _targetMarker.SetParent(_views[target].transform, false);
-                _targetMarker.localPosition = new Vector3(0f, -1f + TargetMarkerHeight, 0f);
+                Transform view = _views[target].transform;
+                _targetMarker.SetParent(transform, false);
+                _targetMarker.position = new Vector3(view.position.x, TargetMarkerHeight, view.position.z);
             }
         }
 
         private EntityView Create(EntitySnapshot entity)
         {
-            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            Vector3 scale = ShapeFor(entity, out PrimitiveType shape);
+            GameObject go = GameObject.CreatePrimitive(shape);
             go.name = $"{entity.Kind}_{entity.DefinitionId}_{entity.Id.Value}";
             go.transform.SetParent(transform, false);
+            go.transform.localScale = scale;
             EntityView view = go.AddComponent<EntityView>();
-            view.Init(entity.Id, _interval, ColorFor(entity), WorldPalette.Dead);
+            float height = shape == PrimitiveType.Capsule ? CapsuleHalfHeight : scale.y * 0.5f;
+            view.Init(entity.Id, _interval, ColorFor(entity), WorldPalette.Dead, height);
             _views[entity.Id] = view;
             _byCollider[view.Collider] = entity.Id;
             if (entity.Id == _ctx.State.LocalPlayerId)
@@ -115,8 +123,31 @@ namespace Game.Client.World
             return view;
         }
 
+        public bool IsStation(EntityId id) => _ctx.State.TryGetEntity(id, out EntitySnapshot entity) && entity.Kind == EntityKind.Npc;
+
+        private Vector3 ShapeFor(EntitySnapshot entity, out PrimitiveType shape)
+        {
+            if (entity.Kind == EntityKind.Npc)
+            {
+                shape = PrimitiveType.Cube;
+                return AnvilScale;
+            }
+            if (entity.Kind == EntityKind.Mob && _ctx.Content.Mobs.TryGetValue(entity.DefinitionId, out MobDto mob) && mob.VisualShape == CubeShape)
+            {
+                shape = PrimitiveType.Cube;
+                return CubeScale;
+            }
+            shape = PrimitiveType.Capsule;
+            return Vector3.one;
+        }
+
         private Color ColorFor(EntitySnapshot entity)
         {
+            if (entity.Kind == EntityKind.Npc)
+            {
+                StationDto station = System.Array.Find(_ctx.Content.World.Stations ?? new StationDto[0], s => s.Id == entity.DefinitionId);
+                return station != null && ColorUtility.TryParseHtmlString(station.VisualColor, out Color stationColor) ? stationColor : WorldPalette.Dead;
+            }
             if (entity.Kind == EntityKind.Player)
             {
                 return entity.Id == _ctx.State.LocalPlayerId ? WorldPalette.LocalPlayer : WorldPalette.OtherPlayer;

@@ -16,6 +16,7 @@ namespace Game.Client.UI.Windows
         protected readonly Tooltip Tooltip;
         protected readonly RectTransform Content;
         private readonly RectTransform _root;
+        private readonly System.Action<HudWindow> _close;
 
         protected HudWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip, System.Action<HudWindow> focus, System.Action<HudWindow> close)
             : this(definition, parent, canvas, ctx, tooltip, focus, close, HudLayout.WindowSize)
@@ -25,6 +26,7 @@ namespace Game.Client.UI.Windows
         protected HudWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip, System.Action<HudWindow> focus, System.Action<HudWindow> close, Vector2 size)
         {
             Definition = definition;
+            _close = close;
             Ctx = ctx;
             Tooltip = tooltip;
             Image panel = UiFactory.Panel($"Window_{definition.Id}", parent, HudPalette.PanelBackground);
@@ -84,6 +86,9 @@ namespace Game.Client.UI.Windows
         }
 
         public void BringToFront() => _root.SetAsLastSibling();
+
+        /// <summary>Lets a window close itself (e.g. NPC windows when the player walks away, 02 7.13).</summary>
+        protected void RequestClose() => _close(this);
 
         /// <summary>Called on open and on every player snapshot while open (data subscription only while open, 02 7.13).</summary>
         public abstract void Refresh(PlayerStateSnapshot state);

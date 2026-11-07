@@ -132,7 +132,7 @@ namespace Game.Server.Systems
             foreach (EquipmentSlotDto slot in _ctx.Content.SlotsFor(player.Class))
             {
                 player.Equipment.TryGetValue(slot.Id, out ItemInstance item);
-                equipment.Add(new EquipmentSlotSnapshot { SlotId = slot.Id, InstanceId = item?.SourceId, DefinitionId = item?.DefinitionId });
+                equipment.Add(new EquipmentSlotSnapshot { SlotId = slot.Id, InstanceId = item?.SourceId, DefinitionId = item?.DefinitionId, UpgradeLevel = item?.UpgradeLevel ?? 0 });
             }
             state.Equipment = equipment.ToArray();
 

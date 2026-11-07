@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Client.Localization;
 using Game.Client.UI.Widgets;
+using Game.Shared.Content;
 using Game.Shared.Content.Dto;
 using Game.Shared.Content.Items;
 using Game.Shared.Protocol;
@@ -11,34 +12,84 @@ using UnityEngine.UI;
 
 namespace Game.Client.UI.Windows
 {
-    /// <summary>Backpack (02, 7.13): grid of bag slots; click equips equipment or uses a consumable; tooltip with item details.</summary>
+    /// <summary>
+    /// Backpack with sections as tabs (developer request v11): equipment, consumables, loot, resources, quest items —
+    /// from bag_sections.json. Each section has its own capacity; the server puts items into the section of their category.
+    /// Click equips equipment or uses a consumable; tooltip shows details.
+    /// </summary>
     public sealed class BackpackWindow : HudWindow
     {
+        private static readonly Vector2 Size = new Vector2(460f, 560f);
+        private const float TabHeight = 30f;
+
         private readonly List<SlotView> _slots = new List<SlotView>();
+        private readonly List<Text> _tabLabels = new List<Text>();
+        private int _section;
 
         public BackpackWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip,
-            Action<HudWindow> focus, Action<HudWindow> close) : base(definition, parent, canvas, ctx, tooltip, focus, close)
+            Action<HudWindow> focus, Action<HudWindow> close) : base(definition, parent, canvas, ctx, tooltip, focus, close, Size)
         {
-            GridLayoutGroup grid = Content.gameObject.AddComponent<GridLayoutGroup>();
+            int sections = ctx.Content.BagSections.Count;
+            for (int i = 0; i < sections; i++)
+            {
+                int index = i;
+                Button tab = UiFactory.Button($"Tab_{ctx.Content.BagSections[i].Id}", Content, ctx.Font,
+                    ctx.Text.Get(ctx.Content.BagSections[i].NameKey), () => SelectSection(index));
+                var rect = (RectTransform)tab.transform;
+                rect.anchorMin = new Vector2((float)i / sections, 1f);
+                rect.anchorMax = new Vector2((float)(i + 1) / sections, 1f);
+                rect.pivot = new Vector2(0.5f, 1f);
+                rect.offsetMin = new Vector2(HudLayout.Gap * 0.5f, -TabHeight);
+                rect.offsetMax = new Vector2(-HudLayout.Gap * 0.5f, 0f);
+                Text label = tab.GetComponentInChildren<Text>();
+                label.resizeTextForBestFit = true;
+                label.resizeTextMaxSize = HudLayout.FontNormal;
+                _tabLabels.Add(label);
+            }
+
+            RectTransform gridRect = UiFactory.Rect("Grid", Content);
+            gridRect.anchorMin = Vector2.zero;
+            gridRect.anchorMax = Vector2.one;
+            gridRect.offsetMin = Vector2.zero;
+            gridRect.offsetMax = new Vector2(0f, -TabHeight - HudLayout.Gap);
+            GridLayoutGroup grid = gridRect.gameObject.AddComponent<GridLayoutGroup>();
             grid.cellSize = new Vector2(HudLayout.BagSlotSize, HudLayout.BagSlotSize);
             grid.spacing = new Vector2(HudLayout.Gap, HudLayout.Gap);
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = HudLayout.BagColumns;
-            for (int i = 0; i < ctx.Content.Config.BagSize; i++)
+            int largest = 0;
+            foreach (BagSection section in ctx.Content.BagSections)
             {
-                var slot = new SlotView($"Bag{i}", Content, ctx.Font, HudLayout.BagSlotSize);
-                int index = i;
-                slot.Bind(() => ShowTooltip(index), Tooltip.Hide, button => OnClick(index, button));
+                largest = Math.Max(largest, section.Size);
+            }
+            for (int i = 0; i < largest; i++)
+            {
+                var slot = new SlotView($"Bag{i}", gridRect, ctx.Font, HudLayout.BagSlotSize);
+                int local = i;
+                slot.Bind(() => ShowTooltip(local), Tooltip.Hide, button => OnClick(local, button));
                 _slots.Add(slot);
             }
         }
 
         public override void Refresh(PlayerStateSnapshot state)
         {
-            for (int i = 0; i < _slots.Count && i < state.Bag.Length; i++)
+            BagSection section = Ctx.Content.BagSections[_section];
+            for (int t = 0; t < _tabLabels.Count; t++)
             {
-                ItemSlotSnapshot bagSlot = state.Bag[i];
+                BagSection tabSection = Ctx.Content.BagSections[t];
+                _tabLabels[t].text = Ctx.Text.Get(tabSection.NameKey) + " " + Ctx.Text.Format(UiKeys.ValueOfMax, Used(state, tabSection), tabSection.Size);
+                _tabLabels[t].color = t == _section ? HudPalette.Cast : HudPalette.Text;
+            }
+            for (int i = 0; i < _slots.Count; i++)
+            {
                 SlotView view = _slots[i];
+                bool inSection = i < section.Size;
+                view.Rect.gameObject.SetActive(inSection);
+                if (!inSection)
+                {
+                    continue;
+                }
+                ItemSlotSnapshot bagSlot = state.Bag[section.Start + i];
                 if (bagSlot.DefinitionId == null)
                 {
                     view.SetFilled(false);
@@ -48,38 +99,72 @@ namespace Game.Client.UI.Windows
                 }
                 ItemDefinition item = Ctx.Content.Items[bagSlot.DefinitionId];
                 view.SetFilled(true);
-                view.SetCaption(Ctx.Text.Get(item.NameKey), HudPalette.ForRarity(item.Rarity));
+                view.SetCaption(TooltipText.ItemName(Ctx, item, bagSlot.UpgradeLevel), HudPalette.ForRarity(item.Rarity));
                 view.SetCount(bagSlot.Count > 1 ? bagSlot.Count.ToString() : string.Empty);
             }
         }
 
-        private void ShowTooltip(int index)
+        private void SelectSection(int index)
         {
-            PlayerStateSnapshot state = Ctx.State.Player;
-            if (state == null || index >= state.Bag.Length || state.Bag[index].DefinitionId == null)
+            _section = index;
+            Tooltip.Hide();
+            if (Ctx.State.Player != null)
             {
-                return;
+                Refresh(Ctx.State.Player);
             }
-            ItemDefinition item = Ctx.Content.Items[state.Bag[index].DefinitionId];
-            string hint = item.Has<EquipmentComponent>() ? UiKeys.ClickToEquip : item.Has<ConsumableComponent>() ? UiKeys.ClickToUse : null;
-            Tooltip.Show(TooltipText.Item(Ctx, item, state.Bag[index].Count, hint));
         }
 
-        private void OnClick(int index, PointerEventData.InputButton button)
+        private static int Used(PlayerStateSnapshot state, BagSection section)
         {
+            int used = 0;
+            for (int i = section.Start; i < section.Start + section.Size && i < state.Bag.Length; i++)
+            {
+                if (state.Bag[i].DefinitionId != null)
+                {
+                    used++;
+                }
+            }
+            return used;
+        }
+
+        private bool TryGetSlot(int local, out ItemSlotSnapshot slot)
+        {
+            slot = default;
             PlayerStateSnapshot state = Ctx.State.Player;
-            if (button != PointerEventData.InputButton.Left || state == null || index >= state.Bag.Length || state.Bag[index].DefinitionId == null)
+            BagSection section = Ctx.Content.BagSections[_section];
+            if (state == null || local >= section.Size)
+            {
+                return false;
+            }
+            slot = state.Bag[section.Start + local];
+            return slot.DefinitionId != null;
+        }
+
+        private void ShowTooltip(int local)
+        {
+            if (!TryGetSlot(local, out ItemSlotSnapshot slot))
             {
                 return;
             }
-            ItemDefinition item = Ctx.Content.Items[state.Bag[index].DefinitionId];
+            ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
+            string hint = item.Has<EquipmentComponent>() ? UiKeys.ClickToEquip : item.Has<ConsumableComponent>() ? UiKeys.ClickToUse : null;
+            Tooltip.Show(TooltipText.Item(Ctx, item, slot.Count, hint, slot.UpgradeLevel));
+        }
+
+        private void OnClick(int local, PointerEventData.InputButton button)
+        {
+            if (button != PointerEventData.InputButton.Left || !TryGetSlot(local, out ItemSlotSnapshot slot))
+            {
+                return;
+            }
+            ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
             if (item.Has<EquipmentComponent>())
             {
-                Ctx.Commands.Equip(index);
+                Ctx.Commands.Equip(slot.Index);
             }
             else if (item.Has<ConsumableComponent>())
             {
-                Ctx.Commands.UseConsumable(index);
+                Ctx.Commands.UseConsumable(slot.Index);
             }
             Tooltip.Hide();
         }

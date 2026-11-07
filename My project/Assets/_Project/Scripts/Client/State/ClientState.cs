@@ -22,6 +22,7 @@ namespace Game.Client.State
         public event Action PlayerChanged;
         public event Action<CombatEventMessage> CombatEvent;
         public event Action<string> Rejected;
+        public event Action<NotificationMessage> Notification;
 
         public void Bind(IServerConnection connection)
         {
@@ -30,6 +31,7 @@ namespace Game.Client.State
             connection.PlayerStateReceived += OnPlayer;
             connection.CombatEventReceived += OnCombatEvent;
             connection.RejectedReceived += OnRejected;
+            connection.NotificationReceived += OnNotification;
         }
 
         public void Unbind(IServerConnection connection)
@@ -38,6 +40,7 @@ namespace Game.Client.State
             connection.PlayerStateReceived -= OnPlayer;
             connection.CombatEventReceived -= OnCombatEvent;
             connection.RejectedReceived -= OnRejected;
+            connection.NotificationReceived -= OnNotification;
             _entities.Clear();
             World = null;
             Player = null;
@@ -61,6 +64,8 @@ namespace Game.Client.State
         private void OnCombatEvent(CombatEventMessage message) => CombatEvent?.Invoke(message);
 
         private void OnRejected(CommandRejectedMessage message) => Rejected?.Invoke(message.ReasonKey);
+
+        private void OnNotification(NotificationMessage message) => Notification?.Invoke(message);
 
         private void OnPlayer(PlayerStateSnapshot snapshot)
         {

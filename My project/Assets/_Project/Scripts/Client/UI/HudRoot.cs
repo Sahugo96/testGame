@@ -3,6 +3,7 @@ using Game.Client.UI.Widgets;
 using Game.Client.UI.Windows;
 using Game.Client.World;
 using Game.Shared.Content;
+using Game.Shared.Core;
 using Game.Shared.Protocol;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -28,6 +29,7 @@ namespace Game.Client.UI
         private MessageWidget _message;
         private CombatTextWidget _combatText;
         private NameplateWidget _nameplates;
+        private ExperienceBarWidget _experience;
         private EntityViewManager _views;
         private string _classId;
 
@@ -73,6 +75,7 @@ namespace Game.Client.UI
             new IconMenuWidget(bottomCenter, ctx, _tooltip, MenuZones.SkillBarLeft, -SkillBar.RowWidth * 0.5f - HudLayout.Gap, Windows.Toggle);
             new MenuBarWidget(bottomLeft, ctx, MenuZones.BottomLeft, false, Windows.Toggle);
             new MenuBarWidget(bottomRight, ctx, MenuZones.BottomRight, true, Windows.Toggle);
+            _experience = new ExperienceBarWidget(bottomRight, ctx, HudLayout.MenuButtonHeight + HudLayout.Gap);
             _message = new MessageWidget(hudLayer, ctx);
             _combatText = new CombatTextWidget(worldLayer, ctx, views);
             _nameplates = new NameplateWidget(worldLayer, ctx, views);
@@ -81,6 +84,25 @@ namespace Game.Client.UI
             ctx.State.WorldChanged += OnWorldChanged;
             ctx.State.CombatEvent += _combatText.Show;
             ctx.State.Rejected += _message.Show;
+            ctx.State.Notification += _message.Show;
+        }
+
+        /// <summary>Opens the window of a clicked station (anvil) if the player stands close enough (02, 7.13).</summary>
+        public void OpenStation(EntityId station)
+        {
+            PlayerStateSnapshot player = _ctx.State.Player;
+            if (player == null || !_ctx.State.TryGetEntity(station, out EntitySnapshot stationEntity)
+                || !_ctx.State.TryGetEntity(player.EntityId, out EntitySnapshot self))
+            {
+                return;
+            }
+            if (Vec3.DistanceXZ(stationEntity.Position, self.Position) > _ctx.Content.Config.InteractRange)
+            {
+                _message.Show(RejectReasons.NotNearStation);
+                return;
+            }
+            _ctx.ActiveStation = station;
+            Windows.Open(WindowFactory.Anvil);
         }
 
         private void OnDestroy()
@@ -93,6 +115,7 @@ namespace Game.Client.UI
             _ctx.State.WorldChanged -= OnWorldChanged;
             _ctx.State.CombatEvent -= _combatText.Show;
             _ctx.State.Rejected -= _message.Show;
+            _ctx.State.Notification -= _message.Show;
             _minimap.Destroy();
         }
 
@@ -120,6 +143,7 @@ namespace Game.Client.UI
                 SkillBar.AssignClassSkills(cls);
             }
             _playerFrame.Refresh(state);
+            _experience.Refresh(state);
             _targetFrame.Refresh(state);
             SkillBar.Refresh(state);
             _consumables.Refresh(state);

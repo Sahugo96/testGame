@@ -7,7 +7,6 @@ namespace Game.Client.World
     public sealed class EntityView : MonoBehaviour
     {
         private const float DeadTiltDegrees = 90f;
-        private const float HeightOffset = 1f;
 
         private Vector3 _from;
         private Vector3 _to;
@@ -19,12 +18,14 @@ namespace Game.Client.World
         private Color _baseColor;
         private Color _deadColor;
         private bool _isDead;
+        private float _heightOffset;
 
         public EntityId Id { get; private set; }
         public Collider Collider { get; private set; }
 
-        public void Init(EntityId id, float interval, Color color, Color deadColor)
+        public void Init(EntityId id, float interval, Color color, Color deadColor, float heightOffset)
         {
+            _heightOffset = heightOffset;
             Id = id;
             _interval = interval;
             _renderer = GetComponent<Renderer>();
@@ -68,6 +69,6 @@ namespace Game.Client.World
             transform.SetPositionAndRotation(Vector3.Lerp(_from, _to, _t), Quaternion.Slerp(_fromRotation, _toRotation, _t));
         }
 
-        private static Vector3 ToWorld(Vec3 position) => new Vector3(position.X, position.Y + HeightOffset, position.Z);
+        private Vector3 ToWorld(Vec3 position) => new Vector3(position.X, position.Y + _heightOffset, position.Z);
     }
 }

@@ -14,12 +14,15 @@ namespace Game.Client.UI.Widgets
     {
         private const float PercentFactor = 100f;
 
-        public static string Item(ClientContext ctx, ItemDefinition item, int count, string hintKey)
+        public static string Item(ClientContext ctx, ItemDefinition item, int count, string hintKey) => Item(ctx, item, count, hintKey, 0);
+
+        public static string Item(ClientContext ctx, ItemDefinition item, int count, string hintKey, int upgradeLevel)
         {
+            float upgrade = UpgradeMultiplier(ctx, item, upgradeLevel);
             ILocalizationService text = ctx.Text;
             var sb = new StringBuilder();
             sb.Append("<b><color=#").Append(ColorUtility.ToHtmlStringRGB(HudPalette.ForRarity(item.Rarity))).Append('>')
-                .Append(text.Get(item.NameKey)).Append("</color></b>\n");
+                .Append(ItemName(ctx, item, upgradeLevel)).Append("</color></b>\n");
             sb.Append(text.Get(UiKeys.RarityPrefix + item.Rarity)).Append('\n');
             EquipSlotComponent slot = item.Get<EquipSlotComponent>();
             if (slot != null)
@@ -46,9 +49,10 @@ namespace Game.Client.UI.Widgets
             {
                 foreach (StatModifier modifier in stats.Modifiers)
                 {
+                    float scaled = modifier.Op == ModifierOp.Multiply ? modifier.Value : modifier.Value * upgrade;
                     string value = modifier.Op == ModifierOp.Add
-                        ? StatFormat.Value(text, modifier.Stat, modifier.Value)
-                        : text.Format(UiKeys.Percent, (modifier.Value * PercentFactor).ToString("0.#", CultureInfo.InvariantCulture));
+                        ? StatFormat.Value(text, modifier.Stat, scaled)
+                        : text.Format(UiKeys.Percent, (scaled * PercentFactor).ToString("0.#", CultureInfo.InvariantCulture));
                     sb.Append("<color=#7CFC7C>+").Append(value).Append(' ').Append(StatFormat.Name(text, modifier.Stat)).Append("</color>\n");
                 }
             }
@@ -83,6 +87,20 @@ namespace Game.Client.UI.Widgets
                 sb.Append("<color=#A0A0A0>").Append(text.Get(hintKey)).Append("</color>");
             }
             return sb.ToString().TrimEnd('\n');
+        }
+
+        /// <summary>Item name with its upgrade level, e.g. "+3 Iron sword".</summary>
+        public static string ItemName(ClientContext ctx, ItemDefinition item, int upgradeLevel) =>
+            upgradeLevel > 0 ? "+" + upgradeLevel + " " + ctx.Text.Get(item.NameKey) : ctx.Text.Get(item.NameKey);
+
+        public static float UpgradeMultiplier(ClientContext ctx, ItemDefinition item, int upgradeLevel)
+        {
+            UpgradeableComponent upgradeable = item.Get<UpgradeableComponent>();
+            if (upgradeable == null || upgradeLevel <= 0 || !ctx.Content.UpgradeRules.TryGetValue(upgradeable.RulesId, out var rule))
+            {
+                return 1f;
+            }
+            return UpgradeMath.StatMultiplier(upgradeLevel, rule.StatBonusPerLevel);
         }
 
         public static string Skill(ClientContext ctx, SkillDefinition skill, SkillVariantKind kind, SkillStateSnapshot state)

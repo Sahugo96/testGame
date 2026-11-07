@@ -6,5 +6,6 @@ namespace Game.Shared.Protocol
         public string SlotId;
         public string InstanceId;
         public string DefinitionId;
+        public int UpgradeLevel;
     }
 }

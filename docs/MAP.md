@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 18)
+### `docs/00_INDEX.md` — индекс набора (версия набора 20)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v9)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v11)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,13 +37,13 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез, этап 1** | :258 |
-| 10 | Проблемы и долги (записи v9 — ограничения среза) | :275 |
-| 11 | Журнал решений (последние — v9) | :289 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :327 |
-| 13 | **Заморожено :337 / Гибко :348 / Отложено + крючки (с модулями) :353** | :333 |
-| — | Открытые вопросы 29, 39–44 | :368 |
-| — | Рекомендации 1,5–10,17–19 | :380 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11 — ограничения среза) | :277 |
+| 11 | Журнал решений (последние — v11) | :292 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :333 |
+| 13 | **Заморожено :343 / Гибко :354 / Отложено + крючки (с модулями) :359** | :339 |
+| — | Открытые вопросы 29, 39–44 | :374 |
+| — | Рекомендации 1,5–10,17–19 | :386 |
 
 ### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v6)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
@@ -51,20 +51,20 @@
 - **7.6 Настройки** :134 — категории и где хранятся :136, правила (apply/rollback, rebinding, JSON `schemaVersion`) :150
 - Вопросы 10–13, 27, 28, 56 :160 · Рекомендации 13, 14 :172
 
-### `docs/03_CLASSES_COMBAT.md` — ресурсы, навыки, классы, бой (v6)
+### `docs/03_CLASSES_COMBAT.md` — ресурсы, навыки, классы, бой (v8)
 Термины: пул A — **основная** мана, пул B — **резервная**, **боевая** мана — третий запас магов («Третье сердце»). Идентификатор `CombatMana` в `CostEntry` = пул A (вопрос 60).
-- **7.1 Ресурсы и мана** :11 — пулы (A, B, боевая) :13, правило списания :24, `CostEntry` + база `PercentOfMax` :26, атомарная проверка (стоимость в HP может убить) :42, боевое состояние :48, **регенерация, блокировка основного пула, расходники, боевая мана, перелив** :50, модификаторы :58
-- **7.2 Навыки Shift/Ctrl** :62 — модификаторы ввода (последний нажатый) :64, `SkillDefinition`/`SkillVariant` :74, `CmdUseSkill` :92, правила (КД, GCD, баланс вариантов, **мастерство навыка**) :94
-- **7.3 Классы** :105 — `ClassDefinition` :107, черновик классов :120
-- **7.12 Боевые характеристики** :132 — оборона до 100% / многоуровневый крит / порядок урона :134, **первичные характеристики** :141, `StatModifier` :143, статус-эффекты :152, зелья :172
-- Вопросы 1–5, 9, 25, 26, 45, 46, 52–54, 59, 60, 63, 64 :181 · Рекомендации 2–4, 26, 27 :203
+- **7.1 Ресурсы и мана** :11 — пулы (A, B, боевая) :13, правило списания :24, `CostEntry` + база `PercentOfMax` :26, атомарная проверка (стоимость в HP может убить) :42, боевое состояние :48, **регенерация (HP и в бою), блокировка основного пула, расходники, боевая мана, перелив** :50, модификаторы :59
+- **7.2 Навыки Shift/Ctrl** :63 — модификаторы ввода (последний нажатый) :65, `SkillDefinition`/`SkillVariant` :75, `CmdUseSkill` :93, правила (КД, GCD, баланс вариантов, **мастерство навыка**) :95
+- **7.3 Классы** :106 — `ClassDefinition` :108, **опыт и уровни (очки характеристик и класса)** :121, черновик классов :123
+- **7.12 Боевые характеристики** :135 — оборона до 100% / многоуровневый крит / порядок урона :137, **первичные характеристики** :144, `StatModifier` :146, статус-эффекты :155, зелья :175
+- Вопросы 1–5, 9, 25, 26, 45, 46, 52–54, 59, 60, 63, 64, 67 :184 · Рекомендации 2–4, 26, 27 :207
 
-### `docs/04_ITEMS_EQUIPMENT.md` — предметы и экипировка (v7)
-- **7.9 Предметы** :11 — `ItemDefinition`/`ItemInstance` :13, **компоненты-свойства (реализация)** :40, редкость (6 уровней, истинные легендарки и реплики) :54, слоты/ингредиенты (рукотворные ядра, извлечение)/overcap :67, божественные (привязка при получении) + «Искра Гефеста» :76
-- **7.9.1 Виды экипировки** :87 — слоты экипировки (кольца по классу) :91, типы брони :105, виды оружия :107, правила слотов (`SocketCap`) :116, модель данных :121
-- **7.11 Реестр легендарных** (только божественные) :138 (`LegendaryRegistryEntry` :144)
-- **7.14.1 Улучшение (`UpgradeLevel`; неудача — падение уровня и разрушение), «связь» божественных** :150 (`CmdUpgradeItem` :157)
-- Вопросы 14–19, 22–24, 30–32, 36–38, 47, 48, 55, 57, 61 :163 · Рекомендации 15, 16, 20 :188
+### `docs/04_ITEMS_EQUIPMENT.md` — предметы и экипировка (v9)
+- **7.9 Предметы** :11 — `ItemDefinition`/`ItemInstance` :13, **рюкзак-отсеки** :40, **компоненты-свойства (реализация)** :42, редкость (6 уровней, истинные легендарки и реплики) :56, слоты/ингредиенты (рукотворные ядра, извлечение)/overcap :69, божественные (привязка при получении) + «Искра Гефеста» :78
+- **7.9.1 Виды экипировки** :89 — слоты экипировки (кольца по классу) :93, типы брони :107, виды оружия :109, правила слотов (`SocketCap`) :118, модель данных :123
+- **7.11 Реестр легендарных** (только божественные) :140 (`LegendaryRegistryEntry` :146)
+- **7.14.1 Улучшение (`UpgradeLevel`; срез: 1 осколок, 100%→55%, до +10; неудача — минус уровень), «связь» божественных** :152 (`CmdUpgradeItem` :160)
+- Вопросы 14–19, 22–24, 30–32, 36–38, 47, 48, 55, 57, 61, 65, 66 :166 · Рекомендации 15, 16, 20 :193
 
 ### `docs/05_ECONOMY_PROFESSIONS.md` — профессии и экономика (v5)
 - **7.4 Профессии** :11 — типы («ремесленник», объединение ядер) :13, модель данных :19, правила (сервер, шанс крафта, неудача уничтожает ингредиенты, кузнец) :27
@@ -72,10 +72,10 @@
 - **7.14.3 Торговля** :52 — личные магазины (торговец-NPC, срок аренды, 1 на игрока, комиссия 15/10/5%) :54, рынок :60, почта (`MailMessage`) :66, безопасность :78
 - Вопросы 8, 33–35, 49, 50, 58 :86 · Рекомендации 11, 21–25 :98
 
-### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v3)
+### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v4)
 - **7.8 Группы и лут** :11 — группа/лидер :13, режимы лута :20, голосование и кворум (`LootModeVote`, `CmdVoteLootMode`) :28, правила раздачи (`LootEntry` :46) :37
 - **7.5 Подземелье на 50** :50 — структура :52, энкаунтеры :58, лут :63, тех. бюджет (тик 20–30 Гц) :65, UI рейда :70
-- Вопросы 6, 7, 20, 21, 51 :74 · Рекомендация 12 :84
+- Вопросы 6, 7, 20, 21, 51, 68 :74 · Рекомендация 12 :85
 
 ### `.cursor/rules/*.mdc` — производные от документов (README там же)
 `core-always` (приоритеты, запрет ECS) · `unity-csharp` (= 01 §6) · `ui-system` (= 02 7.13) · `player-system` (= 01 §6.1).
@@ -129,38 +129,38 @@
 | 20 | Торговля: магазины, рынок, почта, заказы улучшения с эскроу | 11, 12, 13, 14 | 05 7.14.3; 04 7.14.1 |
 | 21 | Полировка | все | — |
 
-Статус: модули 0, 2, 4, 5, 6, 7, 11 — **в работе** (вертикальный срез, этап 1, ветка `claude/vertical-slice`, см. 01 §9); остальные — не начат.
+Статус: модули 0, 2, 4, 5, 6, 7, 9, 11 — **в работе** (вертикальный срез, этап 1, ветка `claude/vertical-slice`, см. 01 §9); остальные — не начат.
 
 ## 4. Индекс сущностей (тип / команда → где определено)
 
 | Сущность | Где |
 |----------|-----|
 | `CostEntry` (Mana/CombatMana/ReserveMana/Health; Flat/PercentOfMax) | 03 7.1 :29 — ЗАМОРОЖЕНО |
-| Мастерство навыка (данные персонажа + таблица кривых, вне `SkillDefinition`) | 03 7.2 :94 |
+| Мастерство навыка (данные персонажа + таблица кривых, вне `SkillDefinition`) | 03 7.2 :95 |
 | Боевая мана / «Третье сердце» (третий запас магов) | 03 7.1 :50 |
-| Первичные характеристики | 03 7.12 :141 |
-| `SkillDefinition`, `SkillVariant` (Default/Empowered/Weakened) | 03 7.2 :77 — ЗАМОРОЖЕНО |
-| `ClassDefinition` | 03 7.3 :110 |
-| `StatModifier` (Add/PercentAdd/Multiply, `SourceId`) | 03 7.12 :146 |
-| `StatusEffectDefinition` | 03 7.12 :155 |
+| Первичные характеристики | 03 7.12 :144 |
+| `SkillDefinition`, `SkillVariant` (Default/Empowered/Weakened) | 03 7.2 :78 — ЗАМОРОЖЕНО |
+| `ClassDefinition` | 03 7.3 :111 |
+| `StatModifier` (Add/PercentAdd/Multiply, `SourceId`) | 03 7.12 :149 |
+| `StatusEffectDefinition` | 03 7.12 :158 |
 | `EffectDefinition`, `IEffectHandler`, `EffectHandlerRegistry` | 01 7.10 :148–152 |
 | `LegendaryDefinition` | 01 7.10 :168 |
 | `MobDefinition`, `ZoneDefinition` (только упоминание) | 01 7.10 :160–163 |
-| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :357 |
+| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :363 |
 | Сборки `Game.Shared/Network/Server/Client/Bots` | 01 §5 :68 |
 | `HudWindowDefinition` | 02 7.13 :49 |
 | `HudRoot`, `HudZone`, `WindowManager`, `WindowRegistry`, `MenuBar`, `DragDropService`, `BadgeService` | 02 7.13 :83 |
-| `ItemDefinition` (`SocketRules {AllowedSocketTypes, MaxSockets}`), `ItemInstance` (GUID, `UpgradeLevel`, `Sockets`) | 04 7.9 :16–31; компоненты :40 |
-| `EquipmentSlotDefinition` (`SocketCap` — единственный источник), `ArmorTypeDefinition`, `WeaponTypeDefinition` | 04 7.9.1 :124 |
-| `LegendaryRegistryEntry` | 04 7.11 :144 |
-| `UpgradeRules` | 04 7.14.1 :152 |
+| `ItemDefinition` (`SocketRules {AllowedSocketTypes, MaxSockets}`), `ItemInstance` (GUID, `UpgradeLevel`, `Sockets`) | 04 7.9 :16–31; компоненты :42 |
+| `EquipmentSlotDefinition` (`SocketCap` — единственный источник), `ArmorTypeDefinition`, `WeaponTypeDefinition` | 04 7.9.1 :126 |
+| `LegendaryRegistryEntry` | 04 7.11 :146 |
+| `UpgradeRules` (в срезе — `upgrade_rules.json`) | 04 7.14.1 :154 |
 | `ProfessionDefinition`, `Recipe`, `GatheringNode` | 05 7.4 :22 |
 | `CurrencyDefinition`, `Wallet`, `Transact(...)` | 05 7.14.2 :40–46 |
 | `MailMessage` | 05 7.14.3 :69 |
 | `LootModeVote` | 06 7.8 :34 |
 | `LootEntry` | 06 7.8 :46 |
 
-**Сетевые команды (клиент → сервер):** `CmdUseSkill {skillId,targetId,modifier,clientSeq}` 03 :92 · `CmdUseConsumable` 02 :116 / 03 :177 · `CmdSwapLoadout {loadoutId}` 02 :124 · `CmdEmoji {emojiId}` 02 :130 · `CmdUpgradeItem {itemInstanceId,stationId}` 04 :157 · `CmdVoteLootMode {proposalId,accept}` 06 :34.
+**Сетевые команды (клиент → сервер):** `CmdUseSkill {skillId,targetId,modifier,clientSeq}` 03 :93 · `CmdUseConsumable` 02 :116 / 03 :180 · `CmdSwapLoadout {loadoutId}` 02 :124 · `CmdEmoji {emojiId}` 02 :130 · `CmdUpgradeItem {itemInstanceId,stationId}` 04 :160 · `CmdVoteLootMode {proposalId,accept}` 06 :34.
 Сообщения — `struct : NetworkMessage` в `Game.Network`, данные — типы `Game.Shared` (01 §6). **Rpc:** `RpcDamageApplied` — только пример имени, 01 §6 :126.
 
 Поиск любого другого имени: `grep -n "ИмяТипа" docs/0*.md`.
@@ -178,9 +178,10 @@
 | 51 | 06 | 52–54 | 03 | 55 | 04 |
 | 56 | 02 | 57 | 04 | 58 | 05 |
 | 59, 60 | 03 | 61 | 04 | 62 | 05 |
-| 63, 64 | 03 | | | | |
+| 63, 64 | 03 | 65, 66 | 04 | 67 | 03 |
+| 68 | 06 | | | | |
 
-Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **64** (новый вопрос = 65). Номера не менять.
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **68** (новый вопрос = 69). Номера не менять.
 
 **Статус вопроса** виден в самой строке: `**РЕШЕНО (vN):** …` — решено разработчиком (ДЕФОЛТ снят); `**Отложено разработчиком:**` — вернуться позже, действует ДЕФОЛТ; без пометки — открыт, действует ДЕФОЛТ.
 Сводка: `grep -n 'РЕШЕНО\|Отложено разработчиком' docs/0*.md`.
@@ -220,7 +221,7 @@
 | Протокол: команды и снимки, коды отказов | `Shared/Protocol/` (`*Command`, `*Snapshot`, `RejectReasons`) |
 | Фасад сервера (тик, игроки, команды) | `Server/GameServer.cs`, контекст — `ServerContext.cs` |
 | Данные мира (struct-компоненты) | `Server/World/` (`ComponentStore`, `*Data`, `ServerWorld`) |
-| Системы | `Server/Systems/`: `Movement`, `Resource` (мана, блокировка, реген, бой), `Skill`, `Combat`, `Targeting`, `Inventory` (экипировка, смена оружия, зелья), `Stat`, `Respawn`, `SnapshotBuilder`, `CostCalculator` |
+| Системы | `Server/Systems/`: `Movement`, `Resource` (мана, блокировка, реген, бой), `Skill`, `Combat` (урон, смерть, событие `Died(victim, killer)`), `Targeting`, `Inventory` (отсеки, стаки, экипировка, смена оружия, зелья, расход материалов), `Stat` (в т.ч. множитель улучшения), `Progression` (опыт, уровни, очки), `Upgrade` (наковальня), `Respawn`, `SnapshotBuilder`, `CostCalculator` |
 | Эффекты по ключу (7.10) | `Server/Effects/` (`EffectHandlerRegistry`, `*EffectHandler`) |
 | Экземпляры предметов, аудит, рюкзак | `Server/Items/` (`ItemFactory`, `ItemInstance`, `IAuditLog`, `Inventory`) |
 | Игрок на сервере, таймеры смены оружия | `Server/Players/` (`PlayerCharacter`, `WeaponSwapState`, `PlayerOutbox`) |
@@ -232,11 +233,13 @@
 | Сущности в мире | `Client/World/EntityViewManager.cs`, `EntityView.cs` |
 | Оверлей: корень, зоны, фабрика uGUI | `Client/UI/HudRoot.cs`, `UiFactory.cs`, `HudLayout.cs`, `HudPalette.cs` |
 | Виджеты оверлея | `Client/UI/Widgets/` (рамки, панель навыков, расходники, меню, мини-карта, сообщения, числа урона, таблички, тексты подсказок) |
-| Окна механик | `Client/UI/Windows/` (`WindowManager`, `WindowFactory`, `HudWindow` — база, `CharacterWindow`, `BackpackWindow`, `SkillBookWindow`, `MapWindow`, `SettingsWindow`, `PlaceholderWindow`) |
+| Окна механик | `Client/UI/Windows/` (`WindowManager`, `WindowFactory`, `HudWindow` — база, `CharacterWindow` (+ раздача очков), `BackpackWindow` (вкладки-отсеки), `AnvilWindow`, `SkillBookWindow`, `MapWindow`, `SettingsWindow`, `PlaceholderWindow`) |
+| Полоса опыта, сообщения и уведомления | `Client/UI/Widgets/ExperienceBarWidget.cs`, `MessageWidget.cs` |
+| NPC-станции (наковальня) | данные `world.json → Stations`; сервер `Server/World/StationData.cs`, `UpgradeSystem`; клиент — клик в `PlayerInputController` → `HudRoot.OpenStation` |
 | Кнопки окон слева от панели навыков | `Client/UI/Widgets/IconMenuWidget.cs` (зона `SkillBarLeft` в `hud_windows.json`) |
 | Портрет персонажа (сцена-превью, слой 31) | `Client/World/CharacterPreview.cs`, `PreviewAttachments.cs`, `RenderLayers.cs` |
 | Запуск и сборка всего | `Host/GameBootstrap.cs` → `Host/GameRoot.cs` |
-| Контент | `Resources/Content/*.json`; тексты — `Resources/Localization/ru.json` |
+| Контент | `Resources/Content/*.json` (в т.ч. `bag_sections`, `upgrade_rules`, `levels`); тексты — `Resources/Localization/ru.json` |
 | Тесты (EditMode, они же в .NET) | `Tests/EditMode/`; запуск вне Unity: `cd sim-tests && dotnet test` (в корне репозитория) |
 
 **Как добавить:** новое свойство предмета — компонент в `Shared/Content/Items/` + регистрация в `ItemComponentRegistry.CreateDefault`; новый эффект — `IEffectHandler` + регистрация в `GameServer` и ключ в `ServerContentFactory.BuiltInEffectKeys`; новое окно — запись в `hud_windows.json` + класс окна в `WindowFactory`; новый текст — ключ в `ru.json`; новый навык/предмет/класс/моб — только JSON.

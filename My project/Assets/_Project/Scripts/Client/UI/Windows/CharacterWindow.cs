@@ -30,6 +30,8 @@ namespace Game.Client.UI.Windows
         private const float SlotSize = 64f;
         private const float TitleHeight = 46f;
         private const float TabHeight = 30f;
+        private const float PlusButtonSize = 22f;
+        private const string PlusCaption = "+";
         private static readonly StatId[] Attributes = { StatId.Strength, StatId.Intelligence, StatId.Stamina };
         private static readonly StatId[] Characteristics = { StatId.DamageBonus, StatId.Defense, StatId.CritChance, StatId.CritSize };
         private static readonly StatId[] Extra = { StatId.HealthRegen, StatId.MainManaRegen, StatId.MoveSpeed };
@@ -38,6 +40,8 @@ namespace Game.Client.UI.Windows
         private readonly Dictionary<string, string> _equipped = new Dictionary<string, string>();
         private readonly Dictionary<string, Text> _values = new Dictionary<string, Text>();
         private readonly List<Text> _attributeValues = new List<Text>();
+        private readonly List<Button> _attributeButtons = new List<Button>();
+        private readonly Text _points;
         private readonly List<Text> _characteristicValues = new List<Text>();
         private readonly List<Text> _extraValues = new List<Text>();
         private readonly RectTransform _equipmentArea;
@@ -98,9 +102,17 @@ namespace Game.Client.UI.Windows
             _values[UiKeys.MainMana] = Pair(mainList, ctx.Text.Get(UiKeys.MainMana));
             _values[UiKeys.ReserveMana] = Pair(mainList, ctx.Text.Get(UiKeys.ReserveMana));
             Header(mainList, UiKeys.ParamsHeader);
+            _points = Row("Points", mainList);
+            _points.color = HudPalette.Positive;
             foreach (StatId stat in Attributes)
             {
-                _attributeValues.Add(Pair(mainList, StatFormat.Name(ctx.Text, stat)));
+                Text value = Pair(mainList, StatFormat.Name(ctx.Text, stat));
+                value.rectTransform.offsetMax = new Vector2(-PlusButtonSize - HudLayout.Gap, 0f);
+                StatId attribute = stat;
+                Button plus = UiFactory.Button("Plus", value.transform.parent, ctx.Font, PlusCaption, () => Ctx.Commands.SpendAttributePoint(attribute));
+                UiFactory.Place((RectTransform)plus.transform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), Vector2.zero, new Vector2(PlusButtonSize, PlusButtonSize));
+                _attributeValues.Add(value);
+                _attributeButtons.Add(plus);
             }
             Header(mainList, UiKeys.CharacteristicsHeader);
             foreach (StatId stat in Characteristics)
@@ -138,7 +150,7 @@ namespace Game.Client.UI.Windows
                     ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
                     _equipped[slot.SlotId] = slot.DefinitionId;
                     view.SetFilled(true);
-                    view.SetCaption(text.Get(item.NameKey), HudPalette.ForRarity(item.Rarity));
+                    view.SetCaption(TooltipText.ItemName(Ctx, item, slot.UpgradeLevel), HudPalette.ForRarity(item.Rarity));
                     previewParts.Add(new KeyValuePair<string, Color>(slotDefinition.SlotType, HudPalette.ForRarity(item.Rarity)));
                 }
                 else
@@ -158,6 +170,11 @@ namespace Game.Client.UI.Windows
             _values[UiKeys.MainMana].text = text.Format(UiKeys.ValueOfMax, Mathf.CeilToInt(state.MainMana), Mathf.RoundToInt(state.MaxMainMana));
             _values[UiKeys.ReserveMana].text = text.Format(UiKeys.ValueOfMax, Mathf.CeilToInt(state.ReserveMana), Mathf.RoundToInt(state.MaxReserveMana));
             Fill(state, Attributes, _attributeValues);
+            _points.text = text.Format(UiKeys.AttributePoints, state.AttributePoints) + "   " + text.Format(UiKeys.ClassPoints, state.ClassPoints);
+            foreach (Button plus in _attributeButtons)
+            {
+                plus.gameObject.SetActive(state.AttributePoints > 0);
+            }
             Fill(state, Characteristics, _characteristicValues);
             Fill(state, Extra, _extraValues);
             float reserveRegen = StatValue(state, StatId.MainManaRegen) * Ctx.Content.Config.ReserveRegenOutOfCombatFactor;
@@ -234,10 +251,20 @@ namespace Game.Client.UI.Windows
 
         private void ShowSlotTooltip(string slotId)
         {
-            if (_equipped.TryGetValue(slotId, out string itemId))
+            PlayerStateSnapshot state = Ctx.State.Player;
+            if (state == null || !_equipped.TryGetValue(slotId, out string itemId))
             {
-                Tooltip.Show(TooltipText.Item(Ctx, Ctx.Content.Items[itemId], 1, UiKeys.ClickToUnequip));
+                return;
             }
+            int level = 0;
+            foreach (EquipmentSlotSnapshot slot in state.Equipment)
+            {
+                if (slot.SlotId == slotId)
+                {
+                    level = slot.UpgradeLevel;
+                }
+            }
+            Tooltip.Show(TooltipText.Item(Ctx, Ctx.Content.Items[itemId], 1, UiKeys.ClickToUnequip, level));
         }
 
         private void Fill(PlayerStateSnapshot state, StatId[] stats, List<Text> values)

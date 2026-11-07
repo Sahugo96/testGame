@@ -13,6 +13,7 @@ namespace Game.Client.UI.Windows
     {
         private readonly Dictionary<string, HudWindow> _windows = new Dictionary<string, HudWindow>();
         private readonly List<HudWindow> _openOrder = new List<HudWindow>();
+        private readonly List<HudWindow> _refreshBuffer = new List<HudWindow>();
         private readonly RectTransform _layer;
         private readonly Canvas _canvas;
         private readonly ClientContext _ctx;
@@ -46,6 +47,20 @@ namespace Game.Client.UI.Windows
             }
         }
 
+        public bool IsOpen(string windowId) => _windows.TryGetValue(windowId, out HudWindow window) && window.IsOpen;
+
+        public void Open(string windowId)
+        {
+            if (!IsOpen(windowId))
+            {
+                Toggle(windowId);
+            }
+            else
+            {
+                Focus(_windows[windowId]);
+            }
+        }
+
         public void CloseTop()
         {
             if (_openOrder.Count > 0)
@@ -56,9 +71,14 @@ namespace Game.Client.UI.Windows
 
         public void Refresh(PlayerStateSnapshot state)
         {
-            foreach (HudWindow window in _openOrder)
+            _refreshBuffer.Clear();
+            _refreshBuffer.AddRange(_openOrder);
+            foreach (HudWindow window in _refreshBuffer)
             {
-                window.Refresh(state);
+                if (window.IsOpen)
+                {
+                    window.Refresh(state);
+                }
             }
         }
 

@@ -36,5 +36,10 @@ namespace Game.Client
         public void Unequip(string slotId) => _connection.Send(new UnequipItemCommand { SlotId = slotId });
 
         public void UseConsumable(int bagIndex) => _connection.Send(new UseConsumableCommand { BagIndex = bagIndex });
+
+        public void UpgradeItem(string itemInstanceId, EntityId stationId) =>
+            _connection.Send(new UpgradeItemCommand { ItemInstanceId = itemInstanceId, StationId = stationId });
+
+        public void SpendAttributePoint(StatId attribute) => _connection.Send(new SpendAttributePointCommand { Attribute = attribute });
     }
 }
