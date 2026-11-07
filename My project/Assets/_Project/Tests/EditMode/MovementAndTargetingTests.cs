@@ -45,6 +45,23 @@ namespace Game.Tests
         }
 
         [Test]
+        public void RemovePlayer_DeletesEntityAndClearsTargets()
+        {
+            var h = new ServerHarness();
+            EntityId mage = h.AddPlayer("mage");
+            EntityId warrior = h.AddPlayer("warrior");
+            h.Send(mage, new SelectTargetCommand { TargetId = warrior });
+            Assert.That(h.Player(mage).TargetId, Is.EqualTo(warrior));
+
+            h.Server.RemovePlayer(warrior);
+            h.Server.Tick();
+
+            Assert.That(h.World.Exists(warrior), Is.False);
+            Assert.That(h.Player(mage).TargetId, Is.EqualTo(EntityId.None));
+            Assert.That(System.Array.Exists(h.Player(mage).Outbox.World.Entities, e => e.Id == warrior), Is.False);
+        }
+
+        [Test]
         public void EnemySkillOnFriendlyTarget_IsRejected()
         {
             var h = new ServerHarness();

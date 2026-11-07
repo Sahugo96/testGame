@@ -175,7 +175,7 @@ namespace Game.Server.Systems
             }
             ref ManaData mana = ref world.Mana.Get(caster);
             ref VitalsData vitals = ref world.Vitals.Get(caster);
-            CostCalculator.Totals totals = CostCalculator.Sum(variant.Costs, mana, vitals);
+            CostTotals totals = CostCalculator.Sum(variant.Costs, mana, vitals);
             if (!CostCalculator.CanPay(totals, mana))
             {
                 CombatEvents.Reject(player, RejectReasons.NotEnoughMana);

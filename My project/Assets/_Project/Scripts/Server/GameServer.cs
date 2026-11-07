@@ -102,6 +102,24 @@ namespace Game.Server
             return id;
         }
 
+        /// <summary>Removes a player and its entity (disconnect or character switch).</summary>
+        public void RemovePlayer(EntityId id)
+        {
+            if (!_ctx.Players.Remove(id))
+            {
+                return;
+            }
+            foreach (PlayerCharacter other in _ctx.Players.Values)
+            {
+                if (other.TargetId == id)
+                {
+                    other.TargetId = EntityId.None;
+                }
+            }
+            _ctx.World.DestroyEntity(id);
+            Log.Info(LogTags.Server, $"Player {id} left");
+        }
+
         public PlayerCharacter GetPlayer(EntityId id) => _ctx.GetPlayer(id);
 
         public void Submit(EntityId playerId, IGameCommand command)

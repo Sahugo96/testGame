@@ -1,0 +1,612 @@
+{
+ "Entries": [
+  {
+   "Key": "hud.level",
+   "Value": "Ур. {0}"
+  },
+  {
+   "Key": "hud.hp",
+   "Value": "HP"
+  },
+  {
+   "Key": "hud.main_mana",
+   "Value": "Основная"
+  },
+  {
+   "Key": "hud.reserve_mana",
+   "Value": "Резерв"
+  },
+  {
+   "Key": "hud.main_locked",
+   "Value": "Основная мана заблокирована"
+  },
+  {
+   "Key": "hud.in_combat",
+   "Value": "В бою"
+  },
+  {
+   "Key": "hud.dead",
+   "Value": "Мёртв — возрождение…"
+  },
+  {
+   "Key": "hud.value_of_max",
+   "Value": "{0} / {1}"
+  },
+  {
+   "Key": "hud.weapon_swap_locked",
+   "Value": "Смена оружия: {0} с"
+  },
+  {
+   "Key": "hud.weapon_swap_risk",
+   "Value": "Окно риска смены оружия: {0} с"
+  },
+  {
+   "Key": "hud.crit_tier",
+   "Value": "крит ×{0}"
+  },
+  {
+   "Key": "zone.test",
+   "Value": "Тренировочная площадка"
+  },
+  {
+   "Key": "ui.close",
+   "Value": "×"
+  },
+  {
+   "Key": "ui.empty",
+   "Value": "—"
+  },
+  {
+   "Key": "ui.count",
+   "Value": "Количество: {0}"
+  },
+  {
+   "Key": "ui.mastery_line",
+   "Value": "мастерство {0}%, эффективность {1}%"
+  },
+  {
+   "Key": "ui.variant_empowered",
+   "Value": "усиленный"
+  },
+  {
+   "Key": "ui.variant_weakened",
+   "Value": "ослабленный"
+  },
+  {
+   "Key": "ui.variant_locked",
+   "Value": "не открыт"
+  },
+  {
+   "Key": "ui.cost_line",
+   "Value": "Стоимость: {0} ({1})"
+  },
+  {
+   "Key": "ui.cast_line",
+   "Value": "Каст: {0} с"
+  },
+  {
+   "Key": "ui.cooldown_line",
+   "Value": "Перезарядка: {0} с"
+  },
+  {
+   "Key": "ui.click_to_equip",
+   "Value": "ЛКМ — надеть"
+  },
+  {
+   "Key": "ui.click_to_use",
+   "Value": "ЛКМ — использовать"
+  },
+  {
+   "Key": "ui.click_to_unequip",
+   "Value": "ЛКМ — снять"
+  },
+  {
+   "Key": "ui.stats_header",
+   "Value": "Характеристики"
+  },
+  {
+   "Key": "ui.equipment_header",
+   "Value": "Экипировка"
+  },
+  {
+   "Key": "ui.settings_info",
+   "Value": "Полное меню настроек появится в модуле 17. Пока здесь инструмент разработчика."
+  },
+  {
+   "Key": "ui.switch_class",
+   "Value": "Сменить класс персонажа:"
+  },
+  {
+   "Key": "ui.percent",
+   "Value": "{0}%"
+  },
+  {
+   "Key": "ui.two_handed",
+   "Value": "двуручное"
+  },
+  {
+   "Key": "ui.restores",
+   "Value": "Восстанавливает {0} ({1})"
+  },
+  {
+   "Key": "ui.required_level",
+   "Value": "Требуемый уровень: {0}"
+  },
+  {
+   "Key": "ui.classes",
+   "Value": "Классы"
+  },
+  {
+   "Key": "ui.not_implemented",
+   "Value": "Механика ещё не реализована."
+  },
+  {
+   "Key": "window.character",
+   "Value": "Персонаж"
+  },
+  {
+   "Key": "window.backpack",
+   "Value": "Рюкзак"
+  },
+  {
+   "Key": "window.skillbook",
+   "Value": "Умения"
+  },
+  {
+   "Key": "window.settings",
+   "Value": "Настройки"
+  },
+  {
+   "Key": "error.not_enough_mana",
+   "Value": "Недостаточно маны"
+  },
+  {
+   "Key": "error.on_cooldown",
+   "Value": "Ещё не готово"
+  },
+  {
+   "Key": "error.no_target",
+   "Value": "Нет цели"
+  },
+  {
+   "Key": "error.invalid_target",
+   "Value": "Неподходящая цель"
+  },
+  {
+   "Key": "error.out_of_range",
+   "Value": "Слишком далеко"
+  },
+  {
+   "Key": "error.already_casting",
+   "Value": "Уже применяется умение"
+  },
+  {
+   "Key": "error.skill_unknown",
+   "Value": "Умение недоступно"
+  },
+  {
+   "Key": "error.dead",
+   "Value": "Вы мертвы"
+  },
+  {
+   "Key": "error.item_not_found",
+   "Value": "Предмет не найден"
+  },
+  {
+   "Key": "error.cannot_equip",
+   "Value": "Нельзя надеть"
+  },
+  {
+   "Key": "error.wrong_class",
+   "Value": "Не подходит вашему классу"
+  },
+  {
+   "Key": "error.level_too_low",
+   "Value": "Слишком низкий уровень"
+  },
+  {
+   "Key": "error.armor_in_combat",
+   "Value": "В бою можно менять только оружие"
+  },
+  {
+   "Key": "error.weapon_swap_locked",
+   "Value": "Смена оружия пока недоступна"
+  },
+  {
+   "Key": "error.bag_full",
+   "Value": "Рюкзак полон"
+  },
+  {
+   "Key": "error.not_consumable",
+   "Value": "Это нельзя использовать"
+  },
+  {
+   "Key": "error.resource_full",
+   "Value": "Запас уже полон"
+  },
+  {
+   "Key": "stat.MaxHealth",
+   "Value": "Здоровье"
+  },
+  {
+   "Key": "stat.MaxMainMana",
+   "Value": "Основная мана"
+  },
+  {
+   "Key": "stat.MaxReserveMana",
+   "Value": "Резервная мана"
+  },
+  {
+   "Key": "stat.HealthRegen",
+   "Value": "Восст. здоровья/с"
+  },
+  {
+   "Key": "stat.MainManaRegen",
+   "Value": "Восст. маны/с"
+  },
+  {
+   "Key": "stat.Defense",
+   "Value": "Оборона"
+  },
+  {
+   "Key": "stat.CritChance",
+   "Value": "Шанс крита"
+  },
+  {
+   "Key": "stat.CritSize",
+   "Value": "Размер крита"
+  },
+  {
+   "Key": "stat.DamageBonus",
+   "Value": "Бонус урона"
+  },
+  {
+   "Key": "stat.MoveSpeed",
+   "Value": "Скорость"
+  },
+  {
+   "Key": "stat.Strength",
+   "Value": "Сила"
+  },
+  {
+   "Key": "stat.Intelligence",
+   "Value": "Интеллект"
+  },
+  {
+   "Key": "stat.Stamina",
+   "Value": "Выносливость"
+  },
+  {
+   "Key": "rarity.Common",
+   "Value": "Обычный"
+  },
+  {
+   "Key": "rarity.Uncommon",
+   "Value": "Необычный"
+  },
+  {
+   "Key": "rarity.Rare",
+   "Value": "Редкий"
+  },
+  {
+   "Key": "rarity.Mythic",
+   "Value": "Мифический"
+  },
+  {
+   "Key": "rarity.Legendary",
+   "Value": "Легендарный"
+  },
+  {
+   "Key": "rarity.Divine",
+   "Value": "Божественный"
+  },
+  {
+   "Key": "resource.Mana",
+   "Value": "мана"
+  },
+  {
+   "Key": "resource.CombatMana",
+   "Value": "основная мана"
+  },
+  {
+   "Key": "resource.ReserveMana",
+   "Value": "резервная мана"
+  },
+  {
+   "Key": "resource.Health",
+   "Value": "здоровье"
+  },
+  {
+   "Key": "slot_type.Head",
+   "Value": "Голова"
+  },
+  {
+   "Key": "slot_type.Body",
+   "Value": "Тело"
+  },
+  {
+   "Key": "slot_type.Hands",
+   "Value": "Руки"
+  },
+  {
+   "Key": "slot_type.Legs",
+   "Value": "Ноги"
+  },
+  {
+   "Key": "slot_type.Feet",
+   "Value": "Ступни"
+  },
+  {
+   "Key": "slot_type.Ring",
+   "Value": "Кольцо"
+  },
+  {
+   "Key": "slot_type.Necklace",
+   "Value": "Ожерелье"
+  },
+  {
+   "Key": "slot_type.MainHand",
+   "Value": "Основная рука"
+  },
+  {
+   "Key": "slot_type.OffHand",
+   "Value": "Вторая рука"
+  },
+  {
+   "Key": "slot.head",
+   "Value": "Голова"
+  },
+  {
+   "Key": "slot.body",
+   "Value": "Тело"
+  },
+  {
+   "Key": "slot.hands",
+   "Value": "Руки"
+  },
+  {
+   "Key": "slot.legs",
+   "Value": "Ноги"
+  },
+  {
+   "Key": "slot.feet",
+   "Value": "Ступни"
+  },
+  {
+   "Key": "slot.ring1",
+   "Value": "Кольцо 1"
+  },
+  {
+   "Key": "slot.ring2",
+   "Value": "Кольцо 2"
+  },
+  {
+   "Key": "slot.ring3",
+   "Value": "Кольцо 3"
+  },
+  {
+   "Key": "slot.ring4",
+   "Value": "Кольцо 4"
+  },
+  {
+   "Key": "slot.necklace",
+   "Value": "Ожерелье"
+  },
+  {
+   "Key": "slot.mainhand",
+   "Value": "Основная рука"
+  },
+  {
+   "Key": "slot.offhand",
+   "Value": "Вторая рука"
+  },
+  {
+   "Key": "armor_type.Cloth",
+   "Value": "Ткань"
+  },
+  {
+   "Key": "armor_type.Leather",
+   "Value": "Кожа"
+  },
+  {
+   "Key": "armor_type.Plate",
+   "Value": "Латы"
+  },
+  {
+   "Key": "weapon_type.Staff",
+   "Value": "Посох"
+  },
+  {
+   "Key": "weapon_type.Wand",
+   "Value": "Жезл"
+  },
+  {
+   "Key": "weapon_type.Sword",
+   "Value": "Меч"
+  },
+  {
+   "Key": "weapon_type.Axe",
+   "Value": "Топор"
+  },
+  {
+   "Key": "weapon_type.Shield",
+   "Value": "Щит"
+  },
+  {
+   "Key": "class.mage.name",
+   "Value": "Маг"
+  },
+  {
+   "Key": "class.mage.desc",
+   "Value": "Дальний урон, тянет силу из обоих пулов маны."
+  },
+  {
+   "Key": "class.warrior.name",
+   "Value": "Воин"
+  },
+  {
+   "Key": "class.warrior.desc",
+   "Value": "Ближний бой, жертвует здоровьем ради силы."
+  },
+  {
+   "Key": "skill.fireball.name",
+   "Value": "Огненный шар"
+  },
+  {
+   "Key": "skill.fireball.desc",
+   "Value": "Бросает огненный шар во врага. Движение прерывает каст."
+  },
+  {
+   "Key": "skill.arcane_mend.name",
+   "Value": "Тайное исцеление"
+  },
+  {
+   "Key": "skill.arcane_mend.desc",
+   "Value": "Лечит союзника или себя."
+  },
+  {
+   "Key": "skill.reserve_nova.name",
+   "Value": "Вспышка резерва"
+  },
+  {
+   "Key": "skill.reserve_nova.desc",
+   "Value": "Мгновенный удар, тратит и основную, и резервную ману."
+  },
+  {
+   "Key": "skill.power_strike.name",
+   "Value": "Мощный удар"
+  },
+  {
+   "Key": "skill.power_strike.desc",
+   "Value": "Сильный удар оружием по цели рядом."
+  },
+  {
+   "Key": "skill.blood_strike.name",
+   "Value": "Кровавый удар"
+  },
+  {
+   "Key": "skill.blood_strike.desc",
+   "Value": "Платит здоровьем за силу. Может убить вас."
+  },
+  {
+   "Key": "skill.second_wind.name",
+   "Value": "Второе дыхание"
+  },
+  {
+   "Key": "skill.second_wind.desc",
+   "Value": "Лечит себя за счёт резервной маны."
+  },
+  {
+   "Key": "item.apprentice_staff.name",
+   "Value": "Посох ученика"
+  },
+  {
+   "Key": "item.apprentice_staff.desc",
+   "Value": "Двуручный посох начинающего мага."
+  },
+  {
+   "Key": "item.cloth_hood.name",
+   "Value": "Тканевый капюшон"
+  },
+  {
+   "Key": "item.cloth_hood.desc",
+   "Value": "Лёгкий капюшон."
+  },
+  {
+   "Key": "item.cloth_robe.name",
+   "Value": "Мантия адепта"
+  },
+  {
+   "Key": "item.cloth_robe.desc",
+   "Value": "Мантия, укрепляющая резерв."
+  },
+  {
+   "Key": "item.ring_of_focus.name",
+   "Value": "Кольцо сосредоточения"
+  },
+  {
+   "Key": "item.ring_of_focus.desc",
+   "Value": "Повышает шанс и размер крита."
+  },
+  {
+   "Key": "item.iron_helm.name",
+   "Value": "Железный шлем"
+  },
+  {
+   "Key": "item.iron_helm.desc",
+   "Value": "Латный шлем."
+  },
+  {
+   "Key": "item.plate_armor.name",
+   "Value": "Латный доспех"
+  },
+  {
+   "Key": "item.plate_armor.desc",
+   "Value": "Тяжёлый, но надёжный."
+  },
+  {
+   "Key": "item.leather_gloves.name",
+   "Value": "Кожаные перчатки"
+  },
+  {
+   "Key": "item.leather_gloves.desc",
+   "Value": "Удобные перчатки."
+  },
+  {
+   "Key": "item.iron_sword.name",
+   "Value": "Железный меч"
+  },
+  {
+   "Key": "item.iron_sword.desc",
+   "Value": "Одноручный меч."
+  },
+  {
+   "Key": "item.wooden_shield.name",
+   "Value": "Деревянный щит"
+  },
+  {
+   "Key": "item.wooden_shield.desc",
+   "Value": "Щит во вторую руку."
+  },
+  {
+   "Key": "item.great_axe.name",
+   "Value": "Большой топор"
+  },
+  {
+   "Key": "item.great_axe.desc",
+   "Value": "Двуручный топор, только для воинов."
+  },
+  {
+   "Key": "item.health_potion.name",
+   "Value": "Зелье здоровья"
+  },
+  {
+   "Key": "item.health_potion.desc",
+   "Value": "Восстанавливает здоровье."
+  },
+  {
+   "Key": "item.main_mana_potion.name",
+   "Value": "Зелье основной маны"
+  },
+  {
+   "Key": "item.main_mana_potion.desc",
+   "Value": "В бою действует вполовину."
+  },
+  {
+   "Key": "item.reserve_mana_potion.name",
+   "Value": "Зелье резервной маны"
+  },
+  {
+   "Key": "item.reserve_mana_potion.desc",
+   "Value": "Главный способ восполнить резерв. В бою — вполовину."
+  },
+  {
+   "Key": "mob.training_dummy",
+   "Value": "Тренировочный манекен"
+  },
+  {
+   "Key": "mob.sturdy_dummy",
+   "Value": "Прочный манекен"
+  }
+ ]
+}

@@ -1,0 +1,146 @@
+using System;
+using Game.Client.UI.Widgets;
+using Game.Client.UI.Windows;
+using Game.Client.World;
+using Game.Shared.Content;
+using Game.Shared.Protocol;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
+
+namespace Game.Client.UI
+{
+    /// <summary>
+    /// Player overlay (02, 7.13): one screen-space canvas with zones — player frame top-left, target top-center,
+    /// minimap top-right, skill and consumable panels bottom-center, mechanics menu bottom-left, system menu bottom-right,
+    /// windows in the center. Built in code from data (window registry, config).
+    /// </summary>
+    public sealed class HudRoot : MonoBehaviour
+    {
+        private ClientContext _ctx;
+        private Func<Vector2> _pointer;
+        private Tooltip _tooltip;
+        private PlayerFrameWidget _playerFrame;
+        private TargetFrameWidget _targetFrame;
+        private ConsumableBarWidget _consumables;
+        private MinimapWidget _minimap;
+        private MessageWidget _message;
+        private CombatTextWidget _combatText;
+        private NameplateWidget _nameplates;
+        private EntityViewManager _views;
+        private string _classId;
+
+        public SkillBarWidget SkillBar { get; private set; }
+        public WindowManager Windows { get; private set; }
+
+        public void Init(ClientContext ctx, EntityViewManager views, Func<Vector2> pointer)
+        {
+            _ctx = ctx;
+            _views = views;
+            _pointer = pointer;
+
+            Canvas canvas = gameObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = HudLayout.ReferenceResolution;
+            scaler.matchWidthOrHeight = HudLayout.ScalerMatch;
+            gameObject.AddComponent<GraphicRaycaster>();
+            EnsureEventSystem();
+
+            RectTransform root = (RectTransform)transform;
+            RectTransform worldLayer = Layer("WorldLayer", root);
+            RectTransform hudLayer = Layer("HudLayer", root);
+            RectTransform windowLayer = Layer("WindowLayer", root);
+            _tooltip = new Tooltip(root, ctx.Font);
+
+            float margin = HudLayout.Margin;
+            RectTransform topLeft = Zone("TopLeft", hudLayer, new Vector2(0f, 1f), new Vector2(margin, -margin));
+            RectTransform topCenter = Zone("TopCenter", hudLayer, new Vector2(0.5f, 1f), new Vector2(0f, -margin));
+            RectTransform topRight = Zone("TopRight", hudLayer, Vector2.one, new Vector2(-margin, -margin));
+            RectTransform bottomCenter = Zone("BottomCenter", hudLayer, new Vector2(0.5f, 0f), new Vector2(0f, margin));
+            RectTransform bottomLeft = Zone("BottomLeft", hudLayer, Vector2.zero, new Vector2(margin, margin));
+            RectTransform bottomRight = Zone("BottomRight", hudLayer, new Vector2(1f, 0f), new Vector2(-margin, margin));
+
+            _playerFrame = new PlayerFrameWidget(topLeft, ctx);
+            _targetFrame = new TargetFrameWidget(topCenter, ctx);
+            _minimap = new MinimapWidget(topRight, ctx);
+            SkillBar = new SkillBarWidget(bottomCenter, ctx, _tooltip);
+            float skillRowsHeight = ctx.Content.Config.SkillBarRows * (HudLayout.SkillSlotSize + HudLayout.Gap);
+            _consumables = new ConsumableBarWidget(bottomCenter, ctx, _tooltip, skillRowsHeight + HudLayout.Gap);
+            Windows = new WindowManager(windowLayer, canvas, ctx, _tooltip);
+            new MenuBarWidget(bottomLeft, ctx, MenuZones.BottomLeft, false, Windows.Toggle);
+            new MenuBarWidget(bottomRight, ctx, MenuZones.BottomRight, true, Windows.Toggle);
+            _message = new MessageWidget(hudLayer, ctx);
+            _combatText = new CombatTextWidget(worldLayer, ctx, views);
+            _nameplates = new NameplateWidget(worldLayer, ctx, views);
+
+            ctx.State.PlayerChanged += OnPlayerChanged;
+            ctx.State.WorldChanged += OnWorldChanged;
+            ctx.State.CombatEvent += _combatText.Show;
+            ctx.State.Rejected += _message.Show;
+        }
+
+        private void OnDestroy()
+        {
+            if (_ctx == null)
+            {
+                return;
+            }
+            _ctx.State.PlayerChanged -= OnPlayerChanged;
+            _ctx.State.WorldChanged -= OnWorldChanged;
+            _ctx.State.CombatEvent -= _combatText.Show;
+            _ctx.State.Rejected -= _message.Show;
+            _minimap.Destroy();
+        }
+
+        private void Update()
+        {
+            if (_ctx == null)
+            {
+                return;
+            }
+            float dt = Time.deltaTime;
+            _tooltip.Follow(_pointer());
+            _minimap.Follow(_views.LocalPlayerTransform);
+            _minimap.Tick();
+            _message.Tick(dt);
+            _combatText.Tick(dt);
+            _nameplates.Tick();
+        }
+
+        private void OnPlayerChanged()
+        {
+            PlayerStateSnapshot state = _ctx.State.Player;
+            if (state.ClassId != _classId && _ctx.Content.Classes.TryGetValue(state.ClassId, out ClassDefinition cls))
+            {
+                _classId = state.ClassId;
+                SkillBar.AssignClassSkills(cls);
+            }
+            _playerFrame.Refresh(state);
+            _targetFrame.Refresh(state);
+            SkillBar.Refresh(state);
+            _consumables.Refresh(state);
+            Windows.Refresh(state);
+        }
+
+        private void OnWorldChanged() => _targetFrame.Refresh(_ctx.State.Player);
+
+        private static void EnsureEventSystem()
+        {
+            if (EventSystem.current != null)
+            {
+                return;
+            }
+            var go = new GameObject("EventSystem");
+            go.AddComponent<EventSystem>();
+            go.AddComponent<InputSystemUIInputModule>();
+        }
+
+        private static RectTransform Layer(string name, RectTransform parent) => UiFactory.Stretch(UiFactory.Rect(name, parent));
+
+        private static RectTransform Zone(string name, RectTransform parent, Vector2 anchor, Vector2 offset) =>
+            UiFactory.Place(UiFactory.Rect(name, parent), anchor, anchor, offset, Vector2.zero);
+    }
+}

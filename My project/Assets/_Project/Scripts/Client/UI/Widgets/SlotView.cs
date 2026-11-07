@@ -1,0 +1,82 @@
+using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace Game.Client.UI.Widgets
+{
+    /// <summary>A square slot: caption, hotkey, counter, cooldown overlay and a corner mark. Used by skill, consumable and bag slots.</summary>
+    public sealed class SlotView
+    {
+        private const float CornerInset = 3f;
+        private const float CornerLabelHeight = 16f;
+        private const int MinCaptionFont = 8;
+
+        public readonly Image Background;
+        private readonly Text _caption;
+        private readonly Text _hotkey;
+        private readonly Text _count;
+        private readonly Text _mark;
+        private readonly Image _cooldown;
+        private readonly HoverTrigger _hover;
+
+        public SlotView(string name, Transform parent, Font font, float size)
+        {
+            Background = UiFactory.Panel(name, parent, HudPalette.SlotBackground);
+            Background.rectTransform.sizeDelta = new Vector2(size, size);
+            _cooldown = UiFactory.Panel("Cooldown", Background.transform, HudPalette.CooldownOverlay, false);
+            RectTransform cooldownRect = _cooldown.rectTransform;
+            cooldownRect.anchorMin = Vector2.zero;
+            cooldownRect.anchorMax = new Vector2(1f, 0f);
+            cooldownRect.pivot = new Vector2(0.5f, 0f);
+            cooldownRect.offsetMin = Vector2.zero;
+            cooldownRect.offsetMax = Vector2.zero;
+            _caption = UiFactory.Label("Caption", Background.transform, font, HudLayout.FontSmall, TextAnchor.MiddleCenter, HudPalette.Text);
+            UiFactory.Stretch(_caption.rectTransform, CornerInset);
+            _caption.resizeTextForBestFit = true;
+            _caption.resizeTextMinSize = MinCaptionFont;
+            _caption.resizeTextMaxSize = HudLayout.FontSmall;
+            _hotkey = Corner("Hotkey", font, new Vector2(0f, 1f), TextAnchor.UpperLeft, HudPalette.TextDim);
+            _count = Corner("Count", font, new Vector2(1f, 0f), TextAnchor.LowerRight, HudPalette.Text);
+            _mark = Corner("Mark", font, new Vector2(1f, 1f), TextAnchor.UpperRight, HudPalette.Cast);
+            _hover = Background.gameObject.AddComponent<HoverTrigger>();
+        }
+
+        public RectTransform Rect => Background.rectTransform;
+
+        public void Bind(Action onEnter, Action onExit, Action<PointerEventData.InputButton> onClick)
+        {
+            _hover.Entered = onEnter;
+            _hover.Exited = onExit;
+            _hover.Clicked = onClick;
+        }
+
+        public void SetCaption(string caption, Color color)
+        {
+            _caption.text = caption;
+            _caption.color = color;
+        }
+
+        public void SetHotkey(string text) => _hotkey.text = text;
+
+        public void SetCount(string text) => _count.text = text;
+
+        public void SetMark(string text) => _mark.text = text;
+
+        public void SetFilled(bool filled) => Background.color = filled ? HudPalette.SlotFilled : HudPalette.SlotBackground;
+
+        public void SetTint(Color color) => Background.color = color;
+
+        /// <summary>0 = ready, 1 = full cooldown.</summary>
+        public void SetCooldown(float fraction) => _cooldown.rectTransform.anchorMax = new Vector2(1f, Mathf.Clamp01(fraction));
+
+        private Text Corner(string name, Font font, Vector2 anchor, TextAnchor alignment, Color color)
+        {
+            Text label = UiFactory.Label(name, Background.transform, font, HudLayout.FontSmall, alignment, color);
+            float size = Background.rectTransform.sizeDelta.x - CornerInset * 2f;
+            Vector2 offset = new Vector2(anchor.x > 0.5f ? -CornerInset : CornerInset, anchor.y > 0.5f ? -CornerInset : CornerInset);
+            UiFactory.Place(label.rectTransform, anchor, anchor, offset, new Vector2(size, CornerLabelHeight));
+            return label;
+        }
+    }
+}

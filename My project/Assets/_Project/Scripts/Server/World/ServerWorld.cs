@@ -26,6 +26,18 @@ namespace Game.Server.World
             return id;
         }
 
+        public void DestroyEntity(EntityId id)
+        {
+            Identities.Remove(id);
+            Transforms.Remove(id);
+            Vitals.Remove(id);
+            Mana.Remove(id);
+            CombatStates.Remove(id);
+            Casts.Remove(id);
+            Mobs.Remove(id);
+            _entities.Remove(id);
+        }
+
         public bool Exists(EntityId id) => Identities.Has(id);
 
         public bool IsAlive(EntityId id) => Vitals.Has(id) && !Vitals.Get(id).IsDead;
