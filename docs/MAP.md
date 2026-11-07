@@ -30,7 +30,7 @@
 | 2 | Разработчик → ссылка на AI_INSTRUCTIONS | :21 |
 | 3 | Технические решения (стек; Unity 6000.3.19, локализация, сборки) | :28 |
 | 4 | **Архитектурные принципы 1–12** | :51 |
-| 5 | Структура `Assets/_Project/` (от `MyGame/`) + **сборки** `Shared/Network/Server/Client/Bots` | :68 |
+| 5 | Структура `Assets/_Project/` (от корня Unity-проекта, сейчас `My project/`) + **сборки** `Shared/Network/Server/Client/Bots` | :68 |
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
@@ -176,13 +176,15 @@
 
 Пометки «ДЕФОЛТ»: решения для выбора — в «Открытых вопросах»; числовые ДЕФОЛТы в тексте — данные баланса (01 §13 «Гибко»). Найти все: `grep -n ДЕФОЛТ docs/0*.md`.
 
-## 6. Состояние репозитория (фактическое)
+## 6. Состояние репозитория (фактическое, коммит `daa11f7 My project`)
 
-- **C#-кода нет** (0 файлов `.cs`). Все модули — «не начат» (модуль 0, возможно, начат локально — вопрос 44). §9 реестр модулей пуст; проблемы репо записаны в 01 §10.
-- `MyGame/` — только `.sln`, `*.csproj` (Unity **6000.3.19**, сборки `Game.Shared`/`Game.Client`/`Game.Server`), `obj/`, `UserSettings/`, `Build/` (~190 МБ билдов, закоммичено из-за закомментированных строк `.gitignore`).
-  **Нет `MyGame/Assets`, `Packages`, `ProjectSettings`** → проект из репо не открыть. Код, на который ссылаются csproj (`Scripts/Shared/Log.cs`, `Client/ClientBootProbe.cs`, `Server/ServerBootProbe.cs`), в репо отсутствует.
-- Корневой `Assets/_Project/Scripts/.gitkeep` — пустая заготовка вне Unity-проекта (`MyGame/`).
-- Структура кода по плану: 01 §5 (`Scripts/Shared|Network|Server|Client|Bots|Tools`, `Data/`), пути от `MyGame/`.
+- **Unity-проект: папка `My project/`** (имя с пробелом — в командах брать в кавычки). Старая `MyGame/` удалена вместе с `Build/`, `obj/`, `*.csproj`.
+- Это **чистый шаблон 3D URP**, модуль 0 не начат (ответ на вопрос 44): `My project/Assets/` = `Scenes/SampleScene.unity`, `Settings/` (URP-ассеты PC/Mobile, Volume), `TutorialInfo/` (шаблонный Readme, 2 `.cs`), `InputSystem_Actions.inputactions`. Своего кода, `.asmdef`, `_Project/` нет.
+- `ProjectSettings/ProjectVersion.txt`: **6000.3.19f1** (Unity 6.3 LTS). `productName: My project`, `companyName: DefaultCompany`. `activeInputHandler: 1` — включена только новая Input System.
+- `Packages/manifest.json` — есть: URP 17.3.0, Input System 1.19.0, uGUI 2.0.0 (в нём TextMeshPro), AI Navigation 2.0.13 (NavMesh), Test Framework 1.6.0, Timeline, Multiplayer Center, Visual Scripting, Collab-proxy. **Нет:** Mirror, Cinemachine, Addressables, Localization.
+- `.gitignore`: игнорируется только `/My project/[Ll]ibrary/`; строки для `Temp`, `obj`, `Build(s)`, `Logs`, `UserSettings` закомментированы → `My project/UserSettings/` закоммичен. Правила `/[Aa]ssets/...` привязаны к корню репо и к `My project/Assets` не применяются.
+- Корневой `Assets/_Project/Scripts/.gitkeep` — пустая заготовка **вне** Unity-проекта.
+- В документах (01 §5, §10, вопросы 41, 44) корень Unity-проекта ещё назван `MyGame/` — устарело, обновить при записи решений.
 
 ## 7. Legacy (видеокурс, не относится к игре; не читать без запроса)
 
