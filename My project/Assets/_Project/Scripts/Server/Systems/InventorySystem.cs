@@ -19,8 +19,11 @@ namespace Game.Server.Systems
         private readonly ResourceSystem _resources;
         private readonly List<string> _cooldownKeys = new List<string>();
 
-        public InventorySystem(ServerContext ctx, StatSystem stats, ResourceSystem resources)
+        private readonly StatusSystem _statuses;
+
+        public InventorySystem(ServerContext ctx, StatSystem stats, ResourceSystem resources, StatusSystem statuses)
         {
+            _statuses = statuses;
             _ctx = ctx;
             _stats = stats;
             _resources = resources;
@@ -339,18 +342,30 @@ namespace Game.Server.Systems
                 CombatEvents.Reject(player, RejectReasons.OnCooldown);
                 return;
             }
-            if (consumable.EffectKey == EffectKeys.RestoreResource && _resources.Missing(player.EntityId, consumable.Resource) <= 0f)
+            if (consumable.EffectKey == EffectKeys.ApplyStatus)
             {
-                CombatEvents.Reject(player, RejectReasons.ResourceFull);
-                return;
+                // Buff potions use the same statuses (03, 7.12); one exclusive group replaces the other.
+                if (!_statuses.Apply(player.EntityId, player.EntityId, consumable.StatusId, 1f))
+                {
+                    CombatEvents.Reject(player, RejectReasons.CannotUse);
+                    return;
+                }
             }
-            float amount = consumable.Amount;
-            bool isMana = consumable.Resource != ResourceKind.Health;
-            if (isMana && _resources.IsInCombat(player.EntityId))
+            else
             {
-                amount *= _ctx.Content.Config.ManaConsumableInCombatFactor;
+                if (_resources.Missing(player.EntityId, consumable.Resource) <= 0f)
+                {
+                    CombatEvents.Reject(player, RejectReasons.ResourceFull);
+                    return;
+                }
+                float amount = consumable.Amount;
+                bool isMana = consumable.Resource != ResourceKind.Health;
+                if (isMana && _resources.IsInCombat(player.EntityId))
+                {
+                    amount *= _ctx.Content.Config.ManaConsumableInCombatFactor;
+                }
+                _resources.Restore(player.EntityId, consumable.Resource, amount, player.EntityId, null);
             }
-            _resources.Restore(player.EntityId, consumable.Resource, amount, player.EntityId, null);
             if (!string.IsNullOrEmpty(consumable.CooldownGroup))
             {
                 player.ConsumableCooldowns[consumable.CooldownGroup] = consumable.Cooldown;

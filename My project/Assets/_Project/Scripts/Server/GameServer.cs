@@ -33,6 +33,8 @@ namespace Game.Server
         private readonly GroupSystem _groups;
         private readonly LootSystem _loot;
         private readonly CraftingSystem _crafting;
+        private readonly StatusSystem _statuses;
+        private readonly ThreatSystem _threat;
         private int _tick;
         private int _nextCharacterNumber = 1;
 
@@ -48,16 +50,21 @@ namespace Game.Server
             };
             _resources = new ResourceSystem(_ctx);
             _duels = new DuelSystem(_ctx, _resources);
-            _combat = new CombatSystem(_ctx, _resources, _duels);
+            _statuses = new StatusSystem(_ctx);
+            _combat = new CombatSystem(_ctx, _resources, _duels, _statuses);
+            _statuses.BindCombat(_combat);
             var effects = new EffectHandlerRegistry();
             effects.Register(new DamageEffectHandler(_combat));
             effects.Register(new HealEffectHandler(_combat));
             effects.Register(new RestoreResourceEffectHandler(_resources));
-            _skills = new SkillSystem(_ctx, _resources, _combat, effects);
-            _movement = new MovementSystem(_ctx, _skills);
+            effects.Register(new ApplyStatusEffectHandler(_statuses));
+            effects.Register(new DispelEffectHandler(_statuses));
+            _skills = new SkillSystem(_ctx, _resources, _combat, effects, _statuses);
+            _movement = new MovementSystem(_ctx, _skills, _statuses);
             _targeting = new TargetingSystem(_ctx, _combat);
-            _stats = new StatSystem(_ctx);
-            _inventory = new InventorySystem(_ctx, _stats, _resources);
+            _stats = new StatSystem(_ctx) { ExtraModifiers = _statuses.ModifiersOf };
+            _inventory = new InventorySystem(_ctx, _stats, _resources, _statuses);
+            _threat = new ThreatSystem(_ctx);
             _respawn = new RespawnSystem(_ctx);
             _snapshots = new SnapshotBuilder(_ctx, _skills);
             _progression = new ProgressionSystem(_ctx, _stats);
@@ -67,6 +74,11 @@ namespace Game.Server
             _crafting = new CraftingSystem(_ctx, _inventory, _resources);
             _combat.Damaged += _loot.OnDamaged;
             _combat.Healed += _loot.OnHealed;
+            _combat.Damaged += _threat.OnDamaged;
+            _combat.Healed += _threat.OnHealed;
+            _combat.Died += (victim, killer) => _threat.OnDied(victim);
+            _statuses.Changed += OnStatusesChanged;
+            _statuses.Controlled += _skills.CancelCast;
             _combat.Died += OnKilled;
             _duels.Ended += OnDuelEnded;
             SpawnMobs();
@@ -134,6 +146,8 @@ namespace Game.Server
                 return;
             }
             _duels.OnPlayerRemoved(id);
+            _statuses.OnEntityRemoved(id);
+            _threat.OnDied(id);
             _groups.OnPlayerRemoved(id);
             _ctx.Players.Remove(id);
             foreach (PlayerCharacter other in _ctx.Players.Values)
@@ -169,6 +183,7 @@ namespace Game.Server
             }
             _movement.Update(dt);
             _skills.Update(dt);
+            _statuses.Update(dt);
             _inventory.Update(dt);
             _resources.Update(dt);
             _respawn.Update(dt);
@@ -177,6 +192,13 @@ namespace Game.Server
             _groups.Update();
 
             WorldSnapshot worldSnapshot = _snapshots.BuildWorld(_tick);
+            for (int i = 0; i < worldSnapshot.Entities.Length; i++)
+            {
+                EntityId id = worldSnapshot.Entities[i].Id;
+                worldSnapshot.Entities[i].Statuses = _statuses.Snapshot(id);
+                PlayerCharacter owner = _ctx.GetPlayer(id);
+                worldSnapshot.Entities[i].TargetOfId = owner != null ? owner.TargetId : _threat.TopThreat(id);
+            }
             foreach (PlayerCharacter player in _ctx.Players.Values)
             {
                 player.Outbox.World = worldSnapshot;
@@ -261,6 +283,29 @@ namespace Game.Server
                     break;
             }
         }
+
+        /// <summary>Statuses changed what the entity's stats are (03, 7.12).</summary>
+        private void OnStatusesChanged(EntityId id)
+        {
+            PlayerCharacter player = _ctx.GetPlayer(id);
+            if (player != null)
+            {
+                _stats.Recalculate(player);
+            }
+            else
+            {
+                _stats.RecalculateMob(id);
+            }
+        }
+
+        /// <summary>Threat on mobs (module 8) for tests and the coming mob AI (module 10).</summary>
+        public ThreatSystem Threat => _threat;
+
+        /// <summary>Damage and healing (03, 7.12) for tests and tools.</summary>
+        public CombatSystem Combat => _combat;
+
+        /// <summary>Statuses (03, 7.12) for tests and tools.</summary>
+        public StatusSystem Statuses => _statuses;
 
         /// <summary>After a duel nobody keeps hitting: casts aimed at the former opponent are cancelled.</summary>
         private void OnDuelEnded(EntityId a, EntityId b)

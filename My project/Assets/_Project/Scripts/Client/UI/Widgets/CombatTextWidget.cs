@@ -35,7 +35,8 @@ namespace Game.Client.UI.Widgets
 
         public void Show(CombatEventMessage message)
         {
-            if (message.Kind == CombatEventKind.Death || message.Amount <= 0 || !_views.TryGetView(message.TargetId, out EntityView view))
+            bool numeric = message.Kind == CombatEventKind.Damage || message.Kind == CombatEventKind.Heal || message.Kind == CombatEventKind.ResourceRestore;
+            if (!numeric || (message.Amount <= 0 && message.Absorbed <= 0) || !_views.TryGetView(message.TargetId, out EntityView view))
             {
                 return;
             }
@@ -44,6 +45,10 @@ namespace Game.Client.UI.Widgets
             entry.World = view.transform.position + Vector3.up * HeightAboveEntity;
             entry.Age = 0f;
             string amount = message.Kind == CombatEventKind.Damage ? "-" + message.Amount : "+" + message.Amount;
+            if (message.Absorbed > 0)
+            {
+                amount += " " + _ctx.Text.Format(UiKeys.AbsorbedShort, message.Absorbed);
+            }
             if (message.CritTier > 0)
             {
                 amount += " " + _ctx.Text.Format(UiKeys.CritTier, message.CritTier);

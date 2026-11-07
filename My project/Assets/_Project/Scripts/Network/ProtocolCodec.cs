@@ -153,6 +153,7 @@ namespace Game.Network
                     w.Write((byte)m.Kind);
                     w.Write(m.Amount);
                     w.Write(m.CritTier);
+                    w.Write(m.Absorbed);
                     break;
                 case CommandRejectedMessage m:
                     w.Write((byte)MessageType.Rejected);
@@ -229,6 +230,7 @@ namespace Game.Network
                     return new CombatEventMessage
                     {
                         SourceId = Id(r), TargetId = Id(r), SkillId = Str(r), Kind = (CombatEventKind)r.ReadByte(), Amount = r.ReadInt32(), CritTier = r.ReadInt32(),
+                        Absorbed = r.ReadInt32(),
                     };
                 case MessageType.Rejected:
                     return new CommandRejectedMessage { ReasonKey = Str(r) };
@@ -260,6 +262,15 @@ namespace Game.Network
                 w.Write(e.MaxHealth);
                 w.Write(e.IsDead);
                 w.Write(e.IsCasting);
+                StatusSnapshot[] statuses = e.Statuses ?? new StatusSnapshot[0];
+                w.Write(statuses.Length);
+                foreach (StatusSnapshot s in statuses)
+                {
+                    Str(w, s.StatusId);
+                    w.Write(s.Stacks);
+                    w.Write(s.Remaining);
+                }
+                Id(w, e.TargetOfId);
             }
         }
 
@@ -284,6 +295,13 @@ namespace Game.Network
                     IsDead = r.ReadBoolean(),
                     IsCasting = r.ReadBoolean(),
                 };
+                var statuses = new StatusSnapshot[r.ReadInt32()];
+                for (int k = 0; k < statuses.Length; k++)
+                {
+                    statuses[k] = new StatusSnapshot { StatusId = Str(r), Stacks = r.ReadInt32(), Remaining = r.ReadSingle() };
+                }
+                m.Entities[i].Statuses = statuses;
+                m.Entities[i].TargetOfId = Id(r);
             }
             return m;
         }

@@ -8,7 +8,7 @@ namespace Game.Server
     public static class ServerContentFactory
     {
         /// <summary>Effect keys that have handlers in <see cref="GameServer"/>.</summary>
-        public static readonly string[] BuiltInEffectKeys = { EffectKeys.Damage, EffectKeys.Heal, EffectKeys.RestoreResource };
+        public static readonly string[] BuiltInEffectKeys = { EffectKeys.Damage, EffectKeys.Heal, EffectKeys.RestoreResource, EffectKeys.ApplyStatus, EffectKeys.Dispel };
 
         public static ContentDatabase Build(ContentFiles files, List<string> errors) =>
             ContentBuilder.Build(files, ItemComponentRegistry.CreateDefault(), BuiltInEffectKeys, errors);

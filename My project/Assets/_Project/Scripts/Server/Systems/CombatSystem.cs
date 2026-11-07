@@ -15,19 +15,21 @@ namespace Game.Server.Systems
         private readonly ServerContext _ctx;
         private readonly ResourceSystem _resources;
         private readonly DuelSystem _duels;
+        private readonly StatusSystem _statuses;
 
         /// <summary>Called when an entity dies: (victim, killer). Casts are cancelled, rewards are given.</summary>
         public event Action<EntityId, EntityId> Died;
 
-        /// <summary>(source, target) after damage or healing was applied: loot participation (06, 7.8).</summary>
-        public event Action<EntityId, EntityId> Damaged;
-        public event Action<EntityId, EntityId> Healed;
+        /// <summary>(source, target, amount) after damage or healing was applied: loot participation (06, 7.8), threat.</summary>
+        public event Action<EntityId, EntityId, int> Damaged;
+        public event Action<EntityId, EntityId, int> Healed;
 
-        public CombatSystem(ServerContext ctx, ResourceSystem resources, DuelSystem duels)
+        public CombatSystem(ServerContext ctx, ResourceSystem resources, DuelSystem duels, StatusSystem statuses)
         {
             _ctx = ctx;
             _resources = resources;
             _duels = duels;
+            _statuses = statuses;
         }
 
         /// <summary>
@@ -77,7 +79,12 @@ namespace Game.Server.Systems
             ReadOffense(source, out float damageBonus, out float critChance, out float critSize);
             CritRoll crit = CombatMath.RollCrit(critChance, critSize, cfg.CritChanceCap, _ctx.Random);
             ref VitalsData vitals = ref world.Vitals.Get(target);
-            int amount = CombatMath.CalculateDamage(baseAmount, efficiency, damageBonus, crit, vitals.Defense, cfg.DefenseCap, cfg.MinDamage);
+            // 03, 7.12: bonuses → crit → defense → rounding, min → shields; immunity gives 0.
+            int rolled = _statuses.IsImmuneToDamage(target)
+                ? 0
+                : CombatMath.CalculateDamage(baseAmount, efficiency, damageBonus, crit, vitals.Defense, cfg.DefenseCap, cfg.MinDamage);
+            int amount = _statuses.AbsorbDamage(target, rolled);
+            vitals = ref world.Vitals.Get(target);
             vitals.Health -= amount;
             _resources.MarkCombat(target);
             if (source != target)
@@ -92,8 +99,9 @@ namespace Game.Server.Systems
                 Kind = CombatEventKind.Damage,
                 Amount = amount,
                 CritTier = crit.Tier,
+                Absorbed = rolled - amount,
             });
-            Damaged?.Invoke(source, target);
+            Damaged?.Invoke(source, target, amount);
             if (vitals.Health <= 0f)
             {
                 if (_duels.AreOpponents(source, target))
@@ -132,7 +140,7 @@ namespace Game.Server.Systems
                 Amount = healed,
                 CritTier = crit.Tier,
             });
-            Healed?.Invoke(source, target);
+            Healed?.Invoke(source, target, healed);
             return healed;
         }
 
@@ -157,6 +165,7 @@ namespace Game.Server.Systems
                 Kind = CombatEventKind.Death,
             });
             _duels.OnDied(target);
+            _statuses.OnDied(target);
             Died?.Invoke(target, killer);
         }
 

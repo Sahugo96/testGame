@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Shared.Content.Dto;
 using Game.Shared.Content.Items;
+using Game.Shared.Rules;
 
 namespace Game.Shared.Content
 {
@@ -62,6 +63,10 @@ namespace Game.Shared.Content
             {
                 AddUnique(db.UpgradeRules, dto.Id, dto, "upgrade_rules", errors);
             }
+            foreach (StatusEffectDto dto in files.StatusEffects?.Statuses ?? new StatusEffectDto[0])
+            {
+                AddUnique(db.StatusEffects, dto.Id, BuildStatus(dto, errors), "status_effects", errors);
+            }
             foreach (RecipeDto dto in files.Recipes?.Recipes ?? new RecipeDto[0])
             {
                 if (AddUnique(db.Recipes, dto.Id, dto, "recipes", errors))
@@ -98,6 +103,44 @@ namespace Game.Shared.Content
             }
             target.Add(id, value);
             return true;
+        }
+
+        private static StatusEffectDefinition BuildStatus(StatusEffectDto dto, List<string> errors)
+        {
+            string ctx = $"status_effects '{dto.Id}'";
+            var status = new StatusEffectDefinition
+            {
+                Id = dto.Id,
+                NameKey = dto.NameKey,
+                DescriptionKey = dto.DescriptionKey,
+                Icon = dto.Icon,
+                Kind = EnumParser.Parse<StatusKind>(dto.Kind, ctx, errors),
+                Category = EnumParser.Parse<StatusCategory>(dto.Category, ctx, errors),
+                Duration = dto.Duration,
+                TickInterval = dto.TickInterval,
+                TickAmount = dto.TickAmount,
+                Stacking = string.IsNullOrEmpty(dto.Stacking) ? StatusStacking.Refresh : EnumParser.Parse<StatusStacking>(dto.Stacking, ctx, errors),
+                MaxStacks = dto.MaxStacks > 0 ? dto.MaxStacks : 1,
+                Dispellable = dto.Dispellable,
+                DispelType = dto.DispelType,
+                ExclusiveGroup = dto.ExclusiveGroup,
+                ShieldAmount = dto.ShieldAmount,
+                HandlerKey = dto.HandlerKey,
+            };
+            status.ImmunityTags.AddRange(dto.ImmunityTags ?? new string[0]);
+            foreach (string control in dto.Control ?? new string[0])
+            {
+                status.Control |= EnumParser.Parse<ControlType>(control, ctx, errors);
+            }
+            foreach (StatModifierDto modifier in dto.Modifiers ?? new StatModifierDto[0])
+            {
+                status.Modifiers.Add(new StatModifier(
+                    EnumParser.Parse<StatId>(modifier.Stat, ctx, errors),
+                    EnumParser.Parse<ModifierOp>(modifier.Op, ctx, errors),
+                    modifier.Value,
+                    null));
+            }
+            return status;
         }
 
         private static SkillDefinition BuildSkill(SkillDto dto, List<string> errors)
@@ -158,6 +201,8 @@ namespace Game.Shared.Content
                     Resource = string.IsNullOrEmpty(effect.Resource)
                         ? ResourceKind.Health
                         : EnumParser.Parse<ResourceKind>(effect.Resource, ctx, errors),
+                    StatusId = effect.StatusId,
+                    DispelType = effect.DispelType,
                 });
             }
             foreach (string flag in dto.Flags ?? new string[0])

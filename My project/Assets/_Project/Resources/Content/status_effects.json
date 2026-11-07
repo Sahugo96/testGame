@@ -1,0 +1,42 @@
+{
+  "Statuses": [
+    {
+      "Id": "burning", "NameKey": "status.burning.name", "DescriptionKey": "status.burning.desc", "Icon": "burning",
+      "Kind": "Debuff", "Category": "DoT", "Duration": 6, "TickInterval": 1, "TickAmount": 4,
+      "Stacking": "AddStacks", "MaxStacks": 3, "Dispellable": true, "DispelType": "Magic"
+    },
+    {
+      "Id": "stunned", "NameKey": "status.stunned.name", "DescriptionKey": "status.stunned.desc", "Icon": "stunned",
+      "Kind": "Debuff", "Category": "Control", "Duration": 1.5, "Control": [ "Stun" ],
+      "Stacking": "Refresh", "MaxStacks": 1, "Dispellable": true, "DispelType": "Physical"
+    },
+    {
+      "Id": "sundered", "NameKey": "status.sundered.name", "DescriptionKey": "status.sundered.desc", "Icon": "sundered",
+      "Kind": "Debuff", "Category": "Stat", "Duration": 8,
+      "Stacking": "AddStacks", "MaxStacks": 3, "Dispellable": true, "DispelType": "Physical",
+      "Modifiers": [ { "Stat": "Defense", "Op": "Add", "Value": -0.05 } ]
+    },
+    {
+      "Id": "arcane_ward", "NameKey": "status.arcane_ward.name", "DescriptionKey": "status.arcane_ward.desc", "Icon": "ward",
+      "Kind": "Buff", "Category": "Shield", "Duration": 10, "ShieldAmount": 40,
+      "Stacking": "ReplaceStronger", "MaxStacks": 1, "Dispellable": true, "DispelType": "Magic"
+    },
+    {
+      "Id": "second_wind_regen", "NameKey": "status.second_wind_regen.name", "DescriptionKey": "status.second_wind_regen.desc", "Icon": "regen",
+      "Kind": "Buff", "Category": "HoT", "Duration": 6, "TickInterval": 1, "TickAmount": 5,
+      "Stacking": "Refresh", "MaxStacks": 1, "Dispellable": false
+    },
+    {
+      "Id": "iron_skin", "NameKey": "status.iron_skin.name", "DescriptionKey": "status.iron_skin.desc", "Icon": "iron_skin",
+      "Kind": "Buff", "Category": "Stat", "Duration": 30, "ExclusiveGroup": "elixir",
+      "Stacking": "Refresh", "MaxStacks": 1, "Dispellable": true, "DispelType": "Magic",
+      "Modifiers": [ { "Stat": "Defense", "Op": "Add", "Value": 0.1 } ]
+    },
+    {
+      "Id": "fury", "NameKey": "status.fury.name", "DescriptionKey": "status.fury.desc", "Icon": "fury",
+      "Kind": "Buff", "Category": "Stat", "Duration": 30, "ExclusiveGroup": "elixir",
+      "Stacking": "Refresh", "MaxStacks": 1, "Dispellable": true, "DispelType": "Magic",
+      "Modifiers": [ { "Stat": "DamageBonus", "Op": "Add", "Value": 0.15 } ]
+    }
+  ]
+}

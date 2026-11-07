@@ -24,6 +24,7 @@ namespace Game.Host
                 UpgradeRules = Load<UpgradeRulesFileDto>(ContentFileNames.UpgradeRules),
                 Levels = Load<LevelsFileDto>(ContentFileNames.Levels),
                 Recipes = Load<RecipesFileDto>(ContentFileNames.Recipes),
+                StatusEffects = Load<StatusEffectsFileDto>(ContentFileNames.StatusEffects),
             };
         }
 

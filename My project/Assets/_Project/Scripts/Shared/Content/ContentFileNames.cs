@@ -17,5 +17,6 @@ namespace Game.Shared.Content
         public const string UpgradeRules = "upgrade_rules";
         public const string Levels = "levels";
         public const string Recipes = "recipes";
+        public const string StatusEffects = "status_effects";
     }
 }

@@ -35,11 +35,14 @@ namespace Game.Client.UI
         private Text _info;
         private DuelWidget _duel;
         private GroupFramesWidget _groupFrames;
+        private StatusRowWidget _playerStatuses;
         private GroupPromptWidget _groupPrompt;
         private DuelArenaView _arena;
         private string _classId;
 
         private const float InfoWidth = 520f;
+        private const int PlayerStatusColumns = 4;
+        private const int PlayerStatusMax = 8;
         private const int InfoLines = 2;
 
         public SkillBarWidget SkillBar { get; private set; }
@@ -75,7 +78,8 @@ namespace Game.Client.UI
             RectTransform bottomRight = Zone("BottomRight", hudLayer, new Vector2(1f, 0f), new Vector2(-margin, margin));
 
             _playerFrame = new PlayerFrameWidget(topLeft, ctx);
-            _targetFrame = new TargetFrameWidget(topCenter, ctx);
+            _targetFrame = new TargetFrameWidget(topCenter, ctx, _tooltip);
+            _playerStatuses = new StatusRowWidget(topLeft, ctx, _tooltip, new Vector2(0f, 1f), new Vector2(HudLayout.PlayerFrameSize.x + HudLayout.Gap, 0f), PlayerStatusColumns, PlayerStatusMax);
             _minimap = new MinimapWidget(topRight, ctx);
             SkillBar = new SkillBarWidget(bottomCenter, ctx, _tooltip);
             float skillRowsHeight = ctx.Content.Config.SkillBarRows * (HudLayout.SkillSlotSize + HudLayout.Gap);
@@ -197,6 +201,8 @@ namespace Game.Client.UI
 
         private void OnWorldChanged()
         {
+            PlayerStateSnapshot player = _ctx.State.Player;
+            _playerStatuses.Refresh(player != null && _ctx.State.TryGetEntity(player.EntityId, out EntitySnapshot self) ? self.Statuses : null);
             _targetFrame.Refresh(_ctx.State.Player);
             _groupFrames.Refresh(_ctx.State.Player);
         }

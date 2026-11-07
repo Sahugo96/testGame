@@ -32,6 +32,10 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: GroupMaxSize ≥ 2; GroupInviteSeconds, LootVoteSeconds, LootRadius, GroupLogSize > 0; LootVoteRepeatSeconds ≥ 0");
             }
+            if (cfg.ThreatPerDamage <= 0f || cfg.HealThreatFactor < 0f)
+            {
+                errors.Add("config: ThreatPerDamage must be > 0 and HealThreatFactor ≥ 0");
+            }
             if (cfg.InteractRange <= 0f)
             {
                 errors.Add("config: InteractRange must be > 0");
@@ -42,6 +46,7 @@ namespace Game.Shared.Content
             }
             ValidateUpgradeRules(db, errors);
             ValidateRecipes(db, errors);
+            ValidateStatuses(db, errors);
             if (!db.Classes.ContainsKey(cfg.DefaultClassId ?? string.Empty))
             {
                 errors.Add($"config: DefaultClassId '{cfg.DefaultClassId}' is not a class");
@@ -176,6 +181,60 @@ namespace Game.Shared.Content
             else
             {
                 errors.Add("world: file is missing");
+            }
+        }
+
+        private static void ValidateStatuses(ContentDatabase db, List<string> errors)
+        {
+            foreach (StatusEffectDefinition status in db.StatusEffects.Values)
+            {
+                if (string.IsNullOrEmpty(status.NameKey))
+                {
+                    errors.Add($"status_effects '{status.Id}': NameKey is required");
+                }
+                if (status.Duration < 0f)
+                {
+                    errors.Add($"status_effects '{status.Id}': Duration must be ≥ 0 (0 = until removed)");
+                }
+                bool ticking = status.Category == StatusCategory.DoT || status.Category == StatusCategory.HoT;
+                if (ticking && (status.TickInterval <= 0f || status.TickAmount <= 0f))
+                {
+                    errors.Add($"status_effects '{status.Id}': DoT/HoT need TickInterval > 0 and TickAmount > 0");
+                }
+                if (status.Category == StatusCategory.Shield && status.ShieldAmount <= 0f)
+                {
+                    errors.Add($"status_effects '{status.Id}': Shield needs ShieldAmount > 0");
+                }
+                if (status.Category == StatusCategory.Control && status.Control == ControlType.None)
+                {
+                    errors.Add($"status_effects '{status.Id}': Control needs at least one Control type");
+                }
+            }
+            foreach (SkillDefinition skill in db.Skills.Values)
+            {
+                foreach (SkillVariantKind kind in new[] { SkillVariantKind.Default, SkillVariantKind.Empowered, SkillVariantKind.Weakened })
+                {
+                    SkillVariant variant = skill.GetVariant(kind);
+                    if (variant == null || variant.Kind != kind)
+                    {
+                        continue;
+                    }
+                    foreach (EffectDefinition effect in variant.Effects)
+                    {
+                        if (effect.Key == EffectKeys.ApplyStatus && !db.StatusEffects.ContainsKey(effect.StatusId ?? string.Empty))
+                        {
+                            errors.Add($"skills '{skill.Id}': unknown status '{effect.StatusId}'");
+                        }
+                    }
+                }
+            }
+            foreach (ItemDefinition item in db.Items.Values)
+            {
+                ConsumableComponent consumable = item.Get<ConsumableComponent>();
+                if (consumable != null && consumable.EffectKey == EffectKeys.ApplyStatus && !db.StatusEffects.ContainsKey(consumable.StatusId ?? string.Empty))
+                {
+                    errors.Add($"items '{item.Id}': unknown status '{consumable.StatusId}'");
+                }
             }
         }
 

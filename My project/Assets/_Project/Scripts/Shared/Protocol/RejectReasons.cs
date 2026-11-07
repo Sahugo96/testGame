@@ -28,6 +28,9 @@ namespace Game.Shared.Protocol
         public const string RecipeUnknown = "error.recipe_unknown";
         public const string AlreadyCrafting = "error.already_crafting";
         public const string CraftInCombat = "error.craft_in_combat";
+        public const string Stunned = "error.stunned";
+        public const string Silenced = "error.silenced";
+        public const string CannotUse = "error.cannot_use";
         public const string DuelBusy = "error.duel_busy";
         public const string DuelTargetBusy = "error.duel_target_busy";
         public const string DuelInCombat = "error.duel_in_combat";

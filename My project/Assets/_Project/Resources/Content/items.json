@@ -517,6 +517,56 @@
       ]
     },
     {
+      "Id": "iron_skin_elixir",
+      "NameKey": "item.iron_skin_elixir.name",
+      "DescriptionKey": "item.iron_skin_elixir.desc",
+      "Icon": "iron_skin_elixir",
+      "Category": "Consumable",
+      "Rarity": "Uncommon",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Consumable",
+          "Effect": "ApplyStatus",
+          "StatusId": "iron_skin",
+          "CooldownGroup": "elixir",
+          "Cooldown": 5
+        },
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        }
+      ]
+    },
+    {
+      "Id": "fury_elixir",
+      "NameKey": "item.fury_elixir.name",
+      "DescriptionKey": "item.fury_elixir.desc",
+      "Icon": "fury_elixir",
+      "Category": "Consumable",
+      "Rarity": "Uncommon",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Consumable",
+          "Effect": "ApplyStatus",
+          "StatusId": "fury",
+          "CooldownGroup": "elixir",
+          "Cooldown": 5
+        },
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        }
+      ]
+    },
+    {
       "Id": "swordsman_sword",
       "NameKey": "item.swordsman_sword.name",
       "DescriptionKey": "item.swordsman_sword.desc",

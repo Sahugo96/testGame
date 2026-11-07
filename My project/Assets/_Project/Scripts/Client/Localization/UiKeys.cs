@@ -74,6 +74,13 @@ namespace Game.Client.Localization
         public const string MapHint = "ui.map_hint";
         public const string UpgradeButton = "ui.upgrade";
         public const string CraftButton = "ui.craft";
+        public const string AbsorbedShort = "ui.absorbed";
+        public const string TargetOfTarget = "ui.target_of_target";
+        public const string LogDamage = "log.damage";
+        public const string LogHeal = "log.heal";
+        public const string LogDeath = "log.death";
+        public const string LogStatusOn = "log.status_on";
+        public const string LogStatusOff = "log.status_off";
         public const string CraftNoRecipes = "ui.craft_no_recipes";
         public const string CraftInputs = "ui.craft_inputs";
         public const string CraftInputLine = "ui.craft_input_line";

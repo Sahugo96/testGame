@@ -139,6 +139,14 @@
           "Equip": false
         },
         {
+          "ItemId": "iron_skin_elixir",
+          "Count": 2
+        },
+        {
+          "ItemId": "fury_elixir",
+          "Count": 2
+        },
+        {
           "ItemId": "main_mana_potion",
           "Count": 5,
           "Equip": false
@@ -329,6 +337,14 @@
           "ItemId": "health_potion",
           "Count": 5,
           "Equip": false
+        },
+        {
+          "ItemId": "iron_skin_elixir",
+          "Count": 2
+        },
+        {
+          "ItemId": "fury_elixir",
+          "Count": 2
         },
         {
           "ItemId": "main_mana_potion",

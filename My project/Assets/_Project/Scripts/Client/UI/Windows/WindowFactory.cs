@@ -16,6 +16,7 @@ namespace Game.Client.UI.Windows
         public const string Anvil = "anvil";
         public const string Whetstone = "whetstone";
         public const string Group = "group";
+        public const string CombatLog = "combatlog";
 
         /// <summary>Window opened by clicking a station of the given type (StationTypes), or null.</summary>
         public static string ForStation(string stationType)
@@ -48,6 +49,8 @@ namespace Game.Client.UI.Windows
                     return new WhetstoneWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Map:
                     return new MapWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case CombatLog:
+                    return new CombatLogWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Group:
                     return new GroupWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Settings:

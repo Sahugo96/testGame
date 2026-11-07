@@ -11,5 +11,7 @@ namespace Game.Shared.Protocol
         public CombatEventKind Kind;
         public int Amount;
         public int CritTier;
+        /// <summary>Damage soaked by shields (not included in Amount).</summary>
+        public int Absorbed;
     }
 }

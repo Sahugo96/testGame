@@ -18,5 +18,6 @@ namespace Game.Shared.Content
         public UpgradeRulesFileDto UpgradeRules;
         public LevelsFileDto Levels;
         public RecipesFileDto Recipes;
+        public StatusEffectsFileDto StatusEffects;
     }
 }

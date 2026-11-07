@@ -21,10 +21,12 @@ namespace Game.Server.Systems
         private readonly ResourceSystem _resources;
         private readonly CombatSystem _combat;
         private readonly EffectHandlerRegistry _effects;
+        private readonly StatusSystem _statuses;
         private readonly List<string> _cooldownKeys = new List<string>();
 
-        public SkillSystem(ServerContext ctx, ResourceSystem resources, CombatSystem combat, EffectHandlerRegistry effects)
+        public SkillSystem(ServerContext ctx, ResourceSystem resources, CombatSystem combat, EffectHandlerRegistry effects, StatusSystem statuses)
         {
+            _statuses = statuses;
             _ctx = ctx;
             _resources = resources;
             _combat = combat;
@@ -58,6 +60,17 @@ namespace Game.Server.Systems
             if (!world.IsAlive(caster))
             {
                 CombatEvents.Reject(player, RejectReasons.Dead);
+                return;
+            }
+            ControlType control = _statuses.Controls(caster);
+            if ((control & ControlType.Stun) != 0)
+            {
+                CombatEvents.Reject(player, RejectReasons.Stunned);
+                return;
+            }
+            if ((control & ControlType.Silence) != 0)
+            {
+                CombatEvents.Reject(player, RejectReasons.Silenced);
                 return;
             }
             if (command.SkillId == null || !_ctx.Content.Skills.TryGetValue(command.SkillId, out SkillDefinition skill) || !player.KnowsSkill(skill.Id))

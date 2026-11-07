@@ -14,8 +14,10 @@ namespace Game.Client.UI.Widgets
         private readonly UiBar _health;
         private readonly Button _duel;
         private readonly Button _invite;
+        private readonly Text _targetOf;
+        private readonly StatusRowWidget _statuses;
 
-        public TargetFrameWidget(RectTransform zone, ClientContext ctx)
+        public TargetFrameWidget(RectTransform zone, ClientContext ctx, Tooltip tooltip)
         {
             _ctx = ctx;
             _panel = UiFactory.Panel("TargetFrame", zone, HudPalette.PanelBackground, false);
@@ -29,6 +31,11 @@ namespace Game.Client.UI.Widgets
             _duel = UiFactory.Button("Duel", _panel.transform, ctx.Font, ctx.Text.Get(UiKeys.DuelChallenge), RequestDuel);
             UiFactory.Place((RectTransform)_duel.transform, new Vector2(1f, 0.5f), new Vector2(0f, 0.5f), new Vector2(HudLayout.Gap, 0f),
                 new Vector2(DuelButtonWidth, HudLayout.TargetFrameSize.y));
+            _targetOf = UiFactory.Label("TargetOf", zone, ctx.Font, HudLayout.FontSmall, TextAnchor.MiddleCenter, HudPalette.TextDim);
+            UiFactory.Place(_targetOf.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -HudLayout.TargetFrameSize.y - HudLayout.Gap),
+                new Vector2(HudLayout.TargetFrameSize.x, HudLayout.FontSmall + HudLayout.Gap));
+            _statuses = new StatusRowWidget(zone, ctx, tooltip, new Vector2(0.5f, 1f),
+                new Vector2(-HudLayout.TargetFrameSize.x * 0.5f, -HudLayout.TargetFrameSize.y - HudLayout.FontSmall - HudLayout.Gap * 3f), TargetStatusColumns, TargetStatusMax);
             _invite = UiFactory.Button("Invite", _panel.transform, ctx.Font, ctx.Text.Get(UiKeys.GroupInviteButton), InviteToGroup);
             UiFactory.Place((RectTransform)_invite.transform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-HudLayout.Gap, 0f),
                 new Vector2(DuelButtonWidth, HudLayout.TargetFrameSize.y));
@@ -36,6 +43,8 @@ namespace Game.Client.UI.Widgets
         }
 
         private const float DuelButtonWidth = 90f;
+        private const int TargetStatusColumns = 3;
+        private const int TargetStatusMax = 6;
 
         /// <summary>Invite the selected player (the server checks leader rights, size and busy states).</summary>
         private void InviteToGroup()
@@ -76,13 +85,17 @@ namespace Game.Client.UI.Widgets
         {
             bool has = player != null && player.TargetId.IsValid && _ctx.State.TryGetEntity(player.TargetId, out _);
             _panel.gameObject.SetActive(has);
+            _targetOf.gameObject.SetActive(has);
             if (!has)
             {
+                _statuses.Refresh(null);
                 return;
             }
             _ctx.State.TryGetEntity(player.TargetId, out EntitySnapshot target);
             _duel.gameObject.SetActive(target.Kind == EntityKind.Player && target.Id != player.EntityId && player.Duel.Phase == DuelPhase.None);
             _invite.gameObject.SetActive(CanInvite(player, target));
+            _statuses.Refresh(target.Statuses);
+            _targetOf.text = target.TargetOfId.IsValid ? _ctx.Text.Format(UiKeys.TargetOfTarget, EntityNames.Of(_ctx, target.TargetOfId)) : string.Empty;
             _name.text = string.IsNullOrEmpty(target.DisplayName) ? _ctx.Text.Get(target.NameKey) : target.DisplayName;
             _health.Set(target.MaxHealth > 0f ? target.Health / target.MaxHealth : 0f,
                 _ctx.Text.Format(UiKeys.ValueOfMax, Mathf.CeilToInt(target.Health), Mathf.RoundToInt(target.MaxHealth)));

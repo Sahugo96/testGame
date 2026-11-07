@@ -7,5 +7,8 @@ namespace Game.Shared.Protocol
         Heal,
         ResourceRestore,
         Death,
+        /// <summary>SkillId = status id, Amount = stacks.</summary>
+        StatusApplied,
+        StatusRemoved,
     }
 }

@@ -7,7 +7,7 @@
         { "Kind": "Default", "Costs": [ { "Resource": "Mana", "Amount": 20, "Mode": "Flat" } ], "CastTime": 1.5, "Cooldown": 1,
           "Effects": [ { "Key": "Damage", "Amount": 40 } ], "Flags": [ "Interruptible" ] },
         { "Kind": "Empowered", "Costs": [ { "Resource": "Mana", "Amount": 34, "Mode": "Flat" } ], "CastTime": 2, "Cooldown": 3,
-          "Effects": [ { "Key": "Damage", "Amount": 64 } ], "Flags": [ "Interruptible" ] },
+          "Effects": [ { "Key": "Damage", "Amount": 64 }, { "Key": "ApplyStatus", "StatusId": "burning" } ], "Flags": [ "Interruptible" ] },
         { "Kind": "Weakened", "Costs": [ { "Resource": "Mana", "Amount": 10, "Mode": "Flat" } ], "CastTime": 1, "Cooldown": 0.5,
           "Effects": [ { "Key": "Damage", "Amount": 24 } ], "Flags": [ "Interruptible" ] }
       ]
@@ -19,7 +19,7 @@
         { "Kind": "Default", "Costs": [ { "Resource": "Mana", "Amount": 25, "Mode": "Flat" } ], "CastTime": 1, "Cooldown": 6,
           "Effects": [ { "Key": "Heal", "Amount": 35 } ], "Flags": [ "Interruptible" ] },
         { "Kind": "Empowered", "Costs": [ { "Resource": "Mana", "Amount": 42, "Mode": "Flat" } ], "CastTime": 1.5, "Cooldown": 8,
-          "Effects": [ { "Key": "Heal", "Amount": 56 } ], "Flags": [ "Interruptible" ] }
+          "Effects": [ { "Key": "Heal", "Amount": 56 }, { "Key": "ApplyStatus", "StatusId": "arcane_ward" } ], "Flags": [ "Interruptible" ] }
       ]
     },
     {
@@ -38,7 +38,7 @@
         { "Kind": "Default", "Costs": [ { "Resource": "Mana", "Amount": 15, "Mode": "Flat" } ], "CastTime": 0, "Cooldown": 4,
           "Effects": [ { "Key": "Damage", "Amount": 35 } ], "Flags": [ "Instant" ] },
         { "Kind": "Empowered", "Costs": [ { "Resource": "Mana", "Amount": 26, "Mode": "Flat" } ], "CastTime": 0, "Cooldown": 6,
-          "Effects": [ { "Key": "Damage", "Amount": 56 } ], "Flags": [ "Instant" ] },
+          "Effects": [ { "Key": "Damage", "Amount": 56 }, { "Key": "ApplyStatus", "StatusId": "stunned" } ], "Flags": [ "Instant" ] },
         { "Kind": "Weakened", "Costs": [ { "Resource": "Mana", "Amount": 8, "Mode": "Flat" } ], "CastTime": 0, "Cooldown": 2,
           "Effects": [ { "Key": "Damage", "Amount": 21 } ], "Flags": [ "Instant" ] }
       ]
@@ -49,7 +49,7 @@
       "Variants": [
         { "Kind": "Default",
           "Costs": [ { "Resource": "Health", "Amount": 10, "Mode": "PercentOfMax" }, { "Resource": "Mana", "Amount": 10, "Mode": "Flat" } ],
-          "CastTime": 0, "Cooldown": 6, "Effects": [ { "Key": "Damage", "Amount": 55 } ], "Flags": [ "Instant" ] }
+          "CastTime": 0, "Cooldown": 6, "Effects": [ { "Key": "Damage", "Amount": 55 }, { "Key": "ApplyStatus", "StatusId": "sundered" } ], "Flags": [ "Instant" ] }
       ]
     },
     {
@@ -57,7 +57,7 @@
       "TargetType": "Self", "Range": 0, "UsesGlobalCooldown": false,
       "Variants": [
         { "Kind": "Default", "Costs": [ { "Resource": "ReserveMana", "Amount": 40, "Mode": "Flat" } ],
-          "CastTime": 0, "Cooldown": 20, "Effects": [ { "Key": "Heal", "Amount": 60 } ], "Flags": [ "Instant" ] }
+          "CastTime": 0, "Cooldown": 20, "Effects": [ { "Key": "Heal", "Amount": 60 }, { "Key": "ApplyStatus", "StatusId": "second_wind_regen" } ], "Flags": [ "Instant" ] }
       ]
     }
   ]

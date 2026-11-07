@@ -28,7 +28,7 @@ namespace Game.Server.Systems
         }
 
         /// <summary>A player hit a mob: they take part in that fight.</summary>
-        public void OnDamaged(EntityId source, EntityId target)
+        public void OnDamaged(EntityId source, EntityId target, int amount)
         {
             if (_ctx.World.Mobs.Has(target) && _ctx.Players.ContainsKey(source))
             {
@@ -37,7 +37,7 @@ namespace Game.Server.Systems
         }
 
         /// <summary>Healing a fighter is taking part in the fight (06, 7.8: damage, healing, buffs, control).</summary>
-        public void OnHealed(EntityId source, EntityId target)
+        public void OnHealed(EntityId source, EntityId target, int amount)
         {
             if (source == target || !_ctx.Players.ContainsKey(source))
             {

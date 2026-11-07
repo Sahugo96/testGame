@@ -13,6 +13,7 @@ namespace Game.Shared.Content.Dto
         public int Hands;
         public StatModifierDto[] Stats;
         public string Effect;
+        public string StatusId;
         public string Resource;
         public float Amount;
         public string CooldownGroup;

@@ -16,11 +16,13 @@ namespace Game.Server.Systems
 
         private readonly ServerContext _ctx;
         private readonly SkillSystem _skills;
+        private readonly StatusSystem _statuses;
 
-        public MovementSystem(ServerContext ctx, SkillSystem skills)
+        public MovementSystem(ServerContext ctx, SkillSystem skills, StatusSystem statuses)
         {
             _ctx = ctx;
             _skills = skills;
+            _statuses = statuses;
         }
 
         public void Update(float dt)
@@ -34,6 +36,10 @@ namespace Game.Server.Systems
                     continue;
                 }
                 var direction = new Vec3(player.LastMove.DirX, 0f, player.LastMove.DirZ);
+                if ((_statuses.Controls(id) & (ControlType.Stun | ControlType.Root)) != 0)
+                {
+                    direction = Vec3.Zero;
+                }
                 if (direction.LengthXZ > 1f)
                 {
                     direction = direction.Normalized;

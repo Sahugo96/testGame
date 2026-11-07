@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using Game.Shared.Content.Dto;
+using Game.Shared.Core;
 using Game.Server.Items;
 using Game.Server.Players;
 using Game.Server.World;
@@ -16,8 +19,12 @@ namespace Game.Server.Systems
     public sealed class StatSystem
     {
         private readonly ServerContext _ctx;
+        private readonly StatSheet _mobSheet = new StatSheet();
 
         public StatSystem(ServerContext ctx) => _ctx = ctx;
+
+        /// <summary>Modifiers from other sources of an entity (statuses, 03 7.12); null — none.</summary>
+        public Func<EntityId, IEnumerable<StatModifier>> ExtraModifiers;
 
         public void Recalculate(PlayerCharacter player)
         {
@@ -51,9 +58,40 @@ namespace Game.Server.Systems
                     sheet.AddModifier(new StatModifier(template.Stat, template.Op, value, item.SourceId));
                 }
             }
+            AddExtra(sheet, player.EntityId);
             sheet.SetCap(StatId.Defense, _ctx.Content.Config.DefenseCap);
             sheet.SetCap(StatId.CritChance, _ctx.Content.Config.CritChanceCap);
             Apply(player);
+        }
+
+        /// <summary>Mobs: defense and health regeneration from the mob definition plus status modifiers (e.g. armour break).</summary>
+        public void RecalculateMob(EntityId id)
+        {
+            ServerWorld world = _ctx.World;
+            if (!world.Mobs.Has(id) || !_ctx.Content.Mobs.TryGetValue(world.Identities.Get(id).DefinitionId, out MobDto mob))
+            {
+                return;
+            }
+            _mobSheet.Clear();
+            _mobSheet.SetBase(StatId.Defense, mob.Defense);
+            _mobSheet.SetBase(StatId.HealthRegen, mob.HealthRegen);
+            AddExtra(_mobSheet, id);
+            _mobSheet.SetCap(StatId.Defense, _ctx.Content.Config.DefenseCap);
+            ref VitalsData vitals = ref world.Vitals.Get(id);
+            vitals.Defense = Math.Max(0f, _mobSheet.Get(StatId.Defense));
+            vitals.HealthRegen = _mobSheet.Get(StatId.HealthRegen);
+        }
+
+        private void AddExtra(StatSheet sheet, EntityId id)
+        {
+            if (ExtraModifiers == null)
+            {
+                return;
+            }
+            foreach (StatModifier modifier in ExtraModifiers(id))
+            {
+                sheet.AddModifier(modifier);
+            }
         }
 
         /// <summary>Upgrade level strengthens the item's additive and percent bonuses (04, 7.14.1).</summary>

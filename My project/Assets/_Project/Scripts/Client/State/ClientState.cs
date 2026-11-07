@@ -24,6 +24,11 @@ namespace Game.Client.State
         public event Action WorldChanged;
         public event Action PlayerChanged;
         public event Action<CombatEventMessage> CombatEvent;
+
+        private const int CombatLogSize = 50;
+
+        /// <summary>Recent combat events about the player or their target, oldest first (the combat log window shows them).</summary>
+        public readonly List<CombatEventMessage> CombatLog = new List<CombatEventMessage>();
         public event Action<string> Rejected;
         public event Action<NotificationMessage> Notification;
 
@@ -39,6 +44,7 @@ namespace Game.Client.State
 
         public void Unbind(IServerConnection connection)
         {
+            CombatLog.Clear();
             connection.WorldReceived -= OnWorld;
             connection.PlayerStateReceived -= OnPlayer;
             connection.CombatEventReceived -= OnCombatEvent;
@@ -65,7 +71,26 @@ namespace Game.Client.State
             WorldChanged?.Invoke();
         }
 
-        private void OnCombatEvent(CombatEventMessage message) => CombatEvent?.Invoke(message);
+        private void OnCombatEvent(CombatEventMessage message)
+        {
+            if (Player != null && Concerns(Player, message))
+            {
+                CombatLog.Add(message);
+                if (CombatLog.Count > CombatLogSize)
+                {
+                    CombatLog.RemoveAt(0);
+                }
+            }
+            CombatEvent?.Invoke(message);
+        }
+
+        /// <summary>Combat log events concern the player or their target (module 8).</summary>
+        private static bool Concerns(PlayerStateSnapshot player, CombatEventMessage message)
+        {
+            EntityId self = player.EntityId;
+            EntityId target = player.TargetId;
+            return message.SourceId == self || message.TargetId == self || (target.IsValid && (message.SourceId == target || message.TargetId == target));
+        }
 
         private void OnRejected(CommandRejectedMessage message) => Rejected?.Invoke(message.ReasonKey);
 

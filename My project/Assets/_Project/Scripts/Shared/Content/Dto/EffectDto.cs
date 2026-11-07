@@ -9,5 +9,7 @@ namespace Game.Shared.Content.Dto
         public string Key;
         public float Amount;
         public string Resource;
+        public string StatusId;
+        public string DispelType;
     }
 }

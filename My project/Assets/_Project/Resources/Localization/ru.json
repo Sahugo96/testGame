@@ -1359,6 +1359,122 @@
   {
    "Key": "error.craft_in_combat",
    "Value": "Нельзя создавать предметы в бою"
+  },
+  {
+   "Key": "window.combatlog",
+   "Value": "Боевой лог"
+  },
+  {
+   "Key": "ui.absorbed",
+   "Value": "(поглощено {0})"
+  },
+  {
+   "Key": "ui.target_of_target",
+   "Value": "→ {0}"
+  },
+  {
+   "Key": "log.damage",
+   "Value": "{0} → {1}: −{2} {3}"
+  },
+  {
+   "Key": "log.heal",
+   "Value": "{0} → {1}: +{2} {3}"
+  },
+  {
+   "Key": "log.death",
+   "Value": "{0} погибает ({1})"
+  },
+  {
+   "Key": "log.status_on",
+   "Value": "{0}: {1} ×{2}"
+  },
+  {
+   "Key": "log.status_off",
+   "Value": "{0}: {1} — спадает"
+  },
+  {
+   "Key": "status.burning.name",
+   "Value": "Горение"
+  },
+  {
+   "Key": "status.burning.desc",
+   "Value": "Огонь наносит урон каждую секунду. Складывается до 3 раз."
+  },
+  {
+   "Key": "status.stunned.name",
+   "Value": "Оглушение"
+  },
+  {
+   "Key": "status.stunned.desc",
+   "Value": "Нельзя двигаться и применять навыки."
+  },
+  {
+   "Key": "status.sundered.name",
+   "Value": "Раскол брони"
+  },
+  {
+   "Key": "status.sundered.desc",
+   "Value": "Оборона снижена на 5% за каждый заряд (до 3)."
+  },
+  {
+   "Key": "status.arcane_ward.name",
+   "Value": "Чародейский щит"
+  },
+  {
+   "Key": "status.arcane_ward.desc",
+   "Value": "Поглощает урон, пока не иссякнет."
+  },
+  {
+   "Key": "status.second_wind_regen.name",
+   "Value": "Второе дыхание"
+  },
+  {
+   "Key": "status.second_wind_regen.desc",
+   "Value": "Восстанавливает здоровье каждую секунду."
+  },
+  {
+   "Key": "status.iron_skin.name",
+   "Value": "Железная кожа"
+  },
+  {
+   "Key": "status.iron_skin.desc",
+   "Value": "Оборона +10%."
+  },
+  {
+   "Key": "status.fury.name",
+   "Value": "Ярость"
+  },
+  {
+   "Key": "status.fury.desc",
+   "Value": "Урон +15%."
+  },
+  {
+   "Key": "item.iron_skin_elixir.name",
+   "Value": "Эликсир железной кожи"
+  },
+  {
+   "Key": "item.iron_skin_elixir.desc",
+   "Value": "На 30 с оборона +10%. Заменяет другие эликсиры."
+  },
+  {
+   "Key": "item.fury_elixir.name",
+   "Value": "Эликсир ярости"
+  },
+  {
+   "Key": "item.fury_elixir.desc",
+   "Value": "На 30 с урон +15%. Заменяет другие эликсиры."
+  },
+  {
+   "Key": "error.stunned",
+   "Value": "Вы оглушены"
+  },
+  {
+   "Key": "error.silenced",
+   "Value": "Вы не можете применять навыки"
+  },
+  {
+   "Key": "error.cannot_use",
+   "Value": "Сейчас это нельзя использовать"
   }
  ]
 }

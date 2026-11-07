@@ -48,5 +48,7 @@
   "LootVoteSeconds": 30,
   "LootVoteRepeatSeconds": 30,
   "LootRadius": 50,
-  "GroupLogSize": 20
+  "GroupLogSize": 20,
+  "ThreatPerDamage": 1,
+  "HealThreatFactor": 0.5
 }

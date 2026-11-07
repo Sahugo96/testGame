@@ -45,6 +45,9 @@ namespace Game.Shared.Content.Dto
         public float LootVoteRepeatSeconds;
         public float LootRadius;
         public int GroupLogSize;
+        /// <summary>Threat (module 8): per point of damage to a mob, and the share of healing given to the healer.</summary>
+        public float ThreatPerDamage;
+        public float HealThreatFactor;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

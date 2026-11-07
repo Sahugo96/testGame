@@ -23,6 +23,8 @@ namespace Game.Shared.Content
         public readonly Dictionary<string, RecipeDto> Recipes = new Dictionary<string, RecipeDto>();
         /// <summary>Recipes in file order (for the crafting window).</summary>
         public readonly List<RecipeDto> RecipeList = new List<RecipeDto>();
+        /// <summary>Status effects by id (03, 7.12).</summary>
+        public readonly Dictionary<string, StatusEffectDefinition> StatusEffects = new Dictionary<string, StatusEffectDefinition>();
 
         /// <summary>Experience to the next level by level (index = level - 1); the last level is the cap.</summary>
         public readonly List<int> ExperienceToNext = new List<int>();

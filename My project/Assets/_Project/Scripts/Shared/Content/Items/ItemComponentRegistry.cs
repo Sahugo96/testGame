@@ -67,7 +67,8 @@ namespace Game.Shared.Content.Items
             registry.Register(ItemComponentTypes.Consumable, null, (dto, ctx, err) => new ConsumableComponent
             {
                 EffectKey = dto.Effect,
-                Resource = EnumParser.Parse<ResourceKind>(dto.Resource, ctx, err),
+                StatusId = dto.StatusId,
+                Resource = string.IsNullOrEmpty(dto.Resource) ? ResourceKind.Health : EnumParser.Parse<ResourceKind>(dto.Resource, ctx, err),
                 Amount = dto.Amount,
                 CooldownGroup = dto.CooldownGroup,
                 Cooldown = dto.Cooldown,

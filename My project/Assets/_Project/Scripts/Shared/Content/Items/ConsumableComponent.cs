@@ -6,6 +6,8 @@ namespace Game.Shared.Content.Items
         public override string Type => ItemComponentTypes.Consumable;
 
         public string EffectKey;
+        /// <summary>ApplyStatus potions: the status put on the user (03, 7.12: potions use the same statuses).</summary>
+        public string StatusId;
         public ResourceKind Resource;
         public float Amount;
         public string CooldownGroup;

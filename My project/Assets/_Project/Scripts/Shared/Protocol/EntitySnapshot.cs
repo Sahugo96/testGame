@@ -19,5 +19,9 @@ namespace Game.Shared.Protocol
         public float MaxHealth;
         public bool IsDead;
         public bool IsCasting;
+        /// <summary>Statuses on the entity (03, 7.12): seen by everyone who sees the entity.</summary>
+        public StatusSnapshot[] Statuses;
+        /// <summary>Who the entity is attacking: a player's target, a mob's top threat ("target of target").</summary>
+        public EntityId TargetOfId;
     }
 }

@@ -51,6 +51,16 @@
       "Singleton": true
     },
     {
+      "Id": "combatlog",
+      "NameKey": "window.combatlog",
+      "Icon": "combatlog",
+      "MenuZone": "BottomLeft",
+      "MenuOrder": 2,
+      "HotkeyBinding": "<Keyboard>/l",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
       "Id": "group",
       "NameKey": "window.group",
       "Icon": "group",
