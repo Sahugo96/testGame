@@ -109,7 +109,7 @@ namespace Game.Client.UI.Windows
                 Text value = Pair(mainList, StatFormat.Name(ctx.Text, stat));
                 value.rectTransform.offsetMax = new Vector2(-PlusButtonSize - HudLayout.Gap, 0f);
                 StatId attribute = stat;
-                Button plus = UiFactory.Button("Plus", value.transform.parent, ctx.Font, PlusCaption, () => Ctx.Commands.SpendAttributePoint(attribute));
+                Button plus = UiFactory.Button("Plus", value.transform.parent, ctx.Font, PlusCaption, () => Ctx.Commands?.SpendAttributePoint(attribute));
                 UiFactory.Place((RectTransform)plus.transform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), Vector2.zero, new Vector2(PlusButtonSize, PlusButtonSize));
                 _attributeValues.Add(value);
                 _attributeButtons.Add(plus);
@@ -244,7 +244,7 @@ namespace Game.Client.UI.Windows
         {
             if (button == PointerEventData.InputButton.Left && _equipped.ContainsKey(slotId))
             {
-                Ctx.Commands.Unequip(slotId);
+                Ctx.Commands?.Unequip(slotId);
                 Tooltip.Hide();
             }
         }

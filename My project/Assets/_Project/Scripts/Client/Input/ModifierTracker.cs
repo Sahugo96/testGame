@@ -20,5 +20,8 @@ namespace Game.Client.Input
         }
 
         public void Release(SkillModifier modifier) => _held.Remove(modifier);
+
+        /// <summary>Forget held keys (input stops being read while there is no game, so releases can be missed).</summary>
+        public void Clear() => _held.Clear();
     }
 }

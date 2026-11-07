@@ -160,11 +160,11 @@ namespace Game.Client.UI.Windows
             ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
             if (item.Has<EquipmentComponent>())
             {
-                Ctx.Commands.Equip(slot.Index);
+                Ctx.Commands?.Equip(slot.Index);
             }
             else if (item.Has<ConsumableComponent>())
             {
-                Ctx.Commands.UseConsumable(slot.Index);
+                Ctx.Commands?.UseConsumable(slot.Index);
             }
             Tooltip.Hide();
         }

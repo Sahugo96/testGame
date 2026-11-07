@@ -59,6 +59,7 @@ namespace Game.Client.World
             _views.Clear();
             _byCollider.Clear();
             LocalPlayerTransform = null;
+            _targetMarker.gameObject.SetActive(false);
         }
 
         private void OnDestroy()

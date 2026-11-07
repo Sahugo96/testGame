@@ -127,7 +127,7 @@ namespace Game.Client.UI.Widgets
             int bagIndex = _bagIndexBySlot[index];
             if (bagIndex >= 0 && button == PointerEventData.InputButton.Left)
             {
-                _ctx.Commands.UseConsumable(bagIndex);
+                _ctx.Commands?.UseConsumable(bagIndex);
             }
         }
     }

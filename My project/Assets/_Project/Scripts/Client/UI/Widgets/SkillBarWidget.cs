@@ -199,7 +199,7 @@ namespace Game.Client.UI.Widgets
             string skillId = _skillBySlot[index];
             if (skillId != null && button == PointerEventData.InputButton.Left)
             {
-                _ctx.Commands.UseSkill(skillId, default, _ctx.Modifiers.Current);
+                _ctx.Commands?.UseSkill(skillId, default, _ctx.Modifiers.Current);
             }
         }
 

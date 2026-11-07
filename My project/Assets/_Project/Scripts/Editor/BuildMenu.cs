@@ -62,7 +62,9 @@ namespace Game.EditorTools
         [System.Serializable]
         private sealed class PortConfig
         {
+#pragma warning disable 0649 // assigned by JsonUtility
             public int DefaultPort;
+#pragma warning restore 0649
         }
 
         private static void WriteScripts(string folder)

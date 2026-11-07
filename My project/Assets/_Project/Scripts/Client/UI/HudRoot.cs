@@ -127,6 +127,14 @@ namespace Game.Client.UI
             Windows.Open(WindowFactory.Anvil);
         }
 
+        private void OnDisable()
+        {
+            if (_arena != null)
+            {
+                _arena.gameObject.SetActive(false);
+            }
+        }
+
         private void OnDestroy()
         {
             if (_ctx == null)

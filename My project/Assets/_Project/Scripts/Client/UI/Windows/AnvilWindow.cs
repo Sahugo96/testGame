@@ -158,7 +158,7 @@ namespace Game.Client.UI.Windows
         {
             if (_selected != null)
             {
-                Ctx.Commands.UpgradeItem(_selected, Ctx.ActiveStation);
+                Ctx.Commands?.UpgradeItem(_selected, Ctx.ActiveStation);
             }
         }
 

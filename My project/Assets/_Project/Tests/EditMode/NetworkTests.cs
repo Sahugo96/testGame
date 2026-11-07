@@ -85,6 +85,64 @@ namespace Game.Tests
             }
         }
 
+        [Test]
+        public void Duel_OverTheNetwork_RequestAcceptCountdownAndHit()
+        {
+            var h = new ServerHarness();
+            using (var host = new ServerNetworkHost(h.Server, 0))
+            using (NetworkClientSession alice = NetworkClientSession.Connect("127.0.0.1", host.Port, "Alice", "mage"))
+            using (NetworkClientSession bob = NetworkClientSession.Connect("127.0.0.1", host.Port, "Bob", "warrior"))
+            {
+                var aliceView = new ClientView();
+                var bobView = new ClientView();
+                Pump(h, host, () => aliceView.Drain(alice) & bobView.Drain(bob) && alice.IsWelcomed && bob.IsWelcomed);
+
+                alice.Send(new DuelRequestCommand { TargetId = bob.PlayerId });
+                Pump(h, host, () => aliceView.Drain(alice) & bobView.Drain(bob) && bobView.Phase == DuelPhase.IncomingRequest);
+                Assert.That(bobView.State.Duel.OpponentId, Is.EqualTo(alice.PlayerId));
+                Assert.That(bobView.Notifications, Does.Contain(NotificationKeys.DuelRequested));
+
+                bob.Send(new DuelResponseCommand { Accept = true });
+                Pump(h, host, () => aliceView.Drain(alice) & bobView.Drain(bob) && aliceView.Phase == DuelPhase.Active && bobView.Phase == DuelPhase.Active);
+                Assert.That(aliceView.Notifications, Does.Contain(NotificationKeys.DuelStarted));
+
+                alice.Send(new UseSkillCommand { SkillId = "reserve_nova", TargetId = bob.PlayerId });
+                Pump(h, host, () => aliceView.Drain(alice) & bobView.Drain(bob)
+                    && bobView.Events.Any(e => e.Kind == CombatEventKind.Damage && e.TargetId == bob.PlayerId && e.SourceId == alice.PlayerId));
+            }
+        }
+
+        /// <summary>What a test client has received: latest private state, notifications and combat events.</summary>
+        private sealed class ClientView
+        {
+            public PlayerStateSnapshot State;
+            public readonly System.Collections.Generic.List<string> Notifications = new System.Collections.Generic.List<string>();
+            public readonly System.Collections.Generic.List<CombatEventMessage> Events = new System.Collections.Generic.List<CombatEventMessage>();
+
+            public DuelPhase Phase => State != null ? State.Duel.Phase : DuelPhase.None;
+
+            /// <summary>Always true: lets several clients drain in one condition with the non-short-circuit &amp;.</summary>
+            public bool Drain(NetworkClientSession session)
+            {
+                while (session.TryReceive(out object message))
+                {
+                    switch (message)
+                    {
+                        case PlayerStateSnapshot state:
+                            State = state;
+                            break;
+                        case NotificationMessage notification:
+                            Notifications.Add(notification.TextKey);
+                            break;
+                        case CombatEventMessage combat:
+                            Events.Add(combat);
+                            break;
+                    }
+                }
+                return true;
+            }
+        }
+
         private static void Pump(ServerHarness h, ServerNetworkHost host, Func<bool> done)
         {
             var clock = Stopwatch.StartNew();

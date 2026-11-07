@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Game.Client;
 using Game.Client.CameraRig;
 using Game.Client.Input;
@@ -66,6 +67,7 @@ namespace Game.Host
         private string _classId;
         private string _address;
         private int _port;
+        private Task<NetworkClientSession> _pendingJoin;
 
         private void Start()
         {
@@ -107,7 +109,7 @@ namespace Game.Host
             }
             else
             {
-                _menu.Show(null);
+                ShowMenu(null);
             }
         }
 
@@ -118,6 +120,10 @@ namespace Game.Host
             {
                 UpdateDedicated(dt);
                 return;
+            }
+            if (_pendingJoin != null && _pendingJoin.IsCompleted)
+            {
+                CompleteJoin();
             }
             if (_connection == null)
             {
@@ -133,7 +139,7 @@ namespace Game.Host
             {
                 string reason = _connection.CloseReason;
                 Leave();
-                _menu.Show(_ctx.Text.Format(DisconnectedKey, LocalizeReason(reason)));
+                ShowMenu(_ctx.Text.Format(DisconnectedKey, LocalizeReason(reason)));
                 return;
             }
             if (_views.LocalPlayerTransform != _followed)
@@ -217,7 +223,7 @@ namespace Game.Host
             catch (Exception exception)
             {
                 _server = null;
-                _menu.Show(_ctx.Text.Format(ConnectFailedKey, exception.Message));
+                ShowMenu(_ctx.Text.Format(ConnectFailedKey, exception.Message));
                 return;
             }
             _mode = Mode.Host;
@@ -229,20 +235,31 @@ namespace Game.Host
         {
             Leave();
             Remember(playerName, classId, address, port);
-            _menu.SetStatus(_ctx.Text.Get(ConnectingKey));
-            NetworkClientSession session;
-            try
+            ShowMenu(_ctx.Text.Get(ConnectingKey));
+            // Connecting may take up to ConnectTimeoutMs: do it off the main thread so the window keeps drawing.
+            _pendingJoin = Task.Run(() => NetworkClientSession.Connect(address, port, playerName, classId));
+        }
+
+        private void CompleteJoin()
+        {
+            Task<NetworkClientSession> join = _pendingJoin;
+            _pendingJoin = null;
+            if (join.IsFaulted || join.IsCanceled)
             {
-                session = NetworkClientSession.Connect(address, port, playerName, classId);
-            }
-            catch (Exception exception)
-            {
-                _menu.Show(_ctx.Text.Format(ConnectFailedKey, (exception.InnerException ?? exception).Message));
+                Exception error = join.Exception?.GetBaseException();
+                ShowMenu(_ctx.Text.Format(ConnectFailedKey, error != null ? error.Message : string.Empty));
                 return;
             }
             _mode = Mode.Client;
-            Bind(new RemoteServerConnection(session));
+            Bind(new RemoteServerConnection(join.Result));
             _hud.ShowInfo(string.Empty);
+        }
+
+        /// <summary>Start menu over an empty scene: the HUD is hidden (there is no game to control).</summary>
+        private void ShowMenu(string status)
+        {
+            _hud.gameObject.SetActive(false);
+            _menu.Show(status);
         }
 
         private void JoinLocal()
@@ -263,6 +280,7 @@ namespace Game.Host
             _ctx.Commands = new ClientCommands(connection);
             _ctx.State.Bind(connection);
             _menu.Hide();
+            _hud.gameObject.SetActive(true);
         }
 
         /// <summary>Settings → switch class: replace the character (local) or reconnect with the new class (remote).</summary>
@@ -285,17 +303,35 @@ namespace Game.Host
         private void LeaveToMenu()
         {
             Leave();
-            _menu.Show(null);
+            ShowMenu(null);
         }
 
         /// <summary>Drops the current game (connection, local server, network host) and clears the view.</summary>
         private void Leave()
         {
+            DropPendingJoin();
             UnbindConnection();
             _networkHost?.Dispose();
             _networkHost = null;
             _server = null;
             _mode = Mode.None;
+        }
+
+        /// <summary>A connection attempt that is no longer wanted: its session is closed when (if) it arrives.</summary>
+        private void DropPendingJoin()
+        {
+            if (_pendingJoin == null)
+            {
+                return;
+            }
+            _pendingJoin.ContinueWith(task =>
+            {
+                if (task.Status == TaskStatus.RanToCompletion)
+                {
+                    task.Result.Dispose();
+                }
+            });
+            _pendingJoin = null;
         }
 
         private void UnbindConnection()
@@ -314,6 +350,7 @@ namespace Game.Host
             _ctx.Commands = null;
             _views.Clear();
             _followed = null;
+            _ctx.Modifiers.Clear();
         }
 
         private void StartDedicated()
