@@ -18,5 +18,6 @@ namespace Game.Shared.Content
         public const string Levels = "levels";
         public const string Recipes = "recipes";
         public const string StatusEffects = "status_effects";
+        public const string AiProfiles = "ai_profiles";
     }
 }

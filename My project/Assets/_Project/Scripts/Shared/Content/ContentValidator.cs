@@ -47,6 +47,7 @@ namespace Game.Shared.Content
             ValidateUpgradeRules(db, errors);
             ValidateRecipes(db, errors);
             ValidateStatuses(db, errors);
+            ValidateAi(db, errors);
             if (!db.Classes.ContainsKey(cfg.DefaultClassId ?? string.Empty))
             {
                 errors.Add($"config: DefaultClassId '{cfg.DefaultClassId}' is not a class");
@@ -181,6 +182,40 @@ namespace Game.Shared.Content
             else
             {
                 errors.Add("world: file is missing");
+            }
+        }
+
+        private static void ValidateAi(ContentDatabase db, List<string> errors)
+        {
+            GameConfig cfg = db.Config;
+            if (cfg.MobGlobalCooldownSeconds < 0f || cfg.MobAggroThreat <= 0f || cfg.MobReturnArriveDistance <= 0f)
+            {
+                errors.Add("config: MobGlobalCooldownSeconds ≥ 0, MobAggroThreat and MobReturnArriveDistance > 0");
+            }
+            foreach (AiProfile profile in db.AiProfiles.Values)
+            {
+                if (profile.Behavior != AiBehavior.Passive && (profile.MoveSpeed <= 0f || profile.LeashRadius <= 0f || profile.Abilities.Count == 0))
+                {
+                    errors.Add($"ai_profiles '{profile.Id}': a fighting profile needs MoveSpeed, LeashRadius and at least one ability");
+                }
+                if (profile.Behavior == AiBehavior.Aggressive && profile.AggroRadius <= 0f)
+                {
+                    errors.Add($"ai_profiles '{profile.Id}': Aggressive needs AggroRadius > 0");
+                }
+                foreach (string ability in profile.Abilities)
+                {
+                    if (!db.Skills.TryGetValue(ability ?? string.Empty, out SkillDefinition skill) || skill.TargetType != TargetType.Enemy)
+                    {
+                        errors.Add($"ai_profiles '{profile.Id}': ability '{ability}' must be an Enemy-target skill");
+                    }
+                }
+            }
+            foreach (MobDto mob in db.Mobs.Values)
+            {
+                if (!string.IsNullOrEmpty(mob.AiProfile) && !db.AiProfiles.ContainsKey(mob.AiProfile))
+                {
+                    errors.Add($"mob '{mob.Id}': unknown AI profile '{mob.AiProfile}'");
+                }
             }
         }
 

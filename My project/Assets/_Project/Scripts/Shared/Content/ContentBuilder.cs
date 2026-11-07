@@ -63,6 +63,19 @@ namespace Game.Shared.Content
             {
                 AddUnique(db.UpgradeRules, dto.Id, dto, "upgrade_rules", errors);
             }
+            foreach (AiProfileDto dto in files.AiProfiles?.Profiles ?? new AiProfileDto[0])
+            {
+                var profile = new AiProfile
+                {
+                    Id = dto.Id,
+                    Behavior = EnumParser.Parse<AiBehavior>(dto.Behavior, $"ai_profiles '{dto.Id}'", errors),
+                    MoveSpeed = dto.MoveSpeed,
+                    AggroRadius = dto.AggroRadius,
+                    LeashRadius = dto.LeashRadius,
+                };
+                profile.Abilities.AddRange(dto.Abilities ?? new string[0]);
+                AddUnique(db.AiProfiles, dto.Id, profile, "ai_profiles", errors);
+            }
             foreach (StatusEffectDto dto in files.StatusEffects?.Statuses ?? new StatusEffectDto[0])
             {
                 AddUnique(db.StatusEffects, dto.Id, BuildStatus(dto, errors), "status_effects", errors);

@@ -59,6 +59,27 @@
         { "Kind": "Default", "Costs": [ { "Resource": "ReserveMana", "Amount": 40, "Mode": "Flat" } ],
           "CastTime": 0, "Cooldown": 20, "Effects": [ { "Key": "Heal", "Amount": 60 }, { "Key": "ApplyStatus", "StatusId": "second_wind_regen" } ], "Flags": [ "Instant" ] }
       ]
+    },
+    {
+      "Id": "mob_bite", "NameKey": "skill.mob_bite.name", "DescriptionKey": "skill.mob_bite.desc", "Icon": "bite",
+      "TargetType": "Enemy", "Range": 2.5, "UsesGlobalCooldown": false,
+      "Variants": [
+        { "Kind": "Default", "Costs": [], "CastTime": 0, "Cooldown": 1.5, "Effects": [ { "Key": "Damage", "Amount": 9 } ], "Flags": [ "Instant" ] }
+      ]
+    },
+    {
+      "Id": "mob_slam", "NameKey": "skill.mob_slam.name", "DescriptionKey": "skill.mob_slam.desc", "Icon": "slam",
+      "TargetType": "Enemy", "Range": 3, "UsesGlobalCooldown": false,
+      "Variants": [
+        { "Kind": "Default", "Costs": [], "CastTime": 0, "Cooldown": 10, "Effects": [ { "Key": "Damage", "Amount": 14 }, { "Key": "ApplyStatus", "StatusId": "stunned" } ], "Flags": [ "Instant" ] }
+      ]
+    },
+    {
+      "Id": "mob_smash", "NameKey": "skill.mob_smash.name", "DescriptionKey": "skill.mob_smash.desc", "Icon": "smash",
+      "TargetType": "Enemy", "Range": 3, "UsesGlobalCooldown": false,
+      "Variants": [
+        { "Kind": "Default", "Costs": [], "CastTime": 0, "Cooldown": 2.5, "Effects": [ { "Key": "Damage", "Amount": 16 } ], "Flags": [ "Instant" ] }
+      ]
     }
   ]
 }

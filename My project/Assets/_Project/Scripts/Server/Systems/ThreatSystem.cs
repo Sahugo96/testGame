@@ -73,7 +73,11 @@ namespace Game.Server.Systems
             return best;
         }
 
-        private void Add(EntityId mob, EntityId player, float value)
+        /// <summary>The mob forgets everyone (it leashed home).</summary>
+        public void ClearTable(EntityId mob) => _tables.Remove(mob);
+
+        /// <summary>Adds threat directly (e.g. an aggressive mob noticing a player, module 10).</summary>
+        public void Add(EntityId mob, EntityId player, float value)
         {
             if (!_tables.TryGetValue(mob, out Dictionary<EntityId, float> table))
             {

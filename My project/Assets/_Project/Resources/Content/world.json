@@ -61,6 +61,26 @@
       "MobId": "cube",
       "X": -20,
       "Z": 14
+    },
+    {
+      "MobId": "wolf",
+      "X": 18,
+      "Z": 18
+    },
+    {
+      "MobId": "wolf",
+      "X": 22,
+      "Z": 15
+    },
+    {
+      "MobId": "wolf",
+      "X": 15,
+      "Z": 23
+    },
+    {
+      "MobId": "stone_golem",
+      "X": -25,
+      "Z": 28
     }
   ],
   "Stations": [

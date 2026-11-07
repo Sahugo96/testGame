@@ -48,6 +48,10 @@ namespace Game.Shared.Content.Dto
         /// <summary>Threat (module 8): per point of damage to a mob, and the share of healing given to the healer.</summary>
         public float ThreatPerDamage;
         public float HealThreatFactor;
+        /// <summary>Mob AI (module 10): pause between any two abilities, threat for noticing a player, "at home" distance.</summary>
+        public float MobGlobalCooldownSeconds;
+        public float MobAggroThreat;
+        public float MobReturnArriveDistance;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

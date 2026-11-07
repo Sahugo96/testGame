@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 25)
+### `docs/00_INDEX.md` — индекс набора (версия набора 26)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v16)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v17)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,13 +37,13 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8)** | :258 |
-| 10 | Проблемы и долги (записи v9, v11–v16 — ограничения среза, сети, дуэлей, групп, крафта, модуля 8) | :282 |
-| 11 | Журнал решений (последние — v16) | :303 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :349 |
-| 13 | **Заморожено :359 / Гибко :370 / Отложено + крючки (с модулями) :375** | :355 |
-| — | Открытые вопросы 29, 39–44, 69, 70 | :390 |
-| — | Рекомендации 1,5–10,17–19 | :404 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11–v17 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8 и 10) | :283 |
+| 11 | Журнал решений (последние — v17) | :305 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :352 |
+| 13 | **Заморожено :362 / Гибко :373 / Отложено + крючки (с модулями) :378** | :358 |
+| — | Открытые вопросы 29, 39–44, 69, 70, 75 | :393 |
+| — | Рекомендации 1,5–10,17–19 | :408 |
 
 ### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v6)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
@@ -146,7 +146,7 @@
 | `EffectDefinition`, `IEffectHandler`, `EffectHandlerRegistry` | 01 7.10 :148–152 |
 | `LegendaryDefinition` | 01 7.10 :168 |
 | `MobDefinition`, `ZoneDefinition` (только упоминание) | 01 7.10 :160–163 |
-| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :379 |
+| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :382 |
 | Сборки `Game.Shared/Network/Server/Client/Bots` | 01 §5 :68 |
 | `HudWindowDefinition` | 02 7.13 :49 |
 | `HudRoot`, `HudZone`, `WindowManager`, `WindowRegistry`, `MenuBar`, `DragDropService`, `BadgeService` | 02 7.13 :83 |
@@ -173,16 +173,16 @@
 | 6, 7 | 06 | 20, 21 | 06 | 30–32 | 04 |
 | 8 | 05 | 22–24 | 04 | 33–35 | 05 |
 | 9 | 03 | 25, 26 | 03 | 36–38 | 04 |
-| 10–13 | 02 | 27, 28 | 02 | 39–44, 69, 70 | 01 |
+| 10–13 | 02 | 27, 28 | 02 | 39–44, 69, 70, 75 | 01 |
 | 45, 46 | 03 | 47, 48 | 04 | 49, 50 | 05 |
 | 51 | 06 | 52–54 | 03 | 55 | 04 |
 | 56 | 02 | 57 | 04 | 58 | 05 |
 | 59, 60 | 03 | 61 | 04 | 62 | 05 |
 | 63, 64 | 03 | 65, 66 | 04 | 67 | 03 |
 | 68 | 06 | 69, 70 | 01 | 71, 72 | 06 |
-| 73 | 05 | 74 | 03 | | |
+| 73 | 05 | 74 | 03 | 75 | 01 |
 
-Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **74** (новый вопрос = 75). Номера не менять.
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **75** (новый вопрос = 76). Номера не менять.
 
 **Статус вопроса** виден в самой строке: `**РЕШЕНО (vN):** …` — решено разработчиком (ДЕФОЛТ снят); `**Отложено разработчиком:**` — вернуться позже, действует ДЕФОЛТ; без пометки — открыт, действует ДЕФОЛТ.
 Сводка: `grep -n 'РЕШЕНО\|Отложено разработчиком' docs/0*.md`.
@@ -229,6 +229,7 @@
 | Связь клиента с сервером | `Client/Net/IServerConnection.cs`; локальная — `Host/LocalServerConnection.cs`; по сети — `Client/Net/RemoteServerConnection.cs` |
 | Сеть: транспорт и кодек (вопрос 69) | `Network/` (`NetConnection` — кадры и потоки, `NetListener`, `NetworkClientSession`, `ProtocolCodec`, `MessageType`, `Hello`/`WelcomeMessage`, `NetworkConstants`) |
 | Сервер в сети (приём игроков, рассылка) | `Server/Net/ServerNetworkHost.cs` (частота — `config.NetworkWorldEveryTicks`, `NetworkStateEveryTicks`, порт — `DefaultPort`) |
+| **ИИ мобов** (модуль 10, вопрос 75) | данные `mobs.json` (`AiProfile`), `ai_profiles.json` → `AiProfile` (`Shared/Content/AiProfile.cs`), способности — навыки `mob_*` в `skills.json`; сервер `Server/Systems/MobAiSystem.cs`, `Server/World/MobAiData.cs` (Idle / Chase / Return); тесты — `Tests/EditMode/MobAiTests.cs` |
 | **Статус-эффекты, угроза, боевой лог** (модуль 8; 03 §7.12, вопрос 74) | данные `status_effects.json` → `StatusEffectDefinition` (`Shared/Content/`); сервер `Server/Systems/StatusSystem.cs`, `ThreatSystem.cs`, `Server/World/StatusData.cs`, эффекты `Server/Effects/ApplyStatusEffectHandler.cs`, `DispelEffectHandler.cs`; клиент — `Client/UI/Widgets/StatusRowWidget.cs`, «цель цели» в `TargetFrameWidget`, `Client/UI/Windows/CombatLogWindow.cs` (`L`, события — `ClientState.CombatLog`); тесты — `Tests/EditMode/StatusEffectTests.cs` |
 | **Группы и лут** (06 §7.8, вопросы 71, 72) | сервер `Server/Systems/GroupSystem.cs`, `LootSystem.cs` (участие в бою, выбор получателя), `Server/World/GroupData.cs`; `InventorySystem.CanFit`; протокол `Shared/Protocol/GroupCommands.cs`, `GroupSnapshot.cs`, `LootMode.cs`; клиент — `Client/UI/Windows/GroupWindow.cs` (`P`), `Widgets/GroupFramesWidget.cs`, `GroupPromptWidget.cs`, кнопка «В группу» в `TargetFrameWidget.cs`; тесты — `Tests/EditMode/GroupTests.cs` |
 | **Дуэли** (вопрос 70) | сервер `Server/Systems/DuelSystem.cs`, `Server/World/DuelData.cs`; враждебность и помощь — `CombatSystem.AreHostile` / `CanAssist`, PvP — `Server/Systems/CombatContext.cs`; протокол `Shared/Protocol/DuelCommands.cs`, `DuelSnapshot.cs`; клиент — кнопка в `Client/UI/Widgets/TargetFrameWidget.cs`, `DuelWidget.cs`, круг `Client/World/DuelArenaView.cs`; тесты — `Tests/EditMode/DuelTests.cs` |

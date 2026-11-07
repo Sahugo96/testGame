@@ -1475,6 +1475,38 @@
   {
    "Key": "error.cannot_use",
    "Value": "Сейчас это нельзя использовать"
+  },
+  {
+   "Key": "mob.wolf",
+   "Value": "Волк"
+  },
+  {
+   "Key": "mob.stone_golem",
+   "Value": "Каменный голем"
+  },
+  {
+   "Key": "skill.mob_bite.name",
+   "Value": "Укус"
+  },
+  {
+   "Key": "skill.mob_bite.desc",
+   "Value": "Быстрый укус."
+  },
+  {
+   "Key": "skill.mob_slam.name",
+   "Value": "Сотрясающий удар"
+  },
+  {
+   "Key": "skill.mob_slam.desc",
+   "Value": "Удар, оглушающий цель."
+  },
+  {
+   "Key": "skill.mob_smash.name",
+   "Value": "Сокрушение"
+  },
+  {
+   "Key": "skill.mob_smash.desc",
+   "Value": "Тяжёлый удар каменным кулаком."
   }
  ]
 }

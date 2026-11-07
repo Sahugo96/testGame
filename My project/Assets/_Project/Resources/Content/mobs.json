@@ -11,7 +11,8 @@
       "VisualColor": "#C0504D",
       "VisualShape": "Capsule",
       "ExperienceReward": 0,
-      "Drops": []
+      "Drops": [],
+      "AiProfile": "passive"
     },
     {
       "Id": "sturdy_dummy",
@@ -24,7 +25,8 @@
       "VisualColor": "#8064A2",
       "VisualShape": "Capsule",
       "ExperienceReward": 0,
-      "Drops": []
+      "Drops": [],
+      "AiProfile": "passive"
     },
     {
       "Id": "cube",
@@ -38,6 +40,57 @@
       "VisualShape": "Cube",
       "ExperienceReward": 10,
       "Drops": [
+        {
+          "ItemId": "philosopher_stone_shard",
+          "Chance": 0.5,
+          "Count": 1
+        }
+      ],
+      "AiProfile": "passive"
+    },
+    {
+      "Id": "wolf",
+      "NameKey": "mob.wolf",
+      "Faction": "Monsters",
+      "MaxHealth": 90,
+      "HealthRegen": 2,
+      "Defense": 0.05,
+      "RespawnSeconds": 15,
+      "VisualColor": "#7A6A55",
+      "VisualShape": "Capsule",
+      "ExperienceReward": 25,
+      "AiProfile": "wolf",
+      "Drops": [
+        {
+          "ItemId": "iron_ore",
+          "Chance": 0.6,
+          "Count": 2
+        },
+        {
+          "ItemId": "philosopher_stone_shard",
+          "Chance": 0.2,
+          "Count": 1
+        }
+      ]
+    },
+    {
+      "Id": "stone_golem",
+      "NameKey": "mob.stone_golem",
+      "Faction": "Monsters",
+      "MaxHealth": 320,
+      "HealthRegen": 5,
+      "Defense": 0.25,
+      "RespawnSeconds": 30,
+      "VisualColor": "#6B6F78",
+      "VisualShape": "Capsule",
+      "ExperienceReward": 70,
+      "AiProfile": "golem",
+      "Drops": [
+        {
+          "ItemId": "iron_ore",
+          "Chance": 1.0,
+          "Count": 3
+        },
         {
           "ItemId": "philosopher_stone_shard",
           "Chance": 0.5,

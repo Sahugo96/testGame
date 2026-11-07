@@ -17,5 +17,7 @@ namespace Game.Shared.Content.Dto
         public string VisualShape;
         public int ExperienceReward;
         public MobDropDto[] Drops;
+        /// <summary>AI profile id (ai_profiles.json); empty = passive.</summary>
+        public string AiProfile;
     }
 }

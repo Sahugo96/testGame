@@ -25,6 +25,7 @@ namespace Game.Host
                 Levels = Load<LevelsFileDto>(ContentFileNames.Levels),
                 Recipes = Load<RecipesFileDto>(ContentFileNames.Recipes),
                 StatusEffects = Load<StatusEffectsFileDto>(ContentFileNames.StatusEffects),
+                AiProfiles = Load<AiProfilesFileDto>(ContentFileNames.AiProfiles),
             };
         }
 

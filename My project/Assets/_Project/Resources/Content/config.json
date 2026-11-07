@@ -29,6 +29,10 @@
     {
       "A": "Players",
       "B": "Training"
+    },
+    {
+      "A": "Players",
+      "B": "Monsters"
     }
   ],
   "InteractRange": 4,
@@ -50,5 +54,8 @@
   "LootRadius": 50,
   "GroupLogSize": 20,
   "ThreatPerDamage": 1,
-  "HealThreatFactor": 0.5
+  "HealThreatFactor": 0.5,
+  "MobGlobalCooldownSeconds": 1.0,
+  "MobAggroThreat": 1.0,
+  "MobReturnArriveDistance": 0.5
 }

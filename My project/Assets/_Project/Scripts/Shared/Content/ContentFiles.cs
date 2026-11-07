@@ -19,5 +19,6 @@ namespace Game.Shared.Content
         public LevelsFileDto Levels;
         public RecipesFileDto Recipes;
         public StatusEffectsFileDto StatusEffects;
+        public AiProfilesFileDto AiProfiles;
     }
 }

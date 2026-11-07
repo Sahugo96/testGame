@@ -31,6 +31,7 @@ namespace Game.Tests
                 Levels = Read<LevelsFileDto>(ContentFileNames.Levels),
                 Recipes = Read<RecipesFileDto>(ContentFileNames.Recipes),
                 StatusEffects = Read<StatusEffectsFileDto>(ContentFileNames.StatusEffects),
+                AiProfiles = Read<AiProfilesFileDto>(ContentFileNames.AiProfiles),
             };
         }
 

@@ -35,6 +35,7 @@ namespace Game.Server
         private readonly CraftingSystem _crafting;
         private readonly StatusSystem _statuses;
         private readonly ThreatSystem _threat;
+        private readonly MobAiSystem _mobAi;
         private int _tick;
         private int _nextCharacterNumber = 1;
 
@@ -65,6 +66,7 @@ namespace Game.Server
             _stats = new StatSystem(_ctx) { ExtraModifiers = _statuses.ModifiersOf };
             _inventory = new InventorySystem(_ctx, _stats, _resources, _statuses);
             _threat = new ThreatSystem(_ctx);
+            _mobAi = new MobAiSystem(_ctx, _combat, _statuses, _threat, effects);
             _respawn = new RespawnSystem(_ctx);
             _snapshots = new SnapshotBuilder(_ctx, _skills);
             _progression = new ProgressionSystem(_ctx, _stats);
@@ -182,6 +184,7 @@ namespace Game.Server
                 }
             }
             _movement.Update(dt);
+            _mobAi.Update(dt);
             _skills.Update(dt);
             _statuses.Update(dt);
             _inventory.Update(dt);
@@ -327,6 +330,8 @@ namespace Game.Server
                 world.Vitals.Add(id, new VitalsData { Health = mob.MaxHealth, MaxHealth = mob.MaxHealth, HealthRegen = mob.HealthRegen, Defense = mob.Defense });
                 world.CombatStates.Add(id, new CombatStateData());
                 world.Mobs.Add(id, new MobData { SpawnPosition = position, RespawnSeconds = mob.RespawnSeconds });
+                _ctx.Content.AiProfiles.TryGetValue(mob.AiProfile ?? string.Empty, out AiProfile profile);
+                world.MobAi.Add(id, MobAiSystem.Create(profile));
             }
         }
 
