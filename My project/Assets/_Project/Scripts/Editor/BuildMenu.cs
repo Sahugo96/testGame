@@ -8,7 +8,7 @@ namespace Game.EditorTools
 {
     /// <summary>
     /// One-click Windows build (menu "Game → Build Windows"): one executable for client, host and dedicated server,
-    /// plus StartServer.bat / StopServer.bat / StartHost.bat next to it. Output: &lt;project&gt;/Builds/Windows.
+    /// plus StartServer.bat / StopServer.bat / StartHost.bat / StartBots.bat next to it. Output: &lt;project&gt;/Builds/Windows.
     /// </summary>
     public static class BuildMenu
     {
@@ -86,6 +86,14 @@ namespace Game.EditorTools
                 + "taskkill /PID %PID% /F\r\n"
                 + "del server.pid\r\n"
                 + "pause\r\n");
+            Write(folder, "StartBots.bat",
+                "@echo off\r\n"
+                + "cd /d \"%~dp0\"\r\n"
+                + "set /p ADDR=Server address (Enter = 127.0.0.1): \r\n"
+                + "if \"%ADDR%\"==\"\" set ADDR=127.0.0.1\r\n"
+                + "set /p COUNT=How many bots (Enter = 20): \r\n"
+                + "if \"%COUNT%\"==\"\" set COUNT=20\r\n"
+                + "start \"\" \"" + exe + "\" -batchmode -nographics -bots %COUNT% -connect %ADDR% -port " + port + " -logFile bots.log\r\n");
             Write(folder, "StartHost.bat",
                 "@echo off\r\n"
                 + "cd /d \"%~dp0\"\r\n"

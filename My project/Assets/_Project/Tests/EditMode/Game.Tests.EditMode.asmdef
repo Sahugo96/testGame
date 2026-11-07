@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "Game.Shared",
         "Game.Server",
-        "Game.Network"
+        "Game.Network",
+        "Game.Bots"
     ],
     "includePlatforms": [
         "Editor"

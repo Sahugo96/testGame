@@ -54,6 +54,12 @@ namespace Game.Shared.Content.Dto
         public float MobReturnArriveDistance;
         /// <summary>Group experience (question 72): share of an equal part by level gap to the top member (index = gap); a gap ≥ length gets nothing.</summary>
         public float[] GroupXpGapShares;
+        /// <summary>Interest management (module 3): who sees what — radius around the player and grid cell size.</summary>
+        public float InterestRadius;
+        public float InterestCellSize;
+        /// <summary>Metrics: ticks in the sliding window; how often a dedicated server writes them to the log.</summary>
+        public int MetricsWindowTicks;
+        public float MetricsLogSeconds;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

@@ -138,3 +138,7 @@ crashlytics-build.properties
 # .NET test harness outside Unity (sim-tests)
 /sim-tests/bin/
 /sim-tests/obj/
+
+# Load test tool (tools/LoadTest)
+/tools/LoadTest/bin/
+/tools/LoadTest/obj/

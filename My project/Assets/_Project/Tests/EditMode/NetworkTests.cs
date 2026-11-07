@@ -31,7 +31,8 @@ namespace Game.Tests
             Assert.That(decoded.Bag.Length, Is.EqualTo(state.Bag.Length));
             Assert.That(decoded.Bag.Count(b => b.DefinitionId != null), Is.EqualTo(state.Bag.Count(b => b.DefinitionId != null)));
             Assert.That(decoded.Equipment.First(e => e.SlotId == "MainHand").InstanceId, Is.EqualTo(state.Equipment.First(e => e.SlotId == "MainHand").InstanceId));
-            Assert.That(world.Entities.Length, Is.EqualTo(h.World.Entities.Count));
+            Assert.That(world.Entities.Length, Is.EqualTo(h.Player(mage).Outbox.World.Entities.Length));
+            Assert.That(world.Entities.Any(e => e.Id == mage), Is.True, "a player always sees themselves");
         }
 
         [Test]

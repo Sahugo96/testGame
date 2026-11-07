@@ -38,6 +38,8 @@ namespace Game.Server
         private readonly StatusSystem _statuses;
         private readonly ThreatSystem _threat;
         private readonly MobAiSystem _mobAi;
+        private readonly InterestSystem _interest;
+        private readonly System.Diagnostics.Stopwatch _tickClock = new System.Diagnostics.Stopwatch();
         private int _tick;
         private int _nextCharacterNumber = 1;
 
@@ -76,6 +78,8 @@ namespace Game.Server
             _groups = new GroupSystem(_ctx);
             _loot = new LootSystem(_ctx, _groups, _inventory);
             _crafting = new CraftingSystem(_ctx, _inventory, _resources);
+            _interest = new InterestSystem(_ctx, _groups, _duels);
+            Metrics = new ServerMetrics(content.Config.MetricsWindowTicks);
             _combat.Damaged += _loot.OnDamaged;
             _combat.Healed += _loot.OnHealed;
             _combat.Damaged += _threat.OnDamaged;
@@ -173,8 +177,12 @@ namespace Game.Server
             player?.PendingCommands.Enqueue(command);
         }
 
+        /// <summary>Tick time, players, entities and interest numbers (module 3).</summary>
+        public ServerMetrics Metrics { get; }
+
         public void Tick()
         {
+            _tickClock.Restart();
             float dt = TickInterval;
             _ctx.Time += dt;
             _tick++;
@@ -204,15 +212,18 @@ namespace Game.Server
                 PlayerCharacter owner = _ctx.GetPlayer(id);
                 worldSnapshot.Entities[i].TargetOfId = owner != null ? owner.TargetId : _threat.TopThreat(id);
             }
+            _interest.Rebuild(worldSnapshot);
             foreach (PlayerCharacter player in _ctx.Players.Values)
             {
-                player.Outbox.World = worldSnapshot;
+                player.Outbox.World = _interest.BuildFor(player, worldSnapshot);
                 player.Outbox.State = _snapshots.BuildPlayer(player);
                 player.Outbox.State.Duel = _duels.Snapshot(player.EntityId);
                 player.Outbox.State.CraftRecipeId = player.Craft.Active ? player.Craft.RecipeId : null;
                 player.Outbox.State.CraftProgress = _crafting.Progress(player);
                 player.Outbox.State.Group = _groups.Snapshot(player.EntityId);
             }
+            _tickClock.Stop();
+            Metrics.RecordTick(_tickClock.Elapsed.TotalMilliseconds, _ctx.Players.Count, worldSnapshot.Entities.Length, _interest.LastTickEntitiesSent);
             Ticked?.Invoke();
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Game.Shared.Content;
@@ -19,6 +20,23 @@ namespace Game.Network
             using (var w = new BinaryWriter(stream, Encoding.UTF8))
             {
                 Write(w, message);
+                w.Flush();
+                return stream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// World snapshot for one peer (module 3 traffic): static fields (definition, name key, display name, faction) only
+        /// for entities the peer does not know yet; `known` is updated (entities that left the view are forgotten, so they
+        /// come back in full). The client side fills the missing fields from its cache (RemoteServerConnection).
+        /// </summary>
+        public static byte[] EncodeWorld(WorldSnapshot world, HashSet<EntityId> known)
+        {
+            using (var stream = new MemoryStream())
+            using (var w = new BinaryWriter(stream, Encoding.UTF8))
+            {
+                w.Write((byte)MessageType.World);
+                WriteWorld(w, world, known);
                 w.Flush();
                 return stream.ToArray();
             }
@@ -139,7 +157,7 @@ namespace Game.Network
                     break;
                 case WorldSnapshot m:
                     w.Write((byte)MessageType.World);
-                    WriteWorld(w, m);
+                    WriteWorld(w, m, null);
                     break;
                 case PlayerStateSnapshot m:
                     w.Write((byte)MessageType.PlayerState);
@@ -241,19 +259,26 @@ namespace Game.Network
             }
         }
 
-        private static void WriteWorld(BinaryWriter w, WorldSnapshot m)
+        private static void WriteWorld(BinaryWriter w, WorldSnapshot m, HashSet<EntityId> known)
         {
             w.Write(m.Tick);
             w.Write(m.ServerTime);
             w.Write(m.Entities.Length);
+            HashSet<EntityId> seen = known == null ? null : new HashSet<EntityId>();
             foreach (EntitySnapshot e in m.Entities)
             {
                 Id(w, e.Id);
                 w.Write((byte)e.Kind);
-                Str(w, e.DefinitionId);
-                Str(w, e.NameKey);
-                Str(w, e.DisplayName);
-                Str(w, e.Faction);
+                bool full = known == null || !known.Contains(e.Id);
+                w.Write(full);
+                if (full)
+                {
+                    Str(w, e.DefinitionId);
+                    Str(w, e.NameKey);
+                    Str(w, e.DisplayName);
+                    Str(w, e.Faction);
+                }
+                seen?.Add(e.Id);
                 w.Write(e.Position.X);
                 w.Write(e.Position.Y);
                 w.Write(e.Position.Z);
@@ -272,6 +297,11 @@ namespace Game.Network
                 }
                 Id(w, e.TargetOfId);
             }
+            if (known != null)
+            {
+                known.IntersectWith(seen);
+                known.UnionWith(seen);
+            }
         }
 
         private static WorldSnapshot ReadWorld(BinaryReader r)
@@ -280,14 +310,22 @@ namespace Game.Network
             m.Entities = new EntitySnapshot[r.ReadInt32()];
             for (int i = 0; i < m.Entities.Length; i++)
             {
+                var e = new EntitySnapshot { Id = Id(r), Kind = (EntityKind)r.ReadByte() };
+                if (r.ReadBoolean())
+                {
+                    e.DefinitionId = Str(r);
+                    e.NameKey = Str(r);
+                    e.DisplayName = Str(r);
+                    e.Faction = Str(r);
+                }
                 m.Entities[i] = new EntitySnapshot
                 {
-                    Id = Id(r),
-                    Kind = (EntityKind)r.ReadByte(),
-                    DefinitionId = Str(r),
-                    NameKey = Str(r),
-                    DisplayName = Str(r),
-                    Faction = Str(r),
+                    Id = e.Id,
+                    Kind = e.Kind,
+                    DefinitionId = e.DefinitionId,
+                    NameKey = e.NameKey,
+                    DisplayName = e.DisplayName,
+                    Faction = e.Faction,
                     Position = new Vec3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle()),
                     Yaw = r.ReadSingle(),
                     Health = r.ReadSingle(),
@@ -350,9 +388,20 @@ namespace Game.Network
                 w.Write(s.EmpoweredAvailable);
                 w.Write(s.WeakenedAvailable);
             }
+            // Sparse bag (module 3 traffic): the size, then only the occupied slots.
             w.Write(m.Bag.Length);
+            int occupied = 0;
             foreach (ItemSlotSnapshot b in m.Bag)
             {
+                occupied += b.DefinitionId != null ? 1 : 0;
+            }
+            w.Write(occupied);
+            foreach (ItemSlotSnapshot b in m.Bag)
+            {
+                if (b.DefinitionId == null)
+                {
+                    continue;
+                }
                 w.Write(b.Index);
                 Str(w, b.InstanceId);
                 Str(w, b.DefinitionId);
@@ -507,7 +556,16 @@ namespace Game.Network
             m.Bag = new ItemSlotSnapshot[r.ReadInt32()];
             for (int i = 0; i < m.Bag.Length; i++)
             {
-                m.Bag[i] = new ItemSlotSnapshot { Index = r.ReadInt32(), InstanceId = Str(r), DefinitionId = Str(r), Count = r.ReadInt32(), UpgradeLevel = r.ReadInt32() };
+                m.Bag[i] = new ItemSlotSnapshot { Index = i };
+            }
+            int occupiedSlots = r.ReadInt32();
+            for (int i = 0; i < occupiedSlots; i++)
+            {
+                var slot = new ItemSlotSnapshot { Index = r.ReadInt32(), InstanceId = Str(r), DefinitionId = Str(r), Count = r.ReadInt32(), UpgradeLevel = r.ReadInt32() };
+                if (slot.Index >= 0 && slot.Index < m.Bag.Length)
+                {
+                    m.Bag[slot.Index] = slot;
+                }
             }
             m.Equipment = new EquipmentSlotSnapshot[r.ReadInt32()];
             for (int i = 0; i < m.Equipment.Length; i++)

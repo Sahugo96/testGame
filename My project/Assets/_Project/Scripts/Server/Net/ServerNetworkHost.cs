@@ -21,6 +21,8 @@ namespace Game.Server.Net
             public NetConnection Connection;
             public EntityId Player;
             public bool Joined;
+            /// <summary>Entities whose static fields this peer already has (interest management, module 3).</summary>
+            public readonly HashSet<EntityId> KnownEntities = new HashSet<EntityId>();
         }
 
         private const string DefaultNamePrefix = "Player";
@@ -41,6 +43,36 @@ namespace Game.Server.Net
         }
 
         public int Port => _listener.Port;
+
+        private long _bytesSentByClosed;
+        private long _bytesReceivedByClosed;
+
+        /// <summary>All bytes sent / received since the start, including disconnected players (module 3 metrics).</summary>
+        public long BytesSent
+        {
+            get
+            {
+                long total = _bytesSentByClosed;
+                foreach (Peer peer in _peers)
+                {
+                    total += peer.Connection.BytesSent;
+                }
+                return total;
+            }
+        }
+
+        public long BytesReceived
+        {
+            get
+            {
+                long total = _bytesReceivedByClosed;
+                foreach (Peer peer in _peers)
+                {
+                    total += peer.Connection.BytesReceived;
+                }
+                return total;
+            }
+        }
 
         public int ConnectedPlayers
         {
@@ -87,6 +119,8 @@ namespace Game.Server.Net
                         _server.RemovePlayer(peer.Player);
                     }
                     Log.Info(LogTags.Server, $"Disconnected {peer.Connection.RemoteAddress}: {peer.Connection.CloseReason}");
+                    _bytesSentByClosed += peer.Connection.BytesSent;
+                    _bytesReceivedByClosed += peer.Connection.BytesReceived;
                     _peers.RemoveAt(i);
                 }
             }
@@ -180,7 +214,7 @@ namespace Game.Server.Net
                 outbox.Notifications.Clear();
                 if (sendWorld && outbox.World != null)
                 {
-                    peer.Connection.Send(outbox.World);
+                    peer.Connection.SendEncoded(ProtocolCodec.EncodeWorld(outbox.World, peer.KnownEntities));
                 }
                 if (sendState && outbox.State != null)
                 {

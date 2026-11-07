@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Game.Network;
 using Game.Shared.Core;
 using Game.Shared.Protocol;
@@ -12,6 +13,9 @@ namespace Game.Client.Net
     public sealed class RemoteServerConnection : IServerConnection, IDisposable
     {
         private const float FallbackInterval = 0.1f;
+
+        /// <summary>Static fields of entities in view: the server sends them once (module 3 traffic), compact entries are filled from here.</summary>
+        private readonly Dictionary<EntityId, EntitySnapshot> _known = new Dictionary<EntityId, EntitySnapshot>();
 
         private readonly NetworkClientSession _session;
 
@@ -42,6 +46,7 @@ namespace Game.Client.Net
                 switch (message)
                 {
                     case WorldSnapshot world:
+                        FillStaticFields(world);
                         WorldReceived?.Invoke(world);
                         break;
                     case PlayerStateSnapshot state:
@@ -61,5 +66,24 @@ namespace Game.Client.Net
         }
 
         public void Dispose() => _session.Dispose();
+
+        private void FillStaticFields(WorldSnapshot world)
+        {
+            for (int i = 0; i < world.Entities.Length; i++)
+            {
+                ref EntitySnapshot entity = ref world.Entities[i];
+                if (entity.DefinitionId != null)
+                {
+                    _known[entity.Id] = entity;
+                }
+                else if (_known.TryGetValue(entity.Id, out EntitySnapshot cached))
+                {
+                    entity.DefinitionId = cached.DefinitionId;
+                    entity.NameKey = cached.NameKey;
+                    entity.DisplayName = cached.DisplayName;
+                    entity.Faction = cached.Faction;
+                }
+            }
+        }
     }
 }

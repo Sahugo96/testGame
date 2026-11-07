@@ -69,5 +69,9 @@
     0.39,
     0.26,
     0.13
-  ]
+  ],
+  "InterestRadius": 30,
+  "InterestCellSize": 10,
+  "MetricsWindowTicks": 300,
+  "MetricsLogSeconds": 10
 }

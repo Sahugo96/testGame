@@ -24,6 +24,9 @@ namespace Game.Network
 
         public string CloseReason => _connection.CloseReason;
 
+        /// <summary>Bytes received from the server (load test metrics).</summary>
+        public long BytesReceived => _connection.BytesReceived;
+
         /// <summary>Connects (blocks up to ConnectTimeoutMs) and sends Hello. Throws on failure.</summary>
         public static NetworkClientSession Connect(string host, int port, string playerName, string classId)
         {

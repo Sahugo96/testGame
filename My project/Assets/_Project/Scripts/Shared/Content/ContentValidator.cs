@@ -37,6 +37,10 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: GroupXpGapShares must start with 1 and hold values in [0, 1]");
             }
+            if (cfg.InterestRadius <= 0f || cfg.InterestCellSize <= 0f || cfg.MetricsWindowTicks <= 0 || cfg.MetricsLogSeconds <= 0f)
+            {
+                errors.Add("config: InterestRadius, InterestCellSize, MetricsWindowTicks, MetricsLogSeconds must be > 0");
+            }
             if (cfg.ThreatPerDamage <= 0f || cfg.HealThreatFactor < 0f)
             {
                 errors.Add("config: ThreatPerDamage must be > 0 and HealThreatFactor ≥ 0");

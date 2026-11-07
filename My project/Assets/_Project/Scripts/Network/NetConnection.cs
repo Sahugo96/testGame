@@ -40,9 +40,21 @@ namespace Game.Network
         /// <summary>Why the connection closed (exception text), for logs.</summary>
         public string CloseReason { get; private set; }
 
+        private long _bytesSent;
+        private long _bytesReceived;
+
+        /// <summary>Traffic counters (module 3 metrics): frame bytes including the length header.</summary>
+        public long BytesSent => Interlocked.Read(ref _bytesSent);
+        public long BytesReceived => Interlocked.Read(ref _bytesReceived);
+
         public bool TryReceive(out object message) => _incoming.TryDequeue(out message);
 
-        public void Send(object message)
+        /// <summary>Sends an already encoded message (per-peer encodings such as ProtocolCodec.EncodeWorld).</summary>
+        public void SendEncoded(byte[] payload) => Enqueue(payload);
+
+        public void Send(object message) => Enqueue(ProtocolCodec.Encode(message));
+
+        private void Enqueue(byte[] payload)
         {
             if (_closed)
             {
@@ -53,7 +65,6 @@ namespace Game.Network
                 Close("send queue overflow");
                 return;
             }
-            byte[] payload = ProtocolCodec.Encode(message);
             var frame = new byte[HeaderBytes + payload.Length];
             WriteLength(frame, payload.Length);
             Buffer.BlockCopy(payload, 0, frame, HeaderBytes, payload.Length);
@@ -123,6 +134,7 @@ namespace Game.Network
                         Close("remote closed");
                         return;
                     }
+                    Interlocked.Add(ref _bytesReceived, HeaderBytes + length);
                     _incoming.Enqueue(ProtocolCodec.Decode(payload));
                 }
             }
@@ -139,6 +151,7 @@ namespace Game.Network
                 foreach (byte[] frame in _outgoing.GetConsumingEnumerable())
                 {
                     _stream.Write(frame, 0, frame.Length);
+                    Interlocked.Add(ref _bytesSent, frame.Length);
                 }
                 if (_flushReason != null)
                 {

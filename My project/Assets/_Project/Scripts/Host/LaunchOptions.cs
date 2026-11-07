@@ -4,12 +4,14 @@ namespace Game.Host
 {
     /// <summary>
     /// Command-line options of a build: -server (headless dedicated server), -host, -connect &lt;address&gt;,
-    /// -port &lt;n&gt;, -name &lt;text&gt;, -class &lt;id&gt;. Without -server/-host/-connect the start menu is shown.
+    /// -port &lt;n&gt;, -name &lt;text&gt;, -class &lt;id&gt;, -bots &lt;n&gt; (with -connect: headless load-test bots). Without -server/-host/-connect the start menu is shown.
     /// </summary>
     public sealed class LaunchOptions
     {
         public bool DedicatedServer;
         public bool Host;
+        /// <summary>-bots N with -connect: N headless bots instead of a player (module 3 load tests).</summary>
+        public int Bots;
         public string ConnectAddress;
         public int Port;
         public string PlayerName;
@@ -25,6 +27,10 @@ namespace Game.Host
                 {
                     case "-server":
                         options.DedicatedServer = true;
+                        break;
+                    case "-bots":
+                        int.TryParse(next, out options.Bots);
+                        i++;
                         break;
                     case "-host":
                         options.Host = true;

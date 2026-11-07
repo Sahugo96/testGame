@@ -47,6 +47,7 @@ namespace Game.Host
             Host,
             Client,
             Dedicated,
+            Bots,
         }
 
         private ContentDatabase _content;
@@ -62,6 +63,10 @@ namespace Game.Host
         private StartMenuView _menu;
         private Transform _followed;
         private float _dedicatedAccumulator;
+        private float _metricsTimer;
+        private long _lastBytesSent;
+        private Game.Bots.BotSwarm _bots;
+        private const double BytesPerKiB = 1024d;
         private int _lastPlayerCount = -1;
         private string _playerName;
         private string _classId;
@@ -88,6 +93,11 @@ namespace Game.Host
 
             LaunchOptions options = LaunchOptions.Parse(Environment.GetCommandLineArgs());
             _port = options.Port > 0 ? options.Port : _content.Config.DefaultPort;
+            if (options.Bots > 0 && !string.IsNullOrEmpty(options.ConnectAddress))
+            {
+                StartBots(options.ConnectAddress, _port, options.Bots);
+                return;
+            }
             if (options.DedicatedServer || Application.isBatchMode)
             {
                 StartDedicated();
@@ -119,6 +129,11 @@ namespace Game.Host
             if (_mode == Mode.Dedicated)
             {
                 UpdateDedicated(dt);
+                return;
+            }
+            if (_mode == Mode.Bots)
+            {
+                _bots.Update(dt);
                 return;
             }
             if (_pendingJoin != null && _pendingJoin.IsCompleted)
@@ -157,6 +172,7 @@ namespace Game.Host
                 _ctx.LeaveRequested -= LeaveToMenu;
             }
             Leave();
+            _bots?.Dispose();
             _input?.Dispose();
         }
 
@@ -395,6 +411,25 @@ namespace Game.Host
                 _lastPlayerCount = _networkHost.ConnectedPlayers;
                 Log.Info(LogTags.Server, $"Players online: {_lastPlayerCount}");
             }
+            _metricsTimer += dt;
+            if (_metricsTimer >= _content.Config.MetricsLogSeconds)
+            {
+                long bytes = _networkHost.BytesSent;
+                double perPlayer = (bytes - _lastBytesSent) / _metricsTimer / Math.Max(1, _networkHost.ConnectedPlayers) / BytesPerKiB;
+                Log.Info(LogTags.Server, $"Metrics: {_server.Metrics.Summary()}, out {perPlayer:0.0} KiB/s per player");
+                _lastBytesSent = bytes;
+                _metricsTimer = 0f;
+            }
+        }
+
+        /// <summary>-bots N -connect ADDRESS: headless bots for load tests (module 3); no graphics, no player.</summary>
+        private void StartBots(string address, int port, int count)
+        {
+            var classes = new List<string>(_content.Classes.Keys);
+            _bots = Game.Bots.BotSwarm.Connect(address, port, count, classes.ToArray(), _content.Config.WorldHalfSize);
+            _mode = Mode.Bots;
+            Application.targetFrameRate = _content.Config.TickRate;
+            Log.Info(LogTags.Client, $"{count} bots connected to {address}:{port}");
         }
 
         /// <summary>Server error keys ("net.*") are localized; transport reasons are shown as is.</summary>
