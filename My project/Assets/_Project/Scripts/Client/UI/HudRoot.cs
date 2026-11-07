@@ -70,6 +70,7 @@ namespace Game.Client.UI
             float skillRowsHeight = ctx.Content.Config.SkillBarRows * (HudLayout.SkillSlotSize + HudLayout.Gap);
             _consumables = new ConsumableBarWidget(bottomCenter, ctx, _tooltip, skillRowsHeight + HudLayout.Gap);
             Windows = new WindowManager(windowLayer, canvas, ctx, _tooltip);
+            new IconMenuWidget(bottomCenter, ctx, _tooltip, MenuZones.SkillBarLeft, -SkillBar.RowWidth * 0.5f - HudLayout.Gap, Windows.Toggle);
             new MenuBarWidget(bottomLeft, ctx, MenuZones.BottomLeft, false, Windows.Toggle);
             new MenuBarWidget(bottomRight, ctx, MenuZones.BottomRight, true, Windows.Toggle);
             _message = new MessageWidget(hudLayer, ctx);

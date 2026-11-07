@@ -4,7 +4,7 @@
       "Id": "character",
       "NameKey": "window.character",
       "Icon": "character",
-      "MenuZone": "BottomLeft",
+      "MenuZone": "SkillBarLeft",
       "MenuOrder": 1,
       "HotkeyBinding": "<Keyboard>/c",
       "OpenedBy": "Menu",
@@ -14,9 +14,29 @@
       "Id": "backpack",
       "NameKey": "window.backpack",
       "Icon": "backpack",
-      "MenuZone": "BottomLeft",
+      "MenuZone": "SkillBarLeft",
       "MenuOrder": 2,
       "HotkeyBinding": "<Keyboard>/i",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
+      "Id": "talents",
+      "NameKey": "window.talents",
+      "Icon": "talents",
+      "MenuZone": "SkillBarLeft",
+      "MenuOrder": 3,
+      "HotkeyBinding": "<Keyboard>/n",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
+      "Id": "map",
+      "NameKey": "window.map",
+      "Icon": "map",
+      "MenuZone": "SkillBarLeft",
+      "MenuOrder": 4,
+      "HotkeyBinding": "<Keyboard>/m",
       "OpenedBy": "Menu",
       "Singleton": true
     },
@@ -25,7 +45,7 @@
       "NameKey": "window.skillbook",
       "Icon": "skillbook",
       "MenuZone": "BottomLeft",
-      "MenuOrder": 3,
+      "MenuOrder": 1,
       "HotkeyBinding": "<Keyboard>/k",
       "OpenedBy": "Menu",
       "Singleton": true

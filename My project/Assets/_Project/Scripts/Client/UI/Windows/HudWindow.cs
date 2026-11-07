@@ -18,12 +18,17 @@ namespace Game.Client.UI.Windows
         private readonly RectTransform _root;
 
         protected HudWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip, System.Action<HudWindow> focus, System.Action<HudWindow> close)
+            : this(definition, parent, canvas, ctx, tooltip, focus, close, HudLayout.WindowSize)
+        {
+        }
+
+        protected HudWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip, System.Action<HudWindow> focus, System.Action<HudWindow> close, Vector2 size)
         {
             Definition = definition;
             Ctx = ctx;
             Tooltip = tooltip;
             Image panel = UiFactory.Panel($"Window_{definition.Id}", parent, HudPalette.PanelBackground);
-            _root = UiFactory.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, HudLayout.WindowSize);
+            _root = UiFactory.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, size);
 
             Image header = UiFactory.Panel("Header", _root, HudPalette.WindowHeader);
             RectTransform headerRect = header.rectTransform;
@@ -70,6 +75,12 @@ namespace Game.Client.UI.Windows
             {
                 Tooltip.Hide();
             }
+            OnVisibilityChanged(open);
+        }
+
+        /// <summary>Lets windows start or stop expensive work (preview cameras) only while visible.</summary>
+        protected virtual void OnVisibilityChanged(bool open)
+        {
         }
 
         public void BringToFront() => _root.SetAsLastSibling();

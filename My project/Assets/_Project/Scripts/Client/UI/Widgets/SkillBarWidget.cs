@@ -58,6 +58,9 @@ namespace Game.Client.UI.Widgets
 
         public int VisibleRowSlots => _slotsPerRow;
 
+        /// <summary>Width of one row of slots in reference pixels (used to place the window buttons to its left).</summary>
+        public float RowWidth => (HudLayout.SkillSlotSize + HudLayout.Gap) * _slotsPerRow - HudLayout.Gap;
+
         public string SkillAt(int index) => index >= 0 && index < _skillBySlot.Length ? _skillBySlot[index] : null;
 
         /// <summary>Puts the class skills into the first row (until drag & drop from the skill book, module 18).</summary>

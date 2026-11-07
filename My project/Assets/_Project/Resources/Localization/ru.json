@@ -607,6 +607,82 @@
   {
    "Key": "mob.sturdy_dummy",
    "Value": "Прочный манекен"
+  },
+  {
+   "Key": "window.talents",
+   "Value": "Таланты"
+  },
+  {
+   "Key": "window.map",
+   "Value": "Карта"
+  },
+  {
+   "Key": "window.character.short",
+   "Value": "Перс."
+  },
+  {
+   "Key": "window.backpack.short",
+   "Value": "Рюкз."
+  },
+  {
+   "Key": "window.talents.short",
+   "Value": "Тал."
+  },
+  {
+   "Key": "window.map.short",
+   "Value": "Карта"
+  },
+  {
+   "Key": "window.skillbook.short",
+   "Value": "Умен."
+  },
+  {
+   "Key": "window.settings.short",
+   "Value": "Наст."
+  },
+  {
+   "Key": "ui.hotkey",
+   "Value": "Клавиша: {0}"
+  },
+  {
+   "Key": "ui.tab_main",
+   "Value": "Основные"
+  },
+  {
+   "Key": "ui.tab_extra",
+   "Value": "Дополнительно"
+  },
+  {
+   "Key": "ui.params_header",
+   "Value": "Параметры:"
+  },
+  {
+   "Key": "ui.characteristics_header",
+   "Value": "Характеристики:"
+  },
+  {
+   "Key": "ui.health",
+   "Value": "Здоровье"
+  },
+  {
+   "Key": "ui.main_mana",
+   "Value": "Основная мана"
+  },
+  {
+   "Key": "ui.reserve_mana",
+   "Value": "Резервная мана"
+  },
+  {
+   "Key": "ui.reserve_regen",
+   "Value": "Восст. резерва/с (вне боя)"
+  },
+  {
+   "Key": "ui.level_long",
+   "Value": "{0} уровень"
+  },
+  {
+   "Key": "ui.map_hint",
+   "Value": "Синий — вы, цветные — манекены. Клавиша M закрывает карту."
   }
  ]
 }

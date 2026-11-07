@@ -10,7 +10,7 @@ namespace Game.Server.Systems
     /// Combat state and regeneration (03, 7.1, question 1):
     /// pool A regenerates passively in and out of combat unless locked; pool B regenerates only out of combat at
     /// ReserveRegenOutOfCombatFactor of the passive rate; lock = A is empty while B is not full, cleared when B is full.
-    /// Health regenerates out of combat only (ДЕФОЛТ, question 63).
+    /// Health regenerates passively in and out of combat (question 63).
     /// </summary>
     public sealed class ResourceSystem
     {
@@ -86,7 +86,7 @@ namespace Game.Server.Systems
             {
                 EntityId id = world.Vitals.OwnerAt(i);
                 ref VitalsData vitals = ref world.Vitals.At(i);
-                if (vitals.IsDead || IsInCombat(id))
+                if (vitals.IsDead)
                 {
                     continue;
                 }

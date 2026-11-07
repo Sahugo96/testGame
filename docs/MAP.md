@@ -7,6 +7,9 @@
 
 ## 0. Когда что читать целиком
 
+Инструкция для разработчика по запуску проекта в Unity — `docs/HOW_TO_RUN.md`.
+
+
 | Ситуация | Читать |
 |----------|--------|
 | Начало модуля (AI_INSTRUCTIONS §4) | `AI_INSTRUCTIONS.md`, `00_INDEX.md`, `01_DEV_PLAN.md` целиком + тематические файлы модуля (§3 ниже) |
@@ -229,7 +232,9 @@
 | Сущности в мире | `Client/World/EntityViewManager.cs`, `EntityView.cs` |
 | Оверлей: корень, зоны, фабрика uGUI | `Client/UI/HudRoot.cs`, `UiFactory.cs`, `HudLayout.cs`, `HudPalette.cs` |
 | Виджеты оверлея | `Client/UI/Widgets/` (рамки, панель навыков, расходники, меню, мини-карта, сообщения, числа урона, таблички, тексты подсказок) |
-| Окна механик | `Client/UI/Windows/` (`WindowManager`, `WindowFactory`, `CharacterWindow`, `BackpackWindow`, `SkillBookWindow`, `SettingsWindow`) |
+| Окна механик | `Client/UI/Windows/` (`WindowManager`, `WindowFactory`, `HudWindow` — база, `CharacterWindow`, `BackpackWindow`, `SkillBookWindow`, `MapWindow`, `SettingsWindow`, `PlaceholderWindow`) |
+| Кнопки окон слева от панели навыков | `Client/UI/Widgets/IconMenuWidget.cs` (зона `SkillBarLeft` в `hud_windows.json`) |
+| Портрет персонажа (сцена-превью, слой 31) | `Client/World/CharacterPreview.cs`, `PreviewAttachments.cs`, `RenderLayers.cs` |
 | Запуск и сборка всего | `Host/GameBootstrap.cs` → `Host/GameRoot.cs` |
 | Контент | `Resources/Content/*.json`; тексты — `Resources/Localization/ru.json` |
 | Тесты (EditMode, они же в .NET) | `Tests/EditMode/`; запуск вне Unity: `cd sim-tests && dotnet test` (в корне репозитория) |

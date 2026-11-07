@@ -58,6 +58,7 @@ namespace Game.Host
                 camera = new GameObject("Main Camera").AddComponent<Camera>();
                 camera.tag = "MainCamera";
             }
+            camera.cullingMask &= RenderLayers.AllExceptPreview;
             _cameraRig = camera.gameObject.AddComponent<ThirdPersonCamera>();
 
             _ctx = new ClientContext

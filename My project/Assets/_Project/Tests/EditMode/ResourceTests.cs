@@ -118,6 +118,22 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Health_RegeneratesInCombat()
+        {
+            var h = new ServerHarness();
+            EntityId mage = h.AddPlayer("mage");
+            EntityId dummy = h.NearestMob(mage, "training_dummy");
+            h.PlaceNear(mage, dummy, 5f);
+            h.Send(mage, new UseSkillCommand { SkillId = "reserve_nova", TargetId = dummy });
+            h.Vitals(mage).Health = 10f;
+
+            h.Run(1f);
+
+            Assert.That(h.InCombat(mage), Is.True);
+            Assert.That(h.Vitals(mage).Health, Is.GreaterThan(10f), "question 63: health regenerates in combat too");
+        }
+
+        [Test]
         public void CombatState_EndsAfterQuietPeriod()
         {
             var h = new ServerHarness();

@@ -21,6 +21,7 @@ namespace Game.Tests
             PlayerCharacter player = h.Player(mage);
             float efficiency = MasteryMath.Efficiency(player.GetMastery("fireball"), 0.3f, 1.5f);
             float bonus = player.Stats.Get(StatId.DamageBonus);
+            h.Vitals(dummy).HealthRegen = 0f;
             float health = h.Vitals(dummy).Health;
             int expected = (int)Math.Round(40f * efficiency * (1f + bonus) * (1f - h.Vitals(dummy).Defense), MidpointRounding.AwayFromZero);
 

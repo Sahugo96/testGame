@@ -5,5 +5,6 @@ namespace Game.Client.UI
     {
         public const string BottomLeft = "BottomLeft";
         public const string BottomRight = "BottomRight";
+        public const string SkillBarLeft = "SkillBarLeft";
     }
 }

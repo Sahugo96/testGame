@@ -1,4 +1,5 @@
 using Game.Client.Localization;
+using Game.Client.World;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +31,7 @@ namespace Game.Client.UI.Widgets
             _camera = go.AddComponent<Camera>();
             _camera.orthographic = true;
             _camera.orthographicSize = HudLayout.MinimapWorldSize * 0.5f;
+            _camera.cullingMask = RenderLayers.AllExceptPreview;
             _camera.targetTexture = texture;
             _camera.clearFlags = CameraClearFlags.SolidColor;
             _camera.backgroundColor = HudPalette.Minimap;

@@ -33,6 +33,17 @@ namespace Game.Client.Localization
         public const string WeaponSwapRisk = "hud.weapon_swap_risk";
         public const string CritTier = "hud.crit_tier";
         public const string Percent = "ui.percent";
+        public const string Hotkey = "ui.hotkey";
+        public const string TabMain = "ui.tab_main";
+        public const string TabExtra = "ui.tab_extra";
+        public const string ParamsHeader = "ui.params_header";
+        public const string CharacteristicsHeader = "ui.characteristics_header";
+        public const string Health = "ui.health";
+        public const string MainMana = "ui.main_mana";
+        public const string ReserveMana = "ui.reserve_mana";
+        public const string ReserveRegen = "ui.reserve_regen";
+        public const string LevelLong = "ui.level_long";
+        public const string MapHint = "ui.map_hint";
         public const string StatPrefix = "stat.";
         public const string RarityPrefix = "rarity.";
         public const string ResourcePrefix = "resource.";
