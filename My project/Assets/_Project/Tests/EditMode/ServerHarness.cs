@@ -47,6 +47,18 @@ namespace Game.Tests
             }
         }
 
+        public EntityId FindStation(string type)
+        {
+            foreach (EntityId id in World.Entities)
+            {
+                if (World.Stations.Has(id) && World.Stations.Get(id).Type == type)
+                {
+                    return id;
+                }
+            }
+            return EntityId.None;
+        }
+
         public EntityId FindMob(string mobId)
         {
             foreach (EntityId id in World.Entities)

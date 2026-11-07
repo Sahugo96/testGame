@@ -16,5 +16,6 @@ namespace Game.Shared.Content
         public const string BagSections = "bag_sections";
         public const string UpgradeRules = "upgrade_rules";
         public const string Levels = "levels";
+        public const string Recipes = "recipes";
     }
 }

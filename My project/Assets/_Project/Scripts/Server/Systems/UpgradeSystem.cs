@@ -10,9 +10,9 @@ using Game.Shared.Protocol;
 namespace Game.Server.Systems
 {
     /// <summary>
-    /// Item upgrade at an anvil (04, 7.14.1; developer decision v11): one attempt costs MaterialCount of MaterialItemId,
+    /// Item upgrade at a whetstone (developer decision v15) (04, 7.14.1; developer decision v11): one attempt costs MaterialCount of MaterialItemId,
     /// success chance and failure consequences come from the upgrade table steps; the roll is made only on the server.
-    /// Simplifications until professions (module 12): anyone may use the anvil (question 66); destruction chance is
+    /// Simplifications until professions (module 12): anyone may use the whetstone (question 66); destruction chance is
     /// data and 0 for now (question 65).
     /// </summary>
     public sealed class UpgradeSystem
@@ -30,7 +30,7 @@ namespace Game.Server.Systems
 
         public void TryUpgrade(PlayerCharacter player, UpgradeItemCommand command)
         {
-            if (!IsNearAnvil(player, command.StationId))
+            if (!IsNearWhetstone(player, command.StationId))
             {
                 CombatEvents.Reject(player, RejectReasons.NotNearStation);
                 return;
@@ -87,10 +87,10 @@ namespace Game.Server.Systems
             }
         }
 
-        private bool IsNearAnvil(PlayerCharacter player, EntityId stationId)
+        private bool IsNearWhetstone(PlayerCharacter player, EntityId stationId)
         {
             ServerWorld world = _ctx.World;
-            if (!world.Stations.Has(stationId) || world.Stations.Get(stationId).Type != StationTypes.Anvil)
+            if (!world.Stations.Has(stationId) || world.Stations.Get(stationId).Type != StationTypes.Whetstone)
             {
                 return false;
             }

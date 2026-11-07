@@ -1,6 +1,6 @@
 namespace Game.Server.World
 {
-    /// <summary>Interactive NPC object (anvil, ...): its content id and type.</summary>
+    /// <summary>Interactive NPC object (whetstone, anvil, ...): its content id and type.</summary>
     public struct StationData
     {
         public string StationId;

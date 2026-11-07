@@ -25,6 +25,9 @@ namespace Game.Shared.Protocol
         public const string MaxUpgradeLevel = "error.max_upgrade_level";
         public const string CannotUpgrade = "error.cannot_upgrade";
         public const string NoAttributePoints = "error.no_attribute_points";
+        public const string RecipeUnknown = "error.recipe_unknown";
+        public const string AlreadyCrafting = "error.already_crafting";
+        public const string CraftInCombat = "error.craft_in_combat";
         public const string DuelBusy = "error.duel_busy";
         public const string DuelTargetBusy = "error.duel_target_busy";
         public const string DuelInCombat = "error.duel_in_combat";

@@ -29,6 +29,7 @@ namespace Game.Tests
                 BagSections = Read<BagSectionsFileDto>(ContentFileNames.BagSections),
                 UpgradeRules = Read<UpgradeRulesFileDto>(ContentFileNames.UpgradeRules),
                 Levels = Read<LevelsFileDto>(ContentFileNames.Levels),
+                Recipes = Read<RecipesFileDto>(ContentFileNames.Recipes),
             };
         }
 

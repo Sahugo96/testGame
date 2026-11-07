@@ -19,6 +19,10 @@ namespace Game.Shared.Content
         public readonly HashSet<(string, string)> HostileFactions = new HashSet<(string, string)>();
         public readonly List<BagSection> BagSections = new List<BagSection>();
         public readonly Dictionary<string, UpgradeRuleDto> UpgradeRules = new Dictionary<string, UpgradeRuleDto>();
+        /// <summary>Recipes by id (05, 7.4).</summary>
+        public readonly Dictionary<string, RecipeDto> Recipes = new Dictionary<string, RecipeDto>();
+        /// <summary>Recipes in file order (for the crafting window).</summary>
+        public readonly List<RecipeDto> RecipeList = new List<RecipeDto>();
 
         /// <summary>Experience to the next level by level (index = level - 1); the last level is the cap.</summary>
         public readonly List<int> ExperienceToNext = new List<int>();

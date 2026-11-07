@@ -40,6 +40,10 @@ namespace Game.Client
         public void UpgradeItem(string itemInstanceId, EntityId stationId) =>
             _connection.Send(new UpgradeItemCommand { ItemInstanceId = itemInstanceId, StationId = stationId });
 
+        public void Craft(string recipeId, EntityId stationId) => _connection.Send(new CraftItemCommand { RecipeId = recipeId, StationId = stationId });
+
+        public void CancelCraft() => _connection.Send(new CancelCraftCommand());
+
         public void SpendAttributePoint(StatId attribute) => _connection.Send(new SpendAttributePointCommand { Attribute = attribute });
 
         public void RequestDuel(EntityId target) => _connection.Send(new DuelRequestCommand { TargetId = target });

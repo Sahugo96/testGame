@@ -1,4 +1,5 @@
 using System;
+using Game.Shared.Content;
 using Game.Shared.Content.Dto;
 using UnityEngine;
 
@@ -13,7 +14,22 @@ namespace Game.Client.UI.Windows
         public const string Settings = "settings";
         public const string Map = "map";
         public const string Anvil = "anvil";
+        public const string Whetstone = "whetstone";
         public const string Group = "group";
+
+        /// <summary>Window opened by clicking a station of the given type (StationTypes), or null.</summary>
+        public static string ForStation(string stationType)
+        {
+            switch (stationType)
+            {
+                case StationTypes.Anvil:
+                    return Anvil;
+                case StationTypes.Whetstone:
+                    return Whetstone;
+                default:
+                    return null;
+            }
+        }
 
         public static HudWindow Create(HudWindowDto definition, RectTransform layer, Canvas canvas, ClientContext ctx, Tooltip tooltip,
             Action<HudWindow> focus, Action<HudWindow> close)
@@ -28,6 +44,8 @@ namespace Game.Client.UI.Windows
                     return new SkillBookWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Anvil:
                     return new AnvilWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case Whetstone:
+                    return new WhetstoneWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Map:
                     return new MapWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Group:

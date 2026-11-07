@@ -65,12 +65,22 @@
   ],
   "Stations": [
     {
+      "Id": "whetstone_1",
+      "Type": "Whetstone",
+      "NameKey": "npc.whetstone",
+      "X": -6,
+      "Z": -5,
+      "VisualColor": "#8A8F96",
+      "VisualShape": "Cylinder"
+    },
+    {
       "Id": "anvil_1",
       "Type": "Anvil",
       "NameKey": "npc.anvil",
-      "X": -6,
+      "X": 6,
       "Z": -5,
-      "VisualColor": "#5A5F66"
+      "VisualColor": "#3E4248",
+      "VisualShape": "Cube"
     }
   ]
 }

@@ -79,6 +79,16 @@
       "HotkeyBinding": "",
       "OpenedBy": "Npc",
       "Singleton": true
+    },
+    {
+      "Id": "whetstone",
+      "NameKey": "window.whetstone",
+      "Icon": "whetstone",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Npc",
+      "Singleton": true
     }
   ]
 }

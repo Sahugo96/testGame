@@ -16,7 +16,9 @@ namespace Game.Client.World
         private const string CubeShape = "Cube";
         private const float CapsuleHalfHeight = 1f;
         private static readonly Vector3 CubeScale = new Vector3(1f, 1f, 1f);
-        private static readonly Vector3 AnvilScale = new Vector3(1.4f, 0.8f, 0.8f);
+        private const string CylinderShape = "Cylinder";
+        private static readonly Vector3 StationBoxScale = new Vector3(1.4f, 0.8f, 0.8f);
+        private static readonly Vector3 StationWheelScale = new Vector3(1.2f, 0.45f, 1.2f);
 
         private readonly Dictionary<EntityId, EntityView> _views = new Dictionary<EntityId, EntityView>();
         private readonly Dictionary<Collider, EntityId> _byCollider = new Dictionary<Collider, EntityId>();
@@ -128,14 +130,20 @@ namespace Game.Client.World
             return view;
         }
 
+        /// <summary>Content of a station entity (type, look) by its definition id.</summary>
+        public StationDto FindStation(string definitionId) =>
+            System.Array.Find(_ctx.Content.World.Stations ?? new StationDto[0], s => s.Id == definitionId);
+
         public bool IsStation(EntityId id) => _ctx.State.TryGetEntity(id, out EntitySnapshot entity) && entity.Kind == EntityKind.Npc;
 
         private Vector3 ShapeFor(EntitySnapshot entity, out PrimitiveType shape)
         {
             if (entity.Kind == EntityKind.Npc)
             {
-                shape = PrimitiveType.Cube;
-                return AnvilScale;
+                StationDto station = FindStation(entity.DefinitionId);
+                bool wheel = station != null && station.VisualShape == CylinderShape;
+                shape = wheel ? PrimitiveType.Cylinder : PrimitiveType.Cube;
+                return wheel ? StationWheelScale : StationBoxScale;
             }
             if (entity.Kind == EntityKind.Mob && _ctx.Content.Mobs.TryGetValue(entity.DefinitionId, out MobDto mob) && mob.VisualShape == CubeShape)
             {
@@ -150,7 +158,7 @@ namespace Game.Client.World
         {
             if (entity.Kind == EntityKind.Npc)
             {
-                StationDto station = System.Array.Find(_ctx.Content.World.Stations ?? new StationDto[0], s => s.Id == entity.DefinitionId);
+                StationDto station = FindStation(entity.DefinitionId);
                 return station != null && ColorUtility.TryParseHtmlString(station.VisualColor, out Color stationColor) ? stationColor : WorldPalette.Dead;
             }
             if (entity.Kind == EntityKind.Player)

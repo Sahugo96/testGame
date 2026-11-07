@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using Game.Client.Localization;
 using Game.Client.UI.Widgets;
 using Game.Shared.Content;
 using Game.Shared.Content.Dto;
 using Game.Shared.Content.Items;
-using Game.Shared.Core;
 using Game.Shared.Protocol;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,34 +15,56 @@ using UnityEngine.UI;
 namespace Game.Client.UI.Windows
 {
     /// <summary>
-    /// Anvil (04, 7.14.1; developer request v11): pick an equipped item or one from the equipment section, see the next
-    /// level, success chance and material, press "Upgrade". The server decides the result. The window closes when the
-    /// player walks away from the anvil or enters combat (02, 7.13).
+    /// Anvil — crafting by recipes (05, 7.4; developer decision v15). Left: recipes of this station; right: result, inputs
+    /// (have / need), success chance, time, "Create" and a progress bar with "Cancel". The server checks and rolls; the
+    /// window closes when the player walks away from the station or enters combat (02, 7.13).
     /// </summary>
     public sealed class AnvilWindow : HudWindow
     {
         private static readonly Vector2 Size = new Vector2(760f, 470f);
-        private const float ListWidth = 360f;
+        private const float ListWidth = 330f;
         private const float PercentFactor = 100f;
-        private const string EquipmentSectionId = "equipment";
 
-        private readonly RectTransform _list;
+        private readonly List<RecipeDto> _recipes = new List<RecipeDto>();
         private readonly List<Text> _rows = new List<Text>();
-        private readonly List<string> _rowInstances = new List<string>();
         private readonly Text _details;
-        private readonly Button _upgradeButton;
+        private readonly Button _craft;
+        private readonly Button _cancel;
+        private readonly UiBar _progress;
+        private readonly StringBuilder _sb = new StringBuilder();
         private string _selected;
 
         public AnvilWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip,
             Action<HudWindow> focus, Action<HudWindow> close) : base(definition, parent, canvas, ctx, tooltip, focus, close, Size)
         {
-            RectTransform left = UiFactory.Rect("Items", Content);
+            RectTransform left = UiFactory.Rect("Recipes", Content);
             left.anchorMin = Vector2.zero;
             left.anchorMax = new Vector2(0f, 1f);
             left.pivot = new Vector2(0f, 0.5f);
             left.offsetMin = Vector2.zero;
             left.offsetMax = new Vector2(ListWidth, 0f);
-            _list = VerticalList("List", left);
+            RectTransform list = VerticalList("List", left);
+            foreach (RecipeDto recipe in ctx.Content.RecipeList)
+            {
+                if (recipe.Station != StationTypes.Anvil)
+                {
+                    continue;
+                }
+                int index = _recipes.Count;
+                _recipes.Add(recipe);
+                Text row = Row("Recipe", list);
+                row.raycastTarget = true;
+                row.gameObject.AddComponent<HoverTrigger>().Clicked = button =>
+                {
+                    if (button == PointerEventData.InputButton.Left)
+                    {
+                        _selected = _recipes[index].Id;
+                        Refresh(Ctx.State.Player);
+                    }
+                };
+                _rows.Add(row);
+            }
+            _selected = _recipes.Count > 0 ? _recipes[0].Id : null;
 
             RectTransform right = UiFactory.Rect("Details", Content);
             right.anchorMin = Vector2.zero;
@@ -52,124 +74,88 @@ namespace Game.Client.UI.Windows
             _details = UiFactory.Label("Text", right, ctx.Font, HudLayout.FontNormal, TextAnchor.UpperLeft, HudPalette.Text);
             _details.supportRichText = true;
             UiFactory.Stretch(_details.rectTransform);
-            _details.rectTransform.offsetMin = new Vector2(0f, HudLayout.MenuButtonHeight + HudLayout.Gap);
-            _upgradeButton = UiFactory.Button("Upgrade", right, ctx.Font, ctx.Text.Get(UiKeys.UpgradeButton), Upgrade);
-            UiFactory.Place((RectTransform)_upgradeButton.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero,
-                new Vector2(HudLayout.MenuButtonWidth * 2f, HudLayout.MenuButtonHeight));
+            _details.rectTransform.offsetMin = new Vector2(0f, (HudLayout.MenuButtonHeight + HudLayout.Gap) * 2f);
+
+            _progress = UiFactory.Bar("Progress", right, ctx.Font, HudPalette.Cast);
+            UiFactory.Place(_progress.Rect, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, HudLayout.MenuButtonHeight + HudLayout.Gap * 2f),
+                new Vector2(HudLayout.MenuButtonWidth * 3f, HudLayout.BarHeight));
+            _craft = UiFactory.Button("Craft", right, ctx.Font, ctx.Text.Get(UiKeys.CraftButton), Craft);
+            UiFactory.Place((RectTransform)_craft.transform, new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(-HudLayout.Gap, 0f),
+                new Vector2(HudLayout.MenuButtonWidth * 1.5f, HudLayout.MenuButtonHeight));
+            _cancel = UiFactory.Button("Cancel", right, ctx.Font, ctx.Text.Get(UiKeys.DuelCancel), () => Ctx.Commands?.CancelCraft());
+            UiFactory.Place((RectTransform)_cancel.transform, new Vector2(0.5f, 0f), new Vector2(0f, 0f), new Vector2(HudLayout.Gap, 0f),
+                new Vector2(HudLayout.MenuButtonWidth * 1.5f, HudLayout.MenuButtonHeight));
         }
 
         public override void Refresh(PlayerStateSnapshot state)
         {
-            if (!IsNearStation(state) || state.InCombat)
+            if (!IsNearActiveStation(state) || state.InCombat)
             {
                 RequestClose();
                 return;
             }
-            var entries = new List<(string instanceId, string definitionId, int level)>();
-            foreach (EquipmentSlotSnapshot slot in state.Equipment)
-            {
-                if (IsUpgradeable(slot.DefinitionId))
-                {
-                    entries.Add((slot.InstanceId, slot.DefinitionId, slot.UpgradeLevel));
-                }
-            }
-            BagSection section = Ctx.Content.BagSections.Find(s => s.Id == EquipmentSectionId);
-            foreach (ItemSlotSnapshot slot in state.Bag)
-            {
-                if ((section == null || section.Contains(slot.Index)) && IsUpgradeable(slot.DefinitionId))
-                {
-                    entries.Add((slot.InstanceId, slot.DefinitionId, slot.UpgradeLevel));
-                }
-            }
-
-            while (_rows.Count < entries.Count)
-            {
-                Text row = Row("Item", _list);
-                row.raycastTarget = true;
-                HoverTrigger hover = row.gameObject.AddComponent<HoverTrigger>();
-                int index = _rows.Count;
-                hover.Clicked = button =>
-                {
-                    if (button == PointerEventData.InputButton.Left && index < _rowInstances.Count)
-                    {
-                        _selected = _rowInstances[index];
-                        Refresh(Ctx.State.Player);
-                    }
-                };
-                _rows.Add(row);
-            }
-            _rowInstances.Clear();
-            bool selectedFound = false;
             for (int i = 0; i < _rows.Count; i++)
             {
-                bool visible = i < entries.Count;
-                _rows[i].gameObject.SetActive(visible);
-                if (!visible)
-                {
-                    continue;
-                }
-                var (instanceId, definitionId, level) = entries[i];
-                ItemDefinition item = Ctx.Content.Items[definitionId];
-                _rowInstances.Add(instanceId);
-                bool selected = instanceId == _selected;
-                selectedFound |= selected;
-                _rows[i].text = (selected ? "▶ " : string.Empty) + TooltipText.ItemName(Ctx, item, level);
-                _rows[i].color = HudPalette.ForRarity(item.Rarity);
+                RecipeDto recipe = _recipes[i];
+                ItemDefinition output = Ctx.Content.Items[recipe.Outputs[0].ItemId];
+                bool selected = recipe.Id == _selected;
+                _rows[i].text = (selected ? "▶ " : string.Empty) + Ctx.Text.Get(recipe.NameKey);
+                _rows[i].color = HudPalette.ForRarity(output.Rarity);
             }
-            if (!selectedFound)
+            bool crafting = !string.IsNullOrEmpty(state.CraftRecipeId);
+            _progress.SetVisible(crafting);
+            _cancel.gameObject.SetActive(crafting);
+            if (crafting && Ctx.Content.Recipes.TryGetValue(state.CraftRecipeId, out RecipeDto current))
             {
-                _selected = entries.Count > 0 ? entries[0].instanceId : null;
+                _progress.Set(state.CraftProgress, Ctx.Text.Get(current.NameKey));
             }
-            ShowDetails(entries);
+            ShowDetails(state, crafting);
         }
 
-        private void ShowDetails(List<(string instanceId, string definitionId, int level)> entries)
+        private void ShowDetails(PlayerStateSnapshot state, bool crafting)
         {
-            var entry = entries.Find(e => e.instanceId == _selected);
-            if (entry.instanceId == null)
+            if (_selected == null || !Ctx.Content.Recipes.TryGetValue(_selected, out RecipeDto recipe))
             {
-                _details.text = Ctx.Text.Get(UiKeys.AnvilEmpty);
-                _upgradeButton.interactable = false;
+                _details.text = Ctx.Text.Get(UiKeys.CraftNoRecipes);
+                _craft.interactable = false;
                 return;
             }
-            ItemDefinition item = Ctx.Content.Items[entry.definitionId];
-            UpgradeRuleDto rule = Ctx.Content.UpgradeRules[item.Get<UpgradeableComponent>().RulesId];
             ILocalizationService text = Ctx.Text;
-            string name = TooltipText.ItemName(Ctx, item, entry.level);
-            if (entry.level >= rule.MaxLevel)
+            _sb.Clear();
+            ItemCountDto main = recipe.Outputs[0];
+            _sb.Append("<b>").Append(TooltipText.ItemName(Ctx, Ctx.Content.Items[main.ItemId], 0)).Append("</b>");
+            if (main.Count > 1)
             {
-                _details.text = "<b>" + name + "</b>\n\n" + text.Get(UiKeys.AnvilMaxLevel);
-                _upgradeButton.interactable = false;
-                return;
+                _sb.Append(" ×").Append(main.Count);
             }
-            UpgradeStepDto step = rule.Steps[entry.level];
-            int have = CountInBag(rule.MaterialItemId);
-            string material = text.Get(Ctx.Content.Items[rule.MaterialItemId].NameKey);
-            _details.text = "<b>" + name + "</b>\n\n"
-                + text.Format(UiKeys.AnvilNextLevel, entry.level, entry.level + 1) + "\n"
-                + text.Format(UiKeys.AnvilChance, (step.SuccessChance * PercentFactor).ToString("0", CultureInfo.InvariantCulture)) + "\n"
-                + text.Format(UiKeys.AnvilMaterial, material, have, rule.MaterialCount) + "\n"
-                + (step.LevelLossOnFail > 0 ? text.Format(UiKeys.AnvilFailLoss, step.LevelLossOnFail) + "\n" : string.Empty)
-                + text.Format(UiKeys.AnvilStatBonus, (rule.StatBonusPerLevel * PercentFactor).ToString("0", CultureInfo.InvariantCulture));
-            _upgradeButton.interactable = have >= rule.MaterialCount;
+            _sb.Append("\n\n").Append(text.Get(UiKeys.CraftInputs)).Append('\n');
+            bool enough = true;
+            foreach (ItemCountDto input in recipe.Inputs)
+            {
+                int have = CountInBag(state, input.ItemId);
+                enough &= have >= input.Count;
+                _sb.Append(text.Format(UiKeys.CraftInputLine, text.Get(Ctx.Content.Items[input.ItemId].NameKey), have, input.Count)).Append('\n');
+            }
+            _sb.Append('\n')
+                .Append(text.Format(UiKeys.CraftChance, (recipe.SuccessChance * PercentFactor).ToString("0", CultureInfo.InvariantCulture))).Append('\n')
+                .Append(text.Format(UiKeys.CraftTime, recipe.CraftTime.ToString("0.#", CultureInfo.InvariantCulture))).Append('\n')
+                .Append(text.Get(UiKeys.CraftFailLoss));
+            _details.text = _sb.ToString();
+            _craft.interactable = enough && !crafting;
         }
 
-        private void Upgrade()
+        private void Craft()
         {
             if (_selected != null)
             {
-                Ctx.Commands?.UpgradeItem(_selected, Ctx.ActiveStation);
+                Ctx.Commands?.Craft(_selected, Ctx.ActiveStation);
             }
         }
 
-        private bool IsUpgradeable(string definitionId) =>
-            definitionId != null && Ctx.Content.Items.TryGetValue(definitionId, out ItemDefinition item)
-            && item.Has<UpgradeableComponent>() && item.Rarity != Rarity.Divine;
-
-        private int CountInBag(string definitionId)
+        private static int CountInBag(PlayerStateSnapshot state, string definitionId)
         {
             int total = 0;
-            foreach (ItemSlotSnapshot slot in Ctx.State.Player.Bag)
+            foreach (ItemSlotSnapshot slot in state.Bag)
             {
                 if (slot.DefinitionId == definitionId)
                 {
@@ -177,16 +163,6 @@ namespace Game.Client.UI.Windows
                 }
             }
             return total;
-        }
-
-        private bool IsNearStation(PlayerStateSnapshot state)
-        {
-            if (!Ctx.State.TryGetEntity(Ctx.ActiveStation, out EntitySnapshot station)
-                || !Ctx.State.TryGetEntity(state.EntityId, out EntitySnapshot player))
-            {
-                return false;
-            }
-            return Vec3.DistanceXZ(station.Position, player.Position) <= Ctx.Content.Config.InteractRange;
         }
     }
 }

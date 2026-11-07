@@ -41,6 +41,7 @@ namespace Game.Shared.Content
                 errors.Add("levels: the level table is empty");
             }
             ValidateUpgradeRules(db, errors);
+            ValidateRecipes(db, errors);
             if (!db.Classes.ContainsKey(cfg.DefaultClassId ?? string.Empty))
             {
                 errors.Add($"config: DefaultClassId '{cfg.DefaultClassId}' is not a class");
@@ -166,7 +167,7 @@ namespace Game.Shared.Content
                 }
                 foreach (StationDto station in db.World.Stations ?? new StationDto[0])
                 {
-                    if (station.Type != StationTypes.Anvil)
+                    if (station.Type != StationTypes.Anvil && station.Type != StationTypes.Whetstone)
                     {
                         errors.Add($"world: unknown station type '{station.Type}' of '{station.Id}'");
                     }
@@ -175,6 +176,46 @@ namespace Game.Shared.Content
             else
             {
                 errors.Add("world: file is missing");
+            }
+        }
+
+        private static void ValidateRecipes(ContentDatabase db, List<string> errors)
+        {
+            foreach (RecipeDto recipe in db.Recipes.Values)
+            {
+                if (string.IsNullOrEmpty(recipe.NameKey))
+                {
+                    errors.Add($"recipes '{recipe.Id}': NameKey is required");
+                }
+                if (recipe.Station != StationTypes.Anvil && recipe.Station != StationTypes.Whetstone)
+                {
+                    errors.Add($"recipes '{recipe.Id}': unknown station type '{recipe.Station}'");
+                }
+                if (recipe.CraftTime < 0f || recipe.SuccessChance <= 0f || recipe.SuccessChance > 1f)
+                {
+                    errors.Add($"recipes '{recipe.Id}': CraftTime must be ≥ 0 and SuccessChance in (0, 1]");
+                }
+                if (recipe.Inputs == null || recipe.Inputs.Length == 0 || recipe.Outputs == null || recipe.Outputs.Length == 0)
+                {
+                    errors.Add($"recipes '{recipe.Id}': at least one input and one output are required");
+                    continue;
+                }
+                foreach (ItemCountDto entry in recipe.Inputs)
+                {
+                    ValidateItemCount(db, recipe.Id, entry, errors);
+                }
+                foreach (ItemCountDto entry in recipe.Outputs)
+                {
+                    ValidateItemCount(db, recipe.Id, entry, errors);
+                }
+            }
+        }
+
+        private static void ValidateItemCount(ContentDatabase db, string recipeId, ItemCountDto entry, List<string> errors)
+        {
+            if (entry == null || !db.Items.ContainsKey(entry.ItemId ?? string.Empty) || entry.Count <= 0)
+            {
+                errors.Add($"recipes '{recipeId}': unknown item '{entry?.ItemId}' or Count ≤ 0");
             }
         }
 

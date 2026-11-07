@@ -62,6 +62,13 @@ namespace Game.Shared.Content
             {
                 AddUnique(db.UpgradeRules, dto.Id, dto, "upgrade_rules", errors);
             }
+            foreach (RecipeDto dto in files.Recipes?.Recipes ?? new RecipeDto[0])
+            {
+                if (AddUnique(db.Recipes, dto.Id, dto, "recipes", errors))
+                {
+                    db.RecipeList.Add(dto);
+                }
+            }
             var levels = new List<LevelDto>(files.Levels?.Levels ?? new LevelDto[0]);
             levels.Sort((a, b) => a.Level.CompareTo(b.Level));
             for (int i = 0; i < levels.Count; i++)
@@ -76,19 +83,21 @@ namespace Game.Shared.Content
             return db;
         }
 
-        private static void AddUnique<T>(Dictionary<string, T> target, string id, T value, string file, List<string> errors)
+        /// <summary>Adds an entry with a unique, non-empty id; returns false (and reports) otherwise.</summary>
+        private static bool AddUnique<T>(Dictionary<string, T> target, string id, T value, string file, List<string> errors)
         {
             if (string.IsNullOrEmpty(id))
             {
                 errors.Add($"{file}: entry without Id");
-                return;
+                return false;
             }
             if (target.ContainsKey(id))
             {
                 errors.Add($"{file}: duplicate Id '{id}'");
-                return;
+                return false;
             }
             target.Add(id, value);
+            return true;
         }
 
         private static SkillDefinition BuildSkill(SkillDto dto, List<string> errors)

@@ -93,6 +93,17 @@ namespace Game.Client.UI.Windows
         /// <summary>Called on open and on every player snapshot while open (data subscription only while open, 02 7.13).</summary>
         public abstract void Refresh(PlayerStateSnapshot state);
 
+        /// <summary>Station windows (whetstone, anvil) close when the player walks away from the clicked station (02, 7.13).</summary>
+        protected bool IsNearActiveStation(PlayerStateSnapshot state)
+        {
+            if (!Ctx.State.TryGetEntity(Ctx.ActiveStation, out EntitySnapshot station)
+                || !Ctx.State.TryGetEntity(state.EntityId, out EntitySnapshot player))
+            {
+                return false;
+            }
+            return Game.Shared.Core.Vec3.DistanceXZ(station.Position, player.Position) <= Ctx.Content.Config.InteractRange;
+        }
+
         protected Text Row(string name, Transform parent, TextAnchor alignment = TextAnchor.MiddleLeft)
         {
             Text text = UiFactory.Label(name, parent, Ctx.Font, HudLayout.FontNormal, alignment, HudPalette.Text);

@@ -32,6 +32,7 @@ namespace Game.Server
         private readonly DuelSystem _duels;
         private readonly GroupSystem _groups;
         private readonly LootSystem _loot;
+        private readonly CraftingSystem _crafting;
         private int _tick;
         private int _nextCharacterNumber = 1;
 
@@ -63,6 +64,7 @@ namespace Game.Server
             _upgrades = new UpgradeSystem(_ctx, _inventory, _stats);
             _groups = new GroupSystem(_ctx);
             _loot = new LootSystem(_ctx, _groups, _inventory);
+            _crafting = new CraftingSystem(_ctx, _inventory, _resources);
             _combat.Damaged += _loot.OnDamaged;
             _combat.Healed += _loot.OnHealed;
             _combat.Died += OnKilled;
@@ -171,6 +173,7 @@ namespace Game.Server
             _resources.Update(dt);
             _respawn.Update(dt);
             _duels.Update();
+            _crafting.Update(dt);
             _groups.Update();
 
             WorldSnapshot worldSnapshot = _snapshots.BuildWorld(_tick);
@@ -179,6 +182,8 @@ namespace Game.Server
                 player.Outbox.World = worldSnapshot;
                 player.Outbox.State = _snapshots.BuildPlayer(player);
                 player.Outbox.State.Duel = _duels.Snapshot(player.EntityId);
+                player.Outbox.State.CraftRecipeId = player.Craft.Active ? player.Craft.RecipeId : null;
+                player.Outbox.State.CraftProgress = _crafting.Progress(player);
                 player.Outbox.State.Group = _groups.Snapshot(player.EntityId);
             }
             Ticked?.Invoke();
@@ -211,6 +216,12 @@ namespace Game.Server
                     break;
                 case UpgradeItemCommand upgrade:
                     _upgrades.TryUpgrade(player, upgrade);
+                    break;
+                case CraftItemCommand craft:
+                    _crafting.Start(player, craft);
+                    break;
+                case CancelCraftCommand _:
+                    _crafting.Cancel(player, true);
                     break;
                 case SpendAttributePointCommand spend:
                     _progression.SpendAttributePoint(player, spend);

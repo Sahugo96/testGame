@@ -18,7 +18,7 @@ namespace Game.Client
         public Camera Camera;
         public ModifierTracker Modifiers;
 
-        /// <summary>Station (anvil, ...) the player is interacting with; set when its window is opened by clicking the station.</summary>
+        /// <summary>Station (whetstone, anvil, ...) the player is interacting with; set when its window is opened by clicking the station.</summary>
         public Game.Shared.Core.EntityId ActiveStation;
 
         /// <summary>Raised by the settings window; the host reconnects the player with another class (dev tool).</summary>

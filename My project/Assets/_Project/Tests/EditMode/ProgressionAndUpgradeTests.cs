@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace Game.Tests
 {
-    /// <summary>Developer request v11: bag sections, anvil upgrade (1 shard, 100% → 55%), experience and levels, 1-HP cubes.</summary>
+    /// <summary>Developer request v11: bag sections, whetstone upgrade (1 shard, 100% → 55%), experience and levels, 1-HP cubes.</summary>
     public sealed class ProgressionAndUpgradeTests
     {
         [Test]
@@ -34,16 +34,16 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Anvil_UpgradesWithOneShard_WhenNear()
+        public void Whetstone_UpgradesWithOneShard_WhenNear()
         {
             var h = new ServerHarness();
             EntityId warrior = h.AddPlayer("warrior");
-            EntityId anvil = FindAnvil(h);
-            h.PlaceNear(warrior, anvil, 2f);
+            EntityId whetstone = h.FindStation(StationTypes.Whetstone);
+            h.PlaceNear(warrior, whetstone, 2f);
             ItemInstance sword = h.Player(warrior).Equipment["MainHand"];
             h.Random.Value = 0f;
 
-            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = anvil });
+            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = whetstone });
 
             Assert.That(sword.UpgradeLevel, Is.EqualTo(1));
             Assert.That(h.Player(warrior).Bag.Get(h.BagIndexOf(warrior, "philosopher_stone_shard")).Count, Is.EqualTo(19));
@@ -51,27 +51,27 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Anvil_FarAway_IsRejected()
+        public void Whetstone_FarAway_IsRejected()
         {
             var h = new ServerHarness();
             EntityId warrior = h.AddPlayer("warrior");
-            EntityId anvil = FindAnvil(h);
-            h.PlaceNear(warrior, anvil, 10f);
+            EntityId whetstone = h.FindStation(StationTypes.Whetstone);
+            h.PlaceNear(warrior, whetstone, 10f);
             ItemInstance sword = h.Player(warrior).Equipment["MainHand"];
 
-            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = anvil });
+            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = whetstone });
 
             Assert.That(h.Rejections(warrior), Does.Contain(RejectReasons.NotNearStation));
             Assert.That(sword.UpgradeLevel, Is.EqualTo(0));
         }
 
         [Test]
-        public void Anvil_ChanceDropsByFivePercentPerLevel_FailureLowersLevel_CapIsTen()
+        public void Whetstone_ChanceDropsByFivePercentPerLevel_FailureLowersLevel_CapIsTen()
         {
             var h = new ServerHarness();
             EntityId warrior = h.AddPlayer("warrior");
-            EntityId anvil = FindAnvil(h);
-            h.PlaceNear(warrior, anvil, 2f);
+            EntityId whetstone = h.FindStation(StationTypes.Whetstone);
+            h.PlaceNear(warrior, whetstone, 2f);
             ItemInstance sword = h.Player(warrior).Equipment["MainHand"];
             var rule = h.Content.UpgradeRules["default"];
             for (int i = 0; i < rule.MaxLevel; i++)
@@ -81,12 +81,12 @@ namespace Game.Tests
 
             sword.UpgradeLevel = 3;
             h.Random.Value = 0.86f;
-            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = anvil });
+            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = whetstone });
             Assert.That(sword.UpgradeLevel, Is.EqualTo(2), "step +3→+4 succeeds with 85%, roll 0.86 fails and loses a level");
 
             sword.UpgradeLevel = 10;
             h.ClearOutbox(warrior);
-            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = anvil });
+            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = sword.SourceId, StationId = whetstone });
             Assert.That(h.Rejections(warrior), Does.Contain(RejectReasons.MaxUpgradeLevel));
         }
 
@@ -95,28 +95,28 @@ namespace Game.Tests
         {
             var h = new ServerHarness();
             EntityId warrior = h.AddPlayer("warrior");
-            EntityId anvil = FindAnvil(h);
-            h.PlaceNear(warrior, anvil, 2f);
+            EntityId whetstone = h.FindStation(StationTypes.Whetstone);
+            h.PlaceNear(warrior, whetstone, 2f);
             PlayerCharacter player = h.Player(warrior);
             float before = player.Stats.Get(StatId.DamageBonus);
             h.Random.Value = 0f;
 
-            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = player.Equipment["MainHand"].SourceId, StationId = anvil });
+            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = player.Equipment["MainHand"].SourceId, StationId = whetstone });
 
             Assert.That(player.Stats.Get(StatId.DamageBonus), Is.EqualTo(before + 0.1f * 0.1f).Within(0.0001f), "iron sword +10% damage bonus × 1.1");
         }
 
         [Test]
-        public void Anvil_WithoutShards_IsRejected()
+        public void Whetstone_WithoutShards_IsRejected()
         {
             var h = new ServerHarness();
             EntityId warrior = h.AddPlayer("warrior");
-            EntityId anvil = FindAnvil(h);
-            h.PlaceNear(warrior, anvil, 2f);
+            EntityId whetstone = h.FindStation(StationTypes.Whetstone);
+            h.PlaceNear(warrior, whetstone, 2f);
             PlayerCharacter player = h.Player(warrior);
             player.Bag.Set(h.BagIndexOf(warrior, "philosopher_stone_shard"), null);
 
-            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = player.Equipment["MainHand"].SourceId, StationId = anvil });
+            h.Send(warrior, new UpgradeItemCommand { ItemInstanceId = player.Equipment["MainHand"].SourceId, StationId = whetstone });
 
             Assert.That(h.Rejections(warrior), Does.Contain(RejectReasons.NoMaterials));
         }
@@ -185,18 +185,6 @@ namespace Game.Tests
             EntityId mage = h.AddPlayer("mage");
             h.Send(mage, new SpendAttributePointCommand { Attribute = StatId.Strength });
             Assert.That(h.Rejections(mage), Does.Contain(RejectReasons.NoAttributePoints));
-        }
-
-        private static EntityId FindAnvil(ServerHarness h)
-        {
-            foreach (EntityId id in h.World.Entities)
-            {
-                if (h.World.Stations.Has(id))
-                {
-                    return id;
-                }
-            }
-            return EntityId.None;
         }
     }
 }

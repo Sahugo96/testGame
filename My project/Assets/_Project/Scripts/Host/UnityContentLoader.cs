@@ -23,6 +23,7 @@ namespace Game.Host
                 BagSections = Load<BagSectionsFileDto>(ContentFileNames.BagSections),
                 UpgradeRules = Load<UpgradeRulesFileDto>(ContentFileNames.UpgradeRules),
                 Levels = Load<LevelsFileDto>(ContentFileNames.Levels),
+                Recipes = Load<RecipesFileDto>(ContentFileNames.Recipes),
             };
         }
 

@@ -17,5 +17,6 @@ namespace Game.Shared.Content
         public BagSectionsFileDto BagSections;
         public UpgradeRulesFileDto UpgradeRules;
         public LevelsFileDto Levels;
+        public RecipesFileDto Recipes;
     }
 }

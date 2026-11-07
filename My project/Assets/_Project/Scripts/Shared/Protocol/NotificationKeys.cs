@@ -11,6 +11,10 @@ namespace Game.Shared.Protocol
         public const string UpgradeBroken = "notify.upgrade_broken";
         /// <summary>The section for the item is full: the item is not picked up (question 68).</summary>
         public const string BagFullItemLost = "notify.bag_full_lost";
+        public const string CraftSuccess = "notify.craft_success";
+        /// <summary>Failure destroys all inputs (05, 7.4; question 19).</summary>
+        public const string CraftFailed = "notify.craft_failed";
+        public const string CraftCancelled = "notify.craft_cancelled";
         public const string DuelRequested = "notify.duel_requested";
         public const string DuelDeclined = "notify.duel_declined";
         public const string DuelExpired = "notify.duel_expired";

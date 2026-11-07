@@ -3,6 +3,7 @@ using Game.Client.UI.Widgets;
 using Game.Client.UI.Windows;
 using Game.Client.World;
 using Game.Shared.Content;
+using Game.Shared.Content.Dto;
 using Game.Shared.Core;
 using Game.Shared.Protocol;
 using UnityEngine;
@@ -113,7 +114,7 @@ namespace Game.Client.UI
             }
         }
 
-        /// <summary>Opens the window of a clicked station (anvil) if the player stands close enough (02, 7.13).</summary>
+        /// <summary>Opens the window of a clicked station (whetstone, anvil) if the player stands close enough (02, 7.13).</summary>
         public void OpenStation(EntityId station)
         {
             PlayerStateSnapshot player = _ctx.State.Player;
@@ -127,8 +128,14 @@ namespace Game.Client.UI
                 _message.Show(RejectReasons.NotNearStation);
                 return;
             }
+            StationDto content = _views.FindStation(stationEntity.DefinitionId);
+            string windowId = content == null ? null : WindowFactory.ForStation(content.Type);
+            if (windowId == null)
+            {
+                return;
+            }
             _ctx.ActiveStation = station;
-            Windows.Open(WindowFactory.Anvil);
+            Windows.Open(windowId);
         }
 
         private void OnDisable()

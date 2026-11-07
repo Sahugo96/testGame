@@ -1,0 +1,40 @@
+{
+  "Recipes": [
+    {
+      "Id": "craft_iron_helm",
+      "NameKey": "recipe.iron_helm",
+      "Profession": "blacksmithing",
+      "RequiredLevel": 1,
+      "Station": "Anvil",
+      "CraftTime": 2,
+      "SuccessChance": 0.9,
+      "XpReward": 10,
+      "Inputs": [ { "ItemId": "iron_ore", "Count": 3 } ],
+      "Outputs": [ { "ItemId": "iron_helm", "Count": 1 } ]
+    },
+    {
+      "Id": "craft_iron_sword",
+      "NameKey": "recipe.iron_sword",
+      "Profession": "blacksmithing",
+      "RequiredLevel": 1,
+      "Station": "Anvil",
+      "CraftTime": 2.5,
+      "SuccessChance": 0.8,
+      "XpReward": 15,
+      "Inputs": [ { "ItemId": "iron_ore", "Count": 4 }, { "ItemId": "philosopher_stone_shard", "Count": 1 } ],
+      "Outputs": [ { "ItemId": "iron_sword", "Count": 1 } ]
+    },
+    {
+      "Id": "craft_swordsman_helm",
+      "NameKey": "recipe.swordsman_helm",
+      "Profession": "blacksmithing",
+      "RequiredLevel": 1,
+      "Station": "Anvil",
+      "CraftTime": 3,
+      "SuccessChance": 0.6,
+      "XpReward": 25,
+      "Inputs": [ { "ItemId": "iron_ore", "Count": 5 }, { "ItemId": "philosopher_stone_shard", "Count": 2 } ],
+      "Outputs": [ { "ItemId": "swordsman_helm", "Count": 1 } ]
+    }
+  ]
+}

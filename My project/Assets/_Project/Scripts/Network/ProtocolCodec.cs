@@ -129,6 +129,14 @@ namespace Game.Network
                     w.Write(m.ProposalId);
                     w.Write(m.Accept);
                     break;
+                case CraftItemCommand m:
+                    w.Write((byte)MessageType.CraftItem);
+                    Str(w, m.RecipeId);
+                    Id(w, m.StationId);
+                    break;
+                case CancelCraftCommand _:
+                    w.Write((byte)MessageType.CancelCraft);
+                    break;
                 case WorldSnapshot m:
                     w.Write((byte)MessageType.World);
                     WriteWorld(w, m);
@@ -209,6 +217,10 @@ namespace Game.Network
                     return new LootModeProposeCommand { Mode = (LootMode)r.ReadByte() };
                 case MessageType.LootModeVote:
                     return new LootModeVoteCommand { ProposalId = r.ReadInt32(), Accept = r.ReadBoolean() };
+                case MessageType.CraftItem:
+                    return new CraftItemCommand { RecipeId = Str(r), StationId = Id(r) };
+                case MessageType.CancelCraft:
+                    return new CancelCraftCommand();
                 case MessageType.World:
                     return ReadWorld(r);
                 case MessageType.PlayerState:
@@ -349,6 +361,8 @@ namespace Game.Network
                 Str(w, g.Group);
                 w.Write(g.Remaining);
             }
+            Str(w, m.CraftRecipeId);
+            w.Write(m.CraftProgress);
             w.Write((byte)m.Duel.Phase);
             Id(w, m.Duel.OpponentId);
             w.Write(m.Duel.Remaining);
@@ -492,6 +506,8 @@ namespace Game.Network
             {
                 m.ConsumableCooldowns[i] = new CooldownGroupSnapshot { Group = Str(r), Remaining = r.ReadSingle() };
             }
+            m.CraftRecipeId = Str(r);
+            m.CraftProgress = r.ReadSingle();
             m.Duel = new DuelSnapshot
             {
                 Phase = (DuelPhase)r.ReadByte(), OpponentId = Id(r), Remaining = r.ReadSingle(), CenterX = r.ReadSingle(), CenterZ = r.ReadSingle(), Radius = r.ReadSingle(),

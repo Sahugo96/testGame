@@ -24,6 +24,8 @@ namespace Game.Network
         GroupPromote = 26,
         LootModePropose = 27,
         LootModeVote = 28,
+        CraftItem = 29,
+        CancelCraft = 30,
         World = 40,
         PlayerState = 41,
         CombatEvent = 42,

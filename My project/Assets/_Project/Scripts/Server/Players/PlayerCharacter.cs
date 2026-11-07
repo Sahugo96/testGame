@@ -25,6 +25,7 @@ namespace Game.Server.Players
         public readonly Dictionary<string, SkillCooldown> SkillCooldowns = new Dictionary<string, SkillCooldown>();
         public readonly Dictionary<string, float> ConsumableCooldowns = new Dictionary<string, float>();
         public readonly WeaponSwapState WeaponSwap = new WeaponSwapState();
+        public CraftData Craft;
         public EntityId TargetId;
         public MoveCommand LastMove;
         public readonly PlayerOutbox Outbox = new PlayerOutbox();

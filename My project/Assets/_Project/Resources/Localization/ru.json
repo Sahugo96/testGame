@@ -725,31 +725,31 @@
    "Value": "Улучшить"
   },
   {
-   "Key": "ui.anvil_empty",
+   "Key": "ui.whetstone_empty",
    "Value": "Нет предметов, которые можно улучшить."
   },
   {
-   "Key": "ui.anvil_max_level",
+   "Key": "ui.whetstone_max_level",
    "Value": "Достигнут максимальный уровень улучшения."
   },
   {
-   "Key": "ui.anvil_next_level",
+   "Key": "ui.whetstone_next_level",
    "Value": "Улучшение: +{0} → +{1}"
   },
   {
-   "Key": "ui.anvil_chance",
+   "Key": "ui.whetstone_chance",
    "Value": "Шанс успеха: {0}%"
   },
   {
-   "Key": "ui.anvil_material",
+   "Key": "ui.whetstone_material",
    "Value": "Нужно: {0} — есть {1} из {2}"
   },
   {
-   "Key": "ui.anvil_fail_loss",
+   "Key": "ui.whetstone_fail_loss",
    "Value": "При неудаче уровень снизится на {0}"
   },
   {
-   "Key": "ui.anvil_stat_bonus",
+   "Key": "ui.whetstone_stat_bonus",
    "Value": "Каждый уровень: +{0}% к бонусам предмета"
   },
   {
@@ -1283,6 +1283,82 @@
   {
    "Key": "error.loot_vote_not_found",
    "Value": "Голосование уже закончилось"
+  },
+  {
+   "Key": "window.whetstone",
+   "Value": "Точильный камень"
+  },
+  {
+   "Key": "window.whetstone.short",
+   "Value": "Точ."
+  },
+  {
+   "Key": "npc.whetstone",
+   "Value": "Точильный камень"
+  },
+  {
+   "Key": "ui.craft",
+   "Value": "Создать"
+  },
+  {
+   "Key": "ui.craft_no_recipes",
+   "Value": "Здесь нечего создать."
+  },
+  {
+   "Key": "ui.craft_inputs",
+   "Value": "Нужно:"
+  },
+  {
+   "Key": "ui.craft_input_line",
+   "Value": "• {0} — есть {1} из {2}"
+  },
+  {
+   "Key": "ui.craft_chance",
+   "Value": "Шанс успеха: {0}%"
+  },
+  {
+   "Key": "ui.craft_time",
+   "Value": "Время: {0} с"
+  },
+  {
+   "Key": "ui.craft_fail_loss",
+   "Value": "При неудаче все материалы теряются."
+  },
+  {
+   "Key": "recipe.iron_helm",
+   "Value": "Железный шлем"
+  },
+  {
+   "Key": "recipe.iron_sword",
+   "Value": "Железный меч"
+  },
+  {
+   "Key": "recipe.swordsman_helm",
+   "Value": "Шлем мечника"
+  },
+  {
+   "Key": "notify.craft_success",
+   "Value": "Создано: {1} ×{0}"
+  },
+  {
+   "Key": "notify.craft_failed",
+   "Value": "{1}: неудача, материалы потеряны"
+  },
+  {
+   "Key": "notify.craft_cancelled",
+   "Value": "Создание прервано"
+  },
+  {
+   "Key": "error.recipe_unknown",
+   "Value": "Неизвестный рецепт"
+  },
+  {
+   "Key": "error.already_crafting",
+   "Value": "Вы уже что-то создаёте"
+  },
+  {
+   "Key": "error.craft_in_combat",
+   "Value": "Нельзя создавать предметы в бою"
   }
  ]
 }
