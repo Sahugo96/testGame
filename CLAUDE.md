@@ -37,9 +37,11 @@
 @.cursor/rules/ui-system.mdc
 @.cursor/rules/player-system.mdc
 
-## Состояние репозитория (подробно — `docs/MAP.md` §6)
+## Состояние репозитория (подробно — `docs/MAP.md` §6 и §8)
 
-- Unity-проект — `My project/` (имя с пробелом): чистый шаблон 3D URP, Unity 6000.3.19f1, только новая Input System. Своего кода нет; все модули 0–21 «не начат».
-- Нет пакетов Mirror, Cinemachine, Addressables, Localization. `.gitignore` игнорирует только `Library/` (закоммичен `UserSettings/`).
-- Открытые вопросы: 62 (статус в строке — РЕШЕНО / Отложено / без пометки = открыт; см. `docs/MAP.md` §5).
+- Unity-проект — `My project/` (имя с пробелом): Unity 6000.3.19f1, URP, только новая Input System. Нет пакетов Mirror, Cinemachine, Addressables, Localization.
+- Ветка `claude/vertical-slice`: **код вертикального среза, этап 1** (локально, без сети) — карта кода в `docs/MAP.md` §8, реестр и ограничения — `01_DEV_PLAN.md` §9–§10. Модули 0, 2, 4, 5, 6, 7, 11 «в работе».
+- Тесты серверной логики без Unity: `cd sim-tests && dotnet test` (нужен .NET 8 SDK). В Unity — Test Runner → EditMode.
+- Клиентский код (UI, ввод) не проверялся в Unity; ошибки компиляции присылает разработчик.
+- Открытые вопросы: 64 (статус в строке — РЕШЕНО / Отложено / без пометки = открыт; см. `docs/MAP.md` §5).
 - Материалы видеокурса (`docs/lessons/`, `references/` и др., см. `docs/MAP.md` §7) — legacy, к игре не относятся.
