@@ -3,6 +3,8 @@ using Game.Shared.Content;
 using Game.Shared.Content.Dto;
 using Game.Shared.Core;
 using Game.Shared.Protocol;
+using Game.Client.UI;
+using Game.Shared.Content.Items;
 using UnityEngine;
 
 namespace Game.Client.World
@@ -19,6 +21,7 @@ namespace Game.Client.World
         private const string CylinderShape = "Cylinder";
         private static readonly Vector3 StationBoxScale = new Vector3(1.4f, 0.8f, 0.8f);
         private static readonly Vector3 StationWheelScale = new Vector3(1.2f, 0.45f, 1.2f);
+        private static readonly Vector3 LootScale = new Vector3(0.45f, 0.45f, 0.45f);
 
         private readonly Dictionary<EntityId, EntityView> _views = new Dictionary<EntityId, EntityView>();
         private readonly Dictionary<Collider, EntityId> _byCollider = new Dictionary<Collider, EntityId>();
@@ -134,10 +137,18 @@ namespace Game.Client.World
         public StationDto FindStation(string definitionId) =>
             System.Array.Find(_ctx.Content.World.Stations ?? new StationDto[0], s => s.Id == definitionId);
 
+        /// <summary>A drop on the ground (06, 7.8): clicking it picks it up.</summary>
+        public bool IsLoot(EntityId id) => _ctx.State.TryGetEntity(id, out EntitySnapshot entity) && entity.Kind == EntityKind.Loot;
+
         public bool IsStation(EntityId id) => _ctx.State.TryGetEntity(id, out EntitySnapshot entity) && entity.Kind == EntityKind.Npc;
 
         private Vector3 ShapeFor(EntitySnapshot entity, out PrimitiveType shape)
         {
+            if (entity.Kind == EntityKind.Loot)
+            {
+                shape = PrimitiveType.Sphere;
+                return LootScale;
+            }
             if (entity.Kind == EntityKind.Npc)
             {
                 StationDto station = FindStation(entity.DefinitionId);
@@ -160,6 +171,11 @@ namespace Game.Client.World
             {
                 StationDto station = FindStation(entity.DefinitionId);
                 return station != null && ColorUtility.TryParseHtmlString(station.VisualColor, out Color stationColor) ? stationColor : WorldPalette.Dead;
+            }
+            if (entity.Kind == EntityKind.Loot)
+            {
+                return _ctx.Content.Items.TryGetValue(entity.DefinitionId ?? string.Empty, out ItemDefinition item)
+                    ? HudPalette.ForRarity(item.Rarity) : WorldPalette.Dead;
             }
             if (entity.Kind == EntityKind.Player)
             {

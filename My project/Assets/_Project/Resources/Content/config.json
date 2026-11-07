@@ -78,5 +78,7 @@
   "PasswordIterations": 20000,
   "MinPasswordLength": 4,
   "SessionTokenHours": 24,
-  "BackupsToKeep": 5
+  "BackupsToKeep": 5,
+  "LootSeconds": 300,
+  "LootScatterRadius": 1.0
 }

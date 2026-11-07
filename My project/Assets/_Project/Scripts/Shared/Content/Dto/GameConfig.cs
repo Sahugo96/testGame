@@ -66,6 +66,9 @@ namespace Game.Shared.Content.Dto
         public int MinPasswordLength;
         public float SessionTokenHours;
         public int BackupsToKeep;
+        /// <summary>Ground loot (06, 7.8): how long a drop lies (5 min) and how far from the death spot it lands.</summary>
+        public float LootSeconds;
+        public float LootScatterRadius;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

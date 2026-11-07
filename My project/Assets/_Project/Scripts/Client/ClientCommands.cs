@@ -44,6 +44,8 @@ namespace Game.Client
 
         public void CancelCraft() => _connection.Send(new CancelCraftCommand());
 
+        public void PickUpLoot(EntityId lootId) => _connection.Send(new PickUpLootCommand { LootId = lootId });
+
         public void SpendAttributePoint(StatId attribute) => _connection.Send(new SpendAttributePointCommand { Attribute = attribute });
 
         public void RequestDuel(EntityId target) => _connection.Send(new DuelRequestCommand { TargetId = target });

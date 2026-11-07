@@ -132,6 +132,11 @@ namespace Game.Client.Input
                     _hud.OpenStation(id);
                     return;
                 }
+                if (_views.IsLoot(id))
+                {
+                    _ctx.Commands.PickUpLoot(id);
+                    return;
+                }
                 if (id != _ctx.State.LocalPlayerId)
                 {
                     _ctx.Commands.SelectTarget(id);

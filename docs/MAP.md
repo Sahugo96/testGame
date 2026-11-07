@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 29)
+### `docs/00_INDEX.md` — индекс набора (версия набора 30)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v20)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v21)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,13 +37,13 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13)** | :258 |
-| 10 | Проблемы и долги (записи v9, v11–v20 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13) | :285 |
-| 11 | Журнал решений (последние — v20; замеры модуля 3 — v19) | :309 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :359 |
-| 13 | **Заморожено :369 / Гибко :380 / Отложено + крючки (с модулями) :385** | :365 |
-| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :400 |
-| — | Рекомендации 1,5–10,17–19 | :416 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11–v21 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, лута) | :286 |
+| 11 | Журнал решений (последние — v21; замеры модуля 3 — v19) | :311 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :362 |
+| 13 | **Заморожено :372 / Гибко :383 / Отложено + крючки (с модулями) :388** | :368 |
+| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :403 |
+| — | Рекомендации 1,5–10,17–19 | :419 |
 
 ### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v6)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
@@ -72,10 +72,10 @@
 - **7.14.3 Торговля** :54 — личные магазины (торговец-NPC, срок аренды, 1 на игрока, комиссия 15/10/5%) :56, рынок :62, почта (`MailMessage`) :68, безопасность :80
 - Вопросы 8, 33–35, 49, 50, 58, 62, 73 :88 · Рекомендации 11, 21–25 :102
 
-### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v7)
+### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v8)
 - **7.8 Группы и лут** :11 — группа/лидер :13, режимы лута :20, голосование и кворум (`LootModeVote`, `CmdVoteLootMode`) :28, правила раздачи (`LootEntry` :46) :37
 - **7.5 Подземелье на 50** :50 — структура :52, энкаунтеры :58, лут :63, тех. бюджет (тик 20–30 Гц) :65, UI рейда :70
-- Вопросы 6, 7, 20, 21, 51, 68, 71, 72 :74 · Рекомендация 12 :87
+- Вопросы 6, 7, 20, 21, 51, 68, 71, 72, 77 :74 · Рекомендация 12 :88
 
 ### `.cursor/rules/*.mdc` — производные от документов (README там же)
 `core-always` (приоритеты, запрет ECS) · `unity-csharp` (= 01 §6) · `ui-system` (= 02 7.13) · `player-system` (= 01 §6.1).
@@ -146,7 +146,7 @@
 | `EffectDefinition`, `IEffectHandler`, `EffectHandlerRegistry` | 01 7.10 :148–152 |
 | `LegendaryDefinition` | 01 7.10 :168 |
 | `MobDefinition`, `ZoneDefinition` (только упоминание) | 01 7.10 :160–163 |
-| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :389 |
+| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :392 |
 | Сборки `Game.Shared/Network/Server/Client/Bots` | 01 §5 :68 |
 | `HudWindowDefinition` | 02 7.13 :49 |
 | `HudRoot`, `HudZone`, `WindowManager`, `WindowRegistry`, `MenuBar`, `DragDropService`, `BadgeService` | 02 7.13 :83 |
@@ -181,8 +181,9 @@
 | 63, 64 | 03 | 65, 66 | 04 | 67 | 03 |
 | 68 | 06 | 69, 70 | 01 | 71, 72 | 06 |
 | 73 | 05 | 74 | 03 | 75, 76 | 01 |
+| 77 | 06 | | | | |
 
-Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **76** (новый вопрос = 77). Номера не менять.
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **77** (новый вопрос = 78). Номера не менять.
 
 **Статус вопроса** виден в самой строке: `**РЕШЕНО (vN):** …` — решено разработчиком (ДЕФОЛТ снят); `**Отложено разработчиком:**` — вернуться позже, действует ДЕФОЛТ; без пометки — открыт, действует ДЕФОЛТ.
 Сводка: `grep -n 'РЕШЕНО\|Отложено разработчиком' docs/0*.md`.
@@ -233,6 +234,7 @@
 | **Interest management, метрики, боты** (модуль 3) | `Server/World/SpatialGrid.cs`, `Server/Systems/InterestSystem.cs`, `Server/ServerMetrics.cs`; трафик — `ProtocolCodec.EncodeWorld` (неизменные поля один раз) + кэш в `Client/Net/RemoteServerConnection.cs`, `NetConnection.BytesSent/Received`; боты — `Scripts/Bots/` (`Game.Bots`: `BotClient`, `BotSwarm`), запуск `-bots N -connect` (`Host/LaunchOptions.cs`, `GameRoot.StartBots`); вне Unity — `tools/LoadTest/` (README); тесты — `InterestTests`, `BotTests` |
 | **ИИ мобов** (модуль 10, вопрос 75) | данные `mobs.json` (`AiProfile`), `ai_profiles.json` → `AiProfile` (`Shared/Content/AiProfile.cs`), способности — навыки `mob_*` в `skills.json`; сервер `Server/Systems/MobAiSystem.cs`, `Server/World/MobAiData.cs` (Idle / Chase / Return); тесты — `Tests/EditMode/MobAiTests.cs` |
 | **Статус-эффекты, угроза, боевой лог** (модуль 8; 03 §7.12, вопрос 74) | данные `status_effects.json` → `StatusEffectDefinition` (`Shared/Content/`); сервер `Server/Systems/StatusSystem.cs`, `ThreatSystem.cs`, `Server/World/StatusData.cs`, эффекты `Server/Effects/ApplyStatusEffectHandler.cs`, `DispelEffectHandler.cs`; клиент — `Client/UI/Widgets/StatusRowWidget.cs`, «цель цели» в `TargetFrameWidget`, `Client/UI/Windows/CombatLogWindow.cs` (`L`, события — `ClientState.CombatLog`); тесты — `Tests/EditMode/StatusEffectTests.cs` |
+| **Лут на земле** (06 §7.8 `LootEntry`, вопрос 77) | `Server/World/LootData.cs`, `LootSystem` (`Give` — по режимам с выкладкой, `PickUp`, `Update` — исчезновение), `Shared/Protocol/PickUpLootCommand.cs`, `EntityKind.Loot`; клиент — `EntityViewManager` (шар цвета редкости), клик в `PlayerInputController`; тесты — `GroundLootTests` |
 | **Группы и лут** (06 §7.8, вопросы 71, 72) | сервер `Server/Systems/GroupSystem.cs`, `LootSystem.cs` (участие в бою, выбор получателя), `Server/World/GroupData.cs`; `InventorySystem.CanFit`; протокол `Shared/Protocol/GroupCommands.cs`, `GroupSnapshot.cs`, `LootMode.cs`; клиент — `Client/UI/Windows/GroupWindow.cs` (`P`), `Widgets/GroupFramesWidget.cs`, `GroupPromptWidget.cs`, кнопка «В группу» в `TargetFrameWidget.cs`; тесты — `Tests/EditMode/GroupTests.cs` |
 | **Дуэли** (вопрос 70) | сервер `Server/Systems/DuelSystem.cs`, `Server/World/DuelData.cs`; враждебность и помощь — `CombatSystem.AreHostile` / `CanAssist`, PvP — `Server/Systems/CombatContext.cs`; протокол `Shared/Protocol/DuelCommands.cs`, `DuelSnapshot.cs`; клиент — кнопка в `Client/UI/Widgets/TargetFrameWidget.cs`, `DuelWidget.cs`, круг `Client/World/DuelArenaView.cs`; тесты — `Tests/EditMode/DuelTests.cs` |
 | Стартовое меню (одиночная / хост / подключение) | `Client/UI/StartMenuView.cs`; режимы и параметры командной строки — `Host/LaunchOptions.cs`, `Host/GameRoot.cs` |

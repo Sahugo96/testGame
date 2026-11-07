@@ -15,6 +15,7 @@ namespace Game.Server.World
         public readonly ComponentStore<MobData> Mobs = new ComponentStore<MobData>();
         public readonly ComponentStore<StationData> Stations = new ComponentStore<StationData>();
         public readonly ComponentStore<MobAiData> MobAi = new ComponentStore<MobAiData>();
+        public readonly ComponentStore<LootData> Loot = new ComponentStore<LootData>();
 
         private readonly List<EntityId> _entities = new List<EntityId>();
         private int _nextId = 1;
@@ -39,6 +40,7 @@ namespace Game.Server.World
             Mobs.Remove(id);
             Stations.Remove(id);
             MobAi.Remove(id);
+            Loot.Remove(id);
             _entities.Remove(id);
         }
 

@@ -1230,7 +1230,7 @@
   },
   {
    "Key": "notify.loot_leader_bag_full",
-   "Value": "Отсек рюкзака полон — не удалось получить: {1} ×{0}"
+   "Value": "Отсек полон — {1} ×{0} лежит на земле для лидера"
   },
   {
    "Key": "error.group_not_player",
@@ -1543,6 +1543,22 @@
   {
    "Key": "net.token_expired",
    "Value": "сессия устарела — введите пароль"
+  },
+  {
+   "Key": "error.loot_gone",
+   "Value": "Этот предмет уже подобрали"
+  },
+  {
+   "Key": "error.loot_not_yours",
+   "Value": "Этот предмет не для вас"
+  },
+  {
+   "Key": "error.loot_too_far",
+   "Value": "Подойдите ближе, чтобы поднять"
+  },
+  {
+   "Key": "notify.loot_on_ground",
+   "Value": "Отсек полон — {1} ×{0} лежит на земле, освободите место и поднимите"
   }
  ]
 }

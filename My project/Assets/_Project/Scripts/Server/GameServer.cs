@@ -355,6 +355,7 @@ namespace Game.Server
             _respawn.Update(dt);
             _duels.Update();
             _crafting.Update(dt);
+            _loot.Update();
             _groups.Update();
 
             WorldSnapshot worldSnapshot = _snapshots.BuildWorld(_tick);
@@ -413,6 +414,9 @@ namespace Game.Server
                     break;
                 case CancelCraftCommand _:
                     _crafting.Cancel(player, true);
+                    break;
+                case PickUpLootCommand pickUp:
+                    _loot.PickUp(player, pickUp.LootId);
                     break;
                 case SpendAttributePointCommand spend:
                     _progression.SpendAttributePoint(player, spend);

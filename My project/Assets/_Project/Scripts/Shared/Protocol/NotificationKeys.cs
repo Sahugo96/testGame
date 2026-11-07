@@ -38,7 +38,9 @@ namespace Game.Shared.Protocol
         public const string LootVotePassed = "notify.loot_vote_passed";
         public const string LootVoteFailed = "notify.loot_vote_failed";
         public const string LootVoteCancelled = "notify.loot_vote_cancelled";
-        /// <summary>Leader mode: the leader had no room, the item is not picked up (no ground loot yet).</summary>
+        /// <summary>Leader mode: the leader had no room, the item stays on the ground for the leader.</summary>
         public const string LootLeaderBagFull = "notify.loot_leader_bag_full";
+        /// <summary>Solo: the section was full, the drop stays on the ground for the killer.</summary>
+        public const string LootOnGround = "notify.loot_on_ground";
     }
 }

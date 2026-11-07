@@ -159,6 +159,10 @@ namespace Game.Network
                 case CancelCraftCommand _:
                     w.Write((byte)MessageType.CancelCraft);
                     break;
+                case PickUpLootCommand m:
+                    w.Write((byte)MessageType.PickUpLoot);
+                    Id(w, m.LootId);
+                    break;
                 case WorldSnapshot m:
                     w.Write((byte)MessageType.World);
                     WriteWorld(w, m, null);
@@ -244,6 +248,8 @@ namespace Game.Network
                     return new CraftItemCommand { RecipeId = Str(r), StationId = Id(r) };
                 case MessageType.CancelCraft:
                     return new CancelCraftCommand();
+                case MessageType.PickUpLoot:
+                    return new PickUpLootCommand { LootId = Id(r) };
                 case MessageType.World:
                     return ReadWorld(r);
                 case MessageType.PlayerState:

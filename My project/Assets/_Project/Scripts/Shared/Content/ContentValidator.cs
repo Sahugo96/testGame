@@ -45,6 +45,10 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: AutosaveSeconds, PasswordIterations, MinPasswordLength, SessionTokenHours, BackupsToKeep must be > 0");
             }
+            if (cfg.LootSeconds <= 0f || cfg.LootScatterRadius < 0f)
+            {
+                errors.Add("config: LootSeconds must be > 0 and LootScatterRadius ≥ 0");
+            }
             if (cfg.ThreatPerDamage <= 0f || cfg.HealThreatFactor < 0f)
             {
                 errors.Add("config: ThreatPerDamage must be > 0 and HealThreatFactor ≥ 0");

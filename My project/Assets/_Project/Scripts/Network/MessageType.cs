@@ -26,6 +26,7 @@ namespace Game.Network
         LootModeVote = 28,
         CraftItem = 29,
         CancelCraft = 30,
+        PickUpLoot = 31,
         World = 40,
         PlayerState = 41,
         CombatEvent = 42,

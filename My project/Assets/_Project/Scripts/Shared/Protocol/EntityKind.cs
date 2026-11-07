@@ -6,5 +6,7 @@ namespace Game.Shared.Protocol
         Player,
         Mob,
         Npc,
+        /// <summary>A drop on the ground (LootEntry, 06 7.8): click to pick up.</summary>
+        Loot,
     }
 }

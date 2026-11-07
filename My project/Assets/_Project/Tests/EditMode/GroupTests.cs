@@ -238,6 +238,24 @@ namespace Game.Tests
             Assert.That(_h.Vitals(mob).IsDead, Is.True);
         }
 
+        private EntityId GroundLoot()
+        {
+            foreach (EntityId id in _h.World.Entities)
+            {
+                if (_h.World.Loot.Has(id))
+                {
+                    return id;
+                }
+            }
+            return EntityId.None;
+        }
+
+        private void PickUp(EntityId player, EntityId loot)
+        {
+            _h.World.Transforms.Get(player).Position = _h.World.Transforms.Get(loot).Position;
+            _h.Send(player, new PickUpLootCommand { LootId = loot });
+        }
+
         private int Shards(EntityId id) => _h.Player(id).Bag.Get(_h.BagIndexOf(id, "philosopher_stone_shard"))?.Count ?? 0;
 
         private void SetMode(EntityId[] g, LootMode mode)
@@ -259,7 +277,12 @@ namespace Game.Tests
             int before = Shards(g[1]);
             Hit(g[0], cube);
             Kill(g[1], cube);
+            EntityId loot = GroundLoot();
+            Assert.That(loot.IsValid, Is.True, "PickedUp: the drop lies on the ground");
+            Assert.That(Shards(g[1]), Is.EqualTo(before));
+            PickUp(g[1], loot);
             Assert.That(Shards(g[1]), Is.EqualTo(before + 1));
+            Assert.That(_h.World.Loot.Has(loot), Is.False, "picked up once");
             GroupLogEntry entry = Group(g[0]).Log.Last();
             Assert.That(entry.ItemDefinitionId, Is.EqualTo("philosopher_stone_shard"));
             Assert.That(entry.Mode, Is.EqualTo(LootMode.PickedUp));
@@ -280,7 +303,8 @@ namespace Game.Tests
             cube = PrepareCube(g[1]);
             int memberBefore = Shards(g[1]);
             Kill(g[1], cube);
-            Assert.That(Shards(g[1]), Is.EqualTo(memberBefore + 1), "the leader did not fight: the killer gets it");
+            PickUp(g[1], GroundLoot());
+            Assert.That(Shards(g[1]), Is.EqualTo(memberBefore + 1), "the leader did not fight: PickedUp, the killer picks it up");
         }
 
         [Test]

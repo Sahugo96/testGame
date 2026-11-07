@@ -31,6 +31,9 @@ namespace Game.Shared.Protocol
         public const string Stunned = "error.stunned";
         public const string Silenced = "error.silenced";
         public const string CannotUse = "error.cannot_use";
+        public const string LootGone = "error.loot_gone";
+        public const string LootNotYours = "error.loot_not_yours";
+        public const string LootTooFar = "error.loot_too_far";
         public const string DuelBusy = "error.duel_busy";
         public const string DuelTargetBusy = "error.duel_target_busy";
         public const string DuelInCombat = "error.duel_in_combat";
