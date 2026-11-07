@@ -43,6 +43,7 @@ namespace Game.Server.Systems
                     Kind = identity.Kind,
                     DefinitionId = identity.DefinitionId,
                     NameKey = identity.NameKey,
+                    DisplayName = identity.DisplayName,
                     Faction = identity.Faction,
                     Position = transform.Position,
                     Yaw = transform.Yaw,

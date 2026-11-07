@@ -55,7 +55,7 @@ namespace Game.Client.UI.Widgets
                 }
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local);
                 plate.Root.anchoredPosition = local;
-                plate.Name.text = _ctx.Text.Get(entity.NameKey);
+                plate.Name.text = string.IsNullOrEmpty(entity.DisplayName) ? _ctx.Text.Get(entity.NameKey) : entity.DisplayName;
                 plate.Health.SetVisible(entity.MaxHealth > 0f);
                 plate.Health.Set(entity.MaxHealth > 0f ? entity.Health / entity.MaxHealth : 0f, string.Empty);
             }

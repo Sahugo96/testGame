@@ -18,6 +18,10 @@ namespace Game.Shared.Content
             {
                 errors.Add("bag_sections: at least one section with Size > 0 is required");
             }
+            if (cfg.DefaultPort <= 0 || cfg.NetworkWorldEveryTicks <= 0 || cfg.NetworkStateEveryTicks <= 0 || cfg.MaxPlayerNameLength <= 0)
+            {
+                errors.Add("config: DefaultPort, NetworkWorldEveryTicks, NetworkStateEveryTicks, MaxPlayerNameLength must be > 0");
+            }
             if (cfg.InteractRange <= 0f)
             {
                 errors.Add("config: InteractRange must be > 0");

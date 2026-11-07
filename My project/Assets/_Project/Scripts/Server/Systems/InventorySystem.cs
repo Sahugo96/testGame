@@ -41,7 +41,7 @@ namespace Game.Server.Systems
         /// <summary>
         /// Puts items into the bag section of their category: tops up existing stacks first, then creates new instances
         /// through the item factory (only the server creates items). Returns the first new instance, if any.
-        /// Items that do not fit are lost and reported (loot tables with LootEntry arrive in module 10).
+        /// Items that do not fit are not picked up and the player is notified (question 68; ground loot with LootEntry arrives in module 10).
         /// </summary>
         public ItemInstance GiveItem(PlayerCharacter player, string definitionId, int count)
         {

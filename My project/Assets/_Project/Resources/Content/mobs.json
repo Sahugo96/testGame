@@ -39,13 +39,8 @@
       "ExperienceReward": 10,
       "Drops": [
         {
-          "ItemId": "cube_fragment",
-          "Chance": 0.5,
-          "Count": 1
-        },
-        {
           "ItemId": "philosopher_stone_shard",
-          "Chance": 0.1,
+          "Chance": 0.5,
           "Count": 1
         }
       ]

@@ -1,0 +1,192 @@
+using System;
+using System.Collections.Generic;
+using Game.Network;
+using Game.Server.Players;
+using Game.Shared.Content.Dto;
+using Game.Shared.Core;
+using Game.Shared.Protocol;
+
+namespace Game.Server.Net
+{
+    /// <summary>
+    /// Network front of the authoritative server (temporary own TCP transport, question 69): accepts players, creates
+    /// their characters on Hello, forwards their commands to <see cref="GameServer"/> and sends snapshots after each
+    /// tick (world every NetworkWorldEveryTicks, private state every NetworkStateEveryTicks, events always).
+    /// Game logic stays in GameServer; this class only moves messages (principle 2).
+    /// </summary>
+    public sealed class ServerNetworkHost : IDisposable
+    {
+        private sealed class Peer
+        {
+            public NetConnection Connection;
+            public EntityId Player;
+            public bool Joined;
+        }
+
+        private const string DefaultNamePrefix = "Player";
+
+        private readonly GameServer _server;
+        private readonly NetListener _listener;
+        private readonly List<Peer> _peers = new List<Peer>();
+        private readonly GameConfig _config;
+        private int _guestNumber;
+
+        public ServerNetworkHost(GameServer server, int port)
+        {
+            _server = server;
+            _config = server.Context.Content.Config;
+            _listener = new NetListener(port);
+            _server.Ticked += OnTicked;
+            Log.Info(LogTags.Server, $"Listening on port {_listener.Port}");
+        }
+
+        public int Port => _listener.Port;
+
+        public int ConnectedPlayers
+        {
+            get
+            {
+                int count = 0;
+                foreach (Peer peer in _peers)
+                {
+                    if (peer.Joined)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+        }
+
+        /// <summary>Accepts connections and applies received messages. Call before every server tick (main thread).</summary>
+        public void Poll()
+        {
+            while (_listener.TryAccept(out NetConnection connection))
+            {
+                _peers.Add(new Peer { Connection = connection });
+                Log.Info(LogTags.Server, $"Connection from {connection.RemoteAddress}");
+            }
+            for (int i = _peers.Count - 1; i >= 0; i--)
+            {
+                Peer peer = _peers[i];
+                while (peer.Connection.TryReceive(out object message))
+                {
+                    if (!peer.Joined)
+                    {
+                        HandleHello(peer, message);
+                    }
+                    else if (message is IGameCommand command)
+                    {
+                        _server.Submit(peer.Player, command);
+                    }
+                }
+                if (peer.Connection.IsClosed)
+                {
+                    if (peer.Joined)
+                    {
+                        _server.RemovePlayer(peer.Player);
+                    }
+                    Log.Info(LogTags.Server, $"Disconnected {peer.Connection.RemoteAddress}: {peer.Connection.CloseReason}");
+                    _peers.RemoveAt(i);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            _server.Ticked -= OnTicked;
+            _listener.Dispose();
+            foreach (Peer peer in _peers)
+            {
+                peer.Connection.Close("server stopped");
+            }
+            _peers.Clear();
+        }
+
+        private void HandleHello(Peer peer, object message)
+        {
+            if (!(message is HelloMessage hello))
+            {
+                peer.Connection.Close("expected Hello");
+                return;
+            }
+            if (hello.ProtocolVersion != NetworkConstants.ProtocolVersion)
+            {
+                Refuse(peer, NetworkConstants.ErrorVersionMismatch);
+                return;
+            }
+            if (!_server.HasClass(hello.ClassId))
+            {
+                Refuse(peer, NetworkConstants.ErrorUnknownClass);
+                return;
+            }
+            peer.Player = _server.AddPlayer(hello.ClassId, CleanName(hello.PlayerName));
+            peer.Joined = true;
+            peer.Connection.Send(new WelcomeMessage
+            {
+                PlayerId = peer.Player,
+                TickRate = _config.TickRate,
+                WorldEveryTicks = _config.NetworkWorldEveryTicks,
+            });
+        }
+
+        private static void Refuse(Peer peer, string error)
+        {
+            peer.Connection.Send(new WelcomeMessage { Error = error });
+            peer.Connection.CloseAfterFlush(error);
+        }
+
+        private string CleanName(string name)
+        {
+            name = (name ?? string.Empty).Trim();
+            if (name.Length == 0)
+            {
+                return DefaultNamePrefix + (++_guestNumber);
+            }
+            return name.Length > _config.MaxPlayerNameLength ? name.Substring(0, _config.MaxPlayerNameLength) : name;
+        }
+
+        private void OnTicked()
+        {
+            int tick = _server.CurrentTick;
+            bool sendWorld = tick % _config.NetworkWorldEveryTicks == 0;
+            bool sendState = tick % _config.NetworkStateEveryTicks == 0;
+            foreach (Peer peer in _peers)
+            {
+                if (!peer.Joined || peer.Connection.IsClosed)
+                {
+                    continue;
+                }
+                PlayerCharacter player = _server.GetPlayer(peer.Player);
+                if (player == null)
+                {
+                    continue;
+                }
+                PlayerOutbox outbox = player.Outbox;
+                foreach (CombatEventMessage message in outbox.CombatEvents)
+                {
+                    peer.Connection.Send(message);
+                }
+                outbox.CombatEvents.Clear();
+                foreach (CommandRejectedMessage message in outbox.Rejections)
+                {
+                    peer.Connection.Send(message);
+                }
+                outbox.Rejections.Clear();
+                foreach (NotificationMessage message in outbox.Notifications)
+                {
+                    peer.Connection.Send(message);
+                }
+                outbox.Notifications.Clear();
+                if (sendWorld && outbox.World != null)
+                {
+                    peer.Connection.Send(outbox.World);
+                }
+                if (sendState && outbox.State != null)
+                {
+                    peer.Connection.Send(outbox.State);
+                }
+            }
+        }
+    }
+}

@@ -9,6 +9,9 @@ namespace Game.Shared.Protocol
         public EntityKind Kind;
         public string DefinitionId;
         public string NameKey;
+
+        /// <summary>Player-chosen name (raw text, not a localization key); empty for mobs and NPCs.</summary>
+        public string DisplayName;
         public string Faction;
         public Vec3 Position;
         public float Yaw;

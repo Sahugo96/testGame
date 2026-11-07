@@ -1,14 +1,26 @@
 {
     "name": "Game.Tests.EditMode",
     "rootNamespace": "Game.Tests",
-    "references": ["UnityEngine.TestRunner", "UnityEditor.TestRunner", "Game.Shared", "Game.Server"],
-    "includePlatforms": ["Editor"],
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Game.Shared",
+        "Game.Server",
+        "Game.Network"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
-    "precompiledReferences": ["nunit.framework.dll"],
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
     "autoReferenced": false,
-    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

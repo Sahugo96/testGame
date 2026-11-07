@@ -31,5 +31,9 @@
       "B": "Training"
     }
   ],
-  "InteractRange": 4
+  "InteractRange": 4,
+  "DefaultPort": 7777,
+  "NetworkWorldEveryTicks": 2,
+  "NetworkStateEveryTicks": 3,
+  "MaxPlayerNameLength": 16
 }

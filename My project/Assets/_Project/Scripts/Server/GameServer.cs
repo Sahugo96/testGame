@@ -68,7 +68,14 @@ namespace Game.Server
 
         public int CurrentTick => _tick;
 
-        public EntityId AddPlayer(string classId)
+        /// <summary>Raised after every tick when snapshots are ready (transports send them).</summary>
+        public event Action Ticked;
+
+        public bool HasClass(string classId) => classId != null && _ctx.Content.Classes.ContainsKey(classId);
+
+        public EntityId AddPlayer(string classId) => AddPlayer(classId, null);
+
+        public EntityId AddPlayer(string classId, string displayName)
         {
             if (!_ctx.Content.Classes.TryGetValue(classId, out ClassDefinition cls))
             {
@@ -77,7 +84,7 @@ namespace Game.Server
             ServerWorld world = _ctx.World;
             EntityId id = world.CreateEntity();
             GameConfig cfg = _ctx.Content.Config;
-            world.Identities.Add(id, new IdentityData { Kind = EntityKind.Player, DefinitionId = cls.Id, NameKey = cls.NameKey, Faction = cfg.PlayerFaction });
+            world.Identities.Add(id, new IdentityData { Kind = EntityKind.Player, DefinitionId = cls.Id, NameKey = cls.NameKey, DisplayName = displayName, Faction = cfg.PlayerFaction });
             world.Transforms.Add(id, new TransformData { Position = _respawn.PlayerSpawn() });
             world.Vitals.Add(id, new VitalsData());
             world.Mana.Add(id, new ManaData());
@@ -158,6 +165,7 @@ namespace Game.Server
                 player.Outbox.World = worldSnapshot;
                 player.Outbox.State = _snapshots.BuildPlayer(player);
             }
+            Ticked?.Invoke();
         }
 
         private void Handle(PlayerCharacter player, IGameCommand command)

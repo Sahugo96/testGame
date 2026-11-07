@@ -24,6 +24,10 @@ namespace Game.Shared.Content.Dto
         public int AttributePointsPerLevel;
         public float TargetCycleRange;
         public float InteractRange;
+        public int DefaultPort;
+        public int NetworkWorldEveryTicks;
+        public int NetworkStateEveryTicks;
+        public int MaxPlayerNameLength;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

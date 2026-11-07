@@ -1,7 +1,12 @@
 {
     "name": "Game.Client",
     "rootNamespace": "Game.Client",
-    "references": ["Game.Shared", "Unity.InputSystem", "UnityEngine.UI"],
+    "references": [
+        "Game.Shared",
+        "Game.Network",
+        "Unity.InputSystem",
+        "UnityEngine.UI"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

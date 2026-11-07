@@ -1,7 +1,10 @@
 {
     "name": "Game.Server",
     "rootNamespace": "Game.Server",
-    "references": ["Game.Shared"],
+    "references": [
+        "Game.Shared",
+        "Game.Network"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

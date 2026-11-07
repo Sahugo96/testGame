@@ -8,6 +8,7 @@ namespace Game.Server.World
         public EntityKind Kind;
         public string DefinitionId;
         public string NameKey;
+        public string DisplayName;
         public string Faction;
     }
 }

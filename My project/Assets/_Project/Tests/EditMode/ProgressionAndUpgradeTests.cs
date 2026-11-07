@@ -142,7 +142,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void CubeDrops_GoToLootAndResources()
+        public void CubeDrops_PhilosopherStoneShard()
         {
             var h = new ServerHarness();
             EntityId mage = h.AddPlayer("mage");
@@ -152,9 +152,6 @@ namespace Game.Tests
 
             h.Send(mage, new UseSkillCommand { SkillId = "reserve_nova", TargetId = cube });
 
-            int lootIndex = h.BagIndexOf(mage, "cube_fragment");
-            BagSection loot = h.Content.BagSections.Find(s => s.Id == "loot");
-            Assert.That(loot.Contains(lootIndex), Is.True);
             Assert.That(h.Player(mage).Bag.Get(h.BagIndexOf(mage, "philosopher_stone_shard")).Count, Is.EqualTo(21));
         }
 

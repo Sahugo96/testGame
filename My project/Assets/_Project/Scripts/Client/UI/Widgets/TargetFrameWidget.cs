@@ -36,7 +36,7 @@ namespace Game.Client.UI.Widgets
                 return;
             }
             _ctx.State.TryGetEntity(player.TargetId, out EntitySnapshot target);
-            _name.text = _ctx.Text.Get(target.NameKey);
+            _name.text = string.IsNullOrEmpty(target.DisplayName) ? _ctx.Text.Get(target.NameKey) : target.DisplayName;
             _health.Set(target.MaxHealth > 0f ? target.Health / target.MaxHealth : 0f,
                 _ctx.Text.Format(UiKeys.ValueOfMax, Mathf.CeilToInt(target.Health), Mathf.RoundToInt(target.MaxHealth)));
         }
