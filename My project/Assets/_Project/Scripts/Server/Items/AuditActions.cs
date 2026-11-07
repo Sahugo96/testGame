@@ -12,5 +12,7 @@ namespace Game.Server.Items
         public const string UpgradeSuccess = "upgrade_success";
         public const string UpgradeFail = "upgrade_fail";
         public const string MaterialSpent = "material_spent";
+        /// <summary>A unique item already exists in the world: a second one is not created (04, 7.11).</summary>
+        public const string UniqueRefused = "unique_refused";
     }
 }

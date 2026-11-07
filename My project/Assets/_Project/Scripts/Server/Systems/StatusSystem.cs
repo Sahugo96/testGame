@@ -140,6 +140,49 @@ namespace Game.Server.Systems
             return removed.Count;
         }
 
+        /// <summary>A saved status comes back with its stacks, time left, strength and shield (question 26: time runs online only).</summary>
+        public void Restore(EntityId target, string statusId, int stacks, float remaining, float power, float shieldLeft)
+        {
+            if (statusId == null || !_ctx.Content.StatusEffects.TryGetValue(statusId, out StatusEffectDefinition definition)
+                || (definition.Duration > 0f && remaining <= 0f))
+            {
+                return;
+            }
+            ListOf(target).Add(new StatusData
+            {
+                StatusId = statusId,
+                SourceId = target,
+                Stacks = Math.Max(1, Math.Min(definition.MaxStacks, stacks)),
+                Remaining = remaining,
+                TickTimer = definition.TickInterval,
+                Power = power,
+                ShieldLeft = shieldLeft,
+                SourceKey = $"status:{_nextKey++}",
+            });
+            Changed?.Invoke(target);
+        }
+
+        public Persistence.StatusRecord[] Export(EntityId target)
+        {
+            if (!_statuses.TryGetValue(target, out List<StatusData> list))
+            {
+                return new Persistence.StatusRecord[0];
+            }
+            var result = new Persistence.StatusRecord[list.Count];
+            for (int i = 0; i < list.Count; i++)
+            {
+                result[i] = new Persistence.StatusRecord
+                {
+                    StatusId = list[i].StatusId,
+                    Stacks = list[i].Stacks,
+                    Remaining = list[i].Remaining,
+                    Power = list[i].Power,
+                    ShieldLeft = list[i].ShieldLeft,
+                };
+            }
+            return result;
+        }
+
         /// <summary>Death clears all statuses (question 74).</summary>
         public void OnDied(EntityId target) => Clear(target);
 

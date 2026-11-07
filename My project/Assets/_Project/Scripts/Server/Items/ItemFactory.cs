@@ -10,6 +10,9 @@ namespace Game.Server.Items
         private readonly ContentDatabase _content;
         private readonly IAuditLog _audit;
 
+        /// <summary>Unique (divine) items: one instance per world (04, 7.11). Null — no registry (tests without storage).</summary>
+        public Persistence.IUniqueItemRegistry UniqueRegistry;
+
         public ItemFactory(ContentDatabase content, IAuditLog audit)
         {
             _content = content;
@@ -22,9 +25,15 @@ namespace Game.Server.Items
             {
                 return null;
             }
+            Guid newId = Guid.NewGuid();
+            if (definition.Rarity == Rarity.Divine && UniqueRegistry != null && !UniqueRegistry.TryReserve(definitionId, newId.ToString("N"), ownerId))
+            {
+                _audit.Write(new AuditEntry { Time = time, Action = AuditActions.UniqueRefused, ActorId = ownerId, DefinitionId = definitionId, Count = count });
+                return null;
+            }
             var instance = new ItemInstance
             {
-                InstanceId = Guid.NewGuid(),
+                InstanceId = newId,
                 DefinitionId = definitionId,
                 Count = Math.Max(1, Math.Min(count, definition.MaxStack)),
                 CreatedAt = time,

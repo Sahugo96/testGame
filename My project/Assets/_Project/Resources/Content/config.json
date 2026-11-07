@@ -73,5 +73,10 @@
   "InterestRadius": 30,
   "InterestCellSize": 10,
   "MetricsWindowTicks": 300,
-  "MetricsLogSeconds": 10
+  "MetricsLogSeconds": 10,
+  "AutosaveSeconds": 60,
+  "PasswordIterations": 20000,
+  "MinPasswordLength": 4,
+  "SessionTokenHours": 24,
+  "BackupsToKeep": 5
 }

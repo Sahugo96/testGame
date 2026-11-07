@@ -41,6 +41,10 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: InterestRadius, InterestCellSize, MetricsWindowTicks, MetricsLogSeconds must be > 0");
             }
+            if (cfg.AutosaveSeconds <= 0f || cfg.PasswordIterations <= 0 || cfg.MinPasswordLength <= 0 || cfg.SessionTokenHours <= 0f || cfg.BackupsToKeep <= 0)
+            {
+                errors.Add("config: AutosaveSeconds, PasswordIterations, MinPasswordLength, SessionTokenHours, BackupsToKeep must be > 0");
+            }
             if (cfg.ThreatPerDamage <= 0f || cfg.HealThreatFactor < 0f)
             {
                 errors.Add("config: ThreatPerDamage must be > 0 and HealThreatFactor ≥ 0");

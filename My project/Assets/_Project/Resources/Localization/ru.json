@@ -1507,6 +1507,42 @@
   {
    "Key": "skill.mob_smash.desc",
    "Value": "Тяжёлый удар каменным кулаком."
+  },
+  {
+   "Key": "menu.login",
+   "Value": "Логин"
+  },
+  {
+   "Key": "menu.password",
+   "Value": "Пароль"
+  },
+  {
+   "Key": "menu.account_hint",
+   "Value": "Для «Подключиться». Новый логин — регистрация при первом входе."
+  },
+  {
+   "Key": "net.bad_login",
+   "Value": "логин 3–20 букв/цифр, пароль не короче 4 символов"
+  },
+  {
+   "Key": "net.wrong_password",
+   "Value": "неверный пароль"
+  },
+  {
+   "Key": "net.bad_name",
+   "Value": "имя персонажа: 2–16 букв, цифр, пробелов, _ или -"
+  },
+  {
+   "Key": "net.name_taken",
+   "Value": "такое имя уже занято другим игроком"
+  },
+  {
+   "Key": "net.logged_elsewhere",
+   "Value": "в этот аккаунт вошли с другого устройства"
+  },
+  {
+   "Key": "net.token_expired",
+   "Value": "сессия устарела — введите пароль"
   }
  ]
 }

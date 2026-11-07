@@ -11,6 +11,8 @@ namespace Game.Bots
     public sealed class BotSwarm : IDisposable
     {
         private const string NamePrefix = "Bot";
+        /// <summary>Bots log in like players (module 13): the account is the bot's name, registered on first login.</summary>
+        private const string BotPassword = "bot-password";
 
         private readonly List<BotClient> _bots = new List<BotClient>();
         private readonly List<NetworkClientSession> _sessions = new List<NetworkClientSession>();
@@ -21,7 +23,8 @@ namespace Game.Bots
             for (int i = 0; i < count; i++)
             {
                 string classId = classIds[i % classIds.Length];
-                NetworkClientSession session = NetworkClientSession.Connect(host, port, NamePrefix + (i + 1).ToString("000"), classId);
+                string name = NamePrefix + (i + 1).ToString("000");
+                NetworkClientSession session = NetworkClientSession.Connect(host, port, name, classId, name, BotPassword, null);
                 swarm._sessions.Add(session);
                 swarm._bots.Add(new BotClient(session, i + 1, worldHalfSize));
             }

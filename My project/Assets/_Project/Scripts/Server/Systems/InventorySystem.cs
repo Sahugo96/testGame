@@ -84,6 +84,10 @@ namespace Game.Server.Systems
                     break;
                 }
                 ItemInstance created = _ctx.Items.Create(definitionId, remaining, player.CharacterId, _ctx.Time);
+                if (created == null)
+                {
+                    break; // a unique item that already exists elsewhere (04, 7.11)
+                }
                 player.Bag.Set(index, created);
                 remaining -= created.Count;
                 if (first == null)

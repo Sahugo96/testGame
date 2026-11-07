@@ -9,5 +9,7 @@ namespace Game.Network
         public int TickRate;
         public int WorldEveryTicks;
         public string Error;
+        /// <summary>Session token: log in again without the password until it expires.</summary>
+        public string Token;
     }
 }

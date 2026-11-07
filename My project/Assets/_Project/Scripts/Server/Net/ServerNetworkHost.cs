@@ -33,9 +33,21 @@ namespace Game.Server.Net
         private readonly GameConfig _config;
         private int _guestNumber;
 
-        public ServerNetworkHost(GameServer server, int port)
+        private readonly Persistence.CharacterPersistence _persistence;
+
+        public ServerNetworkHost(GameServer server, int port) : this(server, port, null)
+        {
+        }
+
+        /// <summary>With persistence players log in to accounts and their characters are saved (module 13); without — guests.</summary>
+        public ServerNetworkHost(GameServer server, int port, Persistence.CharacterPersistence persistence)
         {
             _server = server;
+            _persistence = persistence;
+            if (_persistence != null)
+            {
+                _persistence.Replaced += OnReplaced;
+            }
             _config = server.Context.Content.Config;
             _listener = new NetListener(port);
             _server.Ticked += OnTicked;
@@ -116,7 +128,14 @@ namespace Game.Server.Net
                 {
                     if (peer.Joined)
                     {
-                        _server.RemovePlayer(peer.Player);
+                        if (_persistence != null)
+                        {
+                            _persistence.Leave(peer.Player);
+                        }
+                        else
+                        {
+                            _server.RemovePlayer(peer.Player);
+                        }
                     }
                     Log.Info(LogTags.Server, $"Disconnected {peer.Connection.RemoteAddress}: {peer.Connection.CloseReason}");
                     _bytesSentByClosed += peer.Connection.BytesSent;
@@ -129,12 +148,33 @@ namespace Game.Server.Net
         public void Dispose()
         {
             _server.Ticked -= OnTicked;
+            if (_persistence != null)
+            {
+                _persistence.Replaced -= OnReplaced;
+            }
             _listener.Dispose();
             foreach (Peer peer in _peers)
             {
+                if (peer.Joined && _persistence != null)
+                {
+                    _persistence.Leave(peer.Player);
+                }
                 peer.Connection.Close("server stopped");
             }
             _peers.Clear();
+        }
+
+        /// <summary>The account logged in again: the old connection is closed, its character was already saved and removed.</summary>
+        private void OnReplaced(EntityId player)
+        {
+            foreach (Peer peer in _peers)
+            {
+                if (peer.Joined && peer.Player == player)
+                {
+                    peer.Joined = false;
+                    peer.Connection.Close(LoginErrors.LoggedElsewhere);
+                }
+            }
         }
 
         private void HandleHello(Peer peer, object message)
@@ -154,13 +194,27 @@ namespace Game.Server.Net
                 Refuse(peer, NetworkConstants.ErrorUnknownClass);
                 return;
             }
-            peer.Player = _server.AddPlayer(hello.ClassId, CleanName(hello.PlayerName));
+            string token = null;
+            if (_persistence != null)
+            {
+                peer.Player = _persistence.Enter(hello.Login, hello.Password, hello.Token, hello.PlayerName, hello.ClassId, false, out string error, out token);
+                if (!peer.Player.IsValid)
+                {
+                    Refuse(peer, error);
+                    return;
+                }
+            }
+            else
+            {
+                peer.Player = _server.AddPlayer(hello.ClassId, CleanName(hello.PlayerName));
+            }
             peer.Joined = true;
             peer.Connection.Send(new WelcomeMessage
             {
                 PlayerId = peer.Player,
                 TickRate = _config.TickRate,
                 WorldEveryTicks = _config.NetworkWorldEveryTicks,
+                Token = token,
             });
         }
 

@@ -20,6 +20,9 @@ namespace Game.Network
         /// <summary>Error key from the server (version mismatch, unknown class) or the transport close reason.</summary>
         public string Error { get; private set; }
 
+        /// <summary>Session token from the server's Welcome (module 13).</summary>
+        public string Token { get; private set; }
+
         public bool IsClosed => _connection.IsClosed;
 
         public string CloseReason => _connection.CloseReason;
@@ -28,7 +31,11 @@ namespace Game.Network
         public long BytesReceived => _connection.BytesReceived;
 
         /// <summary>Connects (blocks up to ConnectTimeoutMs) and sends Hello. Throws on failure.</summary>
-        public static NetworkClientSession Connect(string host, int port, string playerName, string classId)
+        public static NetworkClientSession Connect(string host, int port, string playerName, string classId) =>
+            Connect(host, port, playerName, classId, playerName, null, null);
+
+        /// <summary>Connects with an account (module 13): login + password, or a session token from a previous Welcome.</summary>
+        public static NetworkClientSession Connect(string host, int port, string playerName, string classId, string login, string password, string token)
         {
             var client = new TcpClient();
             if (!client.ConnectAsync(host, port).Wait(NetworkConstants.ConnectTimeoutMs) || !client.Connected)
@@ -37,7 +44,10 @@ namespace Game.Network
                 throw new TimeoutException($"No answer from {host}:{port}");
             }
             var session = new NetworkClientSession(new NetConnection(client));
-            session._connection.Send(new HelloMessage { ProtocolVersion = NetworkConstants.ProtocolVersion, PlayerName = playerName, ClassId = classId });
+            session._connection.Send(new HelloMessage
+            {
+                ProtocolVersion = NetworkConstants.ProtocolVersion, PlayerName = playerName, ClassId = classId, Login = login, Password = password, Token = token,
+            });
             return session;
         }
 
@@ -60,6 +70,7 @@ namespace Game.Network
                 else
                 {
                     PlayerId = welcome.PlayerId;
+                    Token = welcome.Token;
                     TickRate = welcome.TickRate;
                     WorldEveryTicks = welcome.WorldEveryTicks;
                     IsWelcomed = true;

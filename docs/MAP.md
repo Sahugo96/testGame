@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 28)
+### `docs/00_INDEX.md` — индекс набора (версия набора 29)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v19)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v20)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,13 +37,13 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3)** | :258 |
-| 10 | Проблемы и долги (записи v9, v11–v19 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3) | :284 |
-| 11 | Журнал решений (последние — v19, замеры модуля 3) | :307 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :356 |
-| 13 | **Заморожено :366 / Гибко :377 / Отложено + крючки (с модулями) :382** | :362 |
-| — | Открытые вопросы 29, 39–44, 69, 70, 75 | :397 |
-| — | Рекомендации 1,5–10,17–19 | :412 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11–v20 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13) | :285 |
+| 11 | Журнал решений (последние — v20; замеры модуля 3 — v19) | :309 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :359 |
+| 13 | **Заморожено :369 / Гибко :380 / Отложено + крючки (с модулями) :385** | :365 |
+| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :400 |
+| — | Рекомендации 1,5–10,17–19 | :416 |
 
 ### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v6)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
@@ -146,7 +146,7 @@
 | `EffectDefinition`, `IEffectHandler`, `EffectHandlerRegistry` | 01 7.10 :148–152 |
 | `LegendaryDefinition` | 01 7.10 :168 |
 | `MobDefinition`, `ZoneDefinition` (только упоминание) | 01 7.10 :160–163 |
-| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :386 |
+| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :389 |
 | Сборки `Game.Shared/Network/Server/Client/Bots` | 01 §5 :68 |
 | `HudWindowDefinition` | 02 7.13 :49 |
 | `HudRoot`, `HudZone`, `WindowManager`, `WindowRegistry`, `MenuBar`, `DragDropService`, `BadgeService` | 02 7.13 :83 |
@@ -173,16 +173,16 @@
 | 6, 7 | 06 | 20, 21 | 06 | 30–32 | 04 |
 | 8 | 05 | 22–24 | 04 | 33–35 | 05 |
 | 9 | 03 | 25, 26 | 03 | 36–38 | 04 |
-| 10–13 | 02 | 27, 28 | 02 | 39–44, 69, 70, 75 | 01 |
+| 10–13 | 02 | 27, 28 | 02 | 39–44, 69, 70, 75, 76 | 01 |
 | 45, 46 | 03 | 47, 48 | 04 | 49, 50 | 05 |
 | 51 | 06 | 52–54 | 03 | 55 | 04 |
 | 56 | 02 | 57 | 04 | 58 | 05 |
 | 59, 60 | 03 | 61 | 04 | 62 | 05 |
 | 63, 64 | 03 | 65, 66 | 04 | 67 | 03 |
 | 68 | 06 | 69, 70 | 01 | 71, 72 | 06 |
-| 73 | 05 | 74 | 03 | 75 | 01 |
+| 73 | 05 | 74 | 03 | 75, 76 | 01 |
 
-Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **75** (новый вопрос = 76). Номера не менять.
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **76** (новый вопрос = 77). Номера не менять.
 
 **Статус вопроса** виден в самой строке: `**РЕШЕНО (vN):** …` — решено разработчиком (ДЕФОЛТ снят); `**Отложено разработчиком:**` — вернуться позже, действует ДЕФОЛТ; без пометки — открыт, действует ДЕФОЛТ.
 Сводка: `grep -n 'РЕШЕНО\|Отложено разработчиком' docs/0*.md`.
@@ -229,6 +229,7 @@
 | Связь клиента с сервером | `Client/Net/IServerConnection.cs`; локальная — `Host/LocalServerConnection.cs`; по сети — `Client/Net/RemoteServerConnection.cs` |
 | Сеть: транспорт и кодек (вопрос 69) | `Network/` (`NetConnection` — кадры и потоки, `NetListener`, `NetworkClientSession`, `ProtocolCodec`, `MessageType`, `Hello`/`WelcomeMessage`, `NetworkConstants`) |
 | Сервер в сети (приём игроков, рассылка) | `Server/Net/ServerNetworkHost.cs` (частота — `config.NetworkWorldEveryTicks`, `NetworkStateEveryTicks`, порт — `DefaultPort`) |
+| **Аккаунты и сохранения** (модуль 13, вопрос 76) | `Server/Persistence/` (`Records.cs` — записи, `Interfaces.cs` — репозитории и `IJsonCodec`, `FileStorage.cs`, `CharacterPersistence.cs` — вход, токены, автосохранение, `PasswordHasher.cs`, `CharacterMigrations.cs`, `FileAuditLog.cs`); `GameServer.AddPlayer(CharacterRecord)` / `ExportPlayer`; реестр уникальных — `ItemFactory.UniqueRegistry`; Unity — `Host/UnityJsonCodec.cs`, `GameRoot.CreateServer`; меню — поля логина в `StartMenuView`; протокол — `HelloMessage` (Login, Password, Token), `WelcomeMessage.Token`, ошибки `LoginErrors`; тесты — `PersistenceTests`, кодек тестов — `TestJsonCodec` |
 | **Interest management, метрики, боты** (модуль 3) | `Server/World/SpatialGrid.cs`, `Server/Systems/InterestSystem.cs`, `Server/ServerMetrics.cs`; трафик — `ProtocolCodec.EncodeWorld` (неизменные поля один раз) + кэш в `Client/Net/RemoteServerConnection.cs`, `NetConnection.BytesSent/Received`; боты — `Scripts/Bots/` (`Game.Bots`: `BotClient`, `BotSwarm`), запуск `-bots N -connect` (`Host/LaunchOptions.cs`, `GameRoot.StartBots`); вне Unity — `tools/LoadTest/` (README); тесты — `InterestTests`, `BotTests` |
 | **ИИ мобов** (модуль 10, вопрос 75) | данные `mobs.json` (`AiProfile`), `ai_profiles.json` → `AiProfile` (`Shared/Content/AiProfile.cs`), способности — навыки `mob_*` в `skills.json`; сервер `Server/Systems/MobAiSystem.cs`, `Server/World/MobAiData.cs` (Idle / Chase / Return); тесты — `Tests/EditMode/MobAiTests.cs` |
 | **Статус-эффекты, угроза, боевой лог** (модуль 8; 03 §7.12, вопрос 74) | данные `status_effects.json` → `StatusEffectDefinition` (`Shared/Content/`); сервер `Server/Systems/StatusSystem.cs`, `ThreatSystem.cs`, `Server/World/StatusData.cs`, эффекты `Server/Effects/ApplyStatusEffectHandler.cs`, `DispelEffectHandler.cs`; клиент — `Client/UI/Widgets/StatusRowWidget.cs`, «цель цели» в `TargetFrameWidget`, `Client/UI/Windows/CombatLogWindow.cs` (`L`, события — `ClientState.CombatLog`); тесты — `Tests/EditMode/StatusEffectTests.cs` |

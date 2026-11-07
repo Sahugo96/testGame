@@ -60,6 +60,12 @@ namespace Game.Shared.Content.Dto
         /// <summary>Metrics: ticks in the sliding window; how often a dedicated server writes them to the log.</summary>
         public int MetricsWindowTicks;
         public float MetricsLogSeconds;
+        /// <summary>Saves and accounts (module 13): autosave period, password hashing cost and minimum length, session token life, backups kept.</summary>
+        public float AutosaveSeconds;
+        public int PasswordIterations;
+        public int MinPasswordLength;
+        public float SessionTokenHours;
+        public int BackupsToKeep;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

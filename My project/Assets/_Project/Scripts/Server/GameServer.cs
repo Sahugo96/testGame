@@ -106,9 +106,146 @@ namespace Game.Server
 
         public EntityId AddPlayer(string classId) => AddPlayer(classId, null);
 
-        public EntityId AddPlayer(string classId, string displayName)
+        public EntityId AddPlayer(string classId, string displayName) => AddPlayer(classId, displayName, null);
+
+        /// <summary>A new character with the class's starting attributes, skills and items.</summary>
+        public EntityId AddPlayer(string classId, string displayName, string characterId)
         {
-            if (!_ctx.Content.Classes.TryGetValue(classId, out ClassDefinition cls))
+            PlayerCharacter player = CreatePlayer(classId, displayName, characterId);
+            foreach (var pair in player.Class.StartingAttributes)
+            {
+                player.Attributes[pair.Key] = pair.Value;
+            }
+            foreach (ClassSkill skill in player.Class.Skills)
+            {
+                player.Mastery[skill.SkillId] = skill.StartingMastery;
+            }
+            _stats.Recalculate(player);
+            _inventory.GiveStartingItems(player);
+            FillResources(player.EntityId);
+            Log.Info(LogTags.Server, $"Player {player.EntityId} joined as '{classId}'");
+            return player.EntityId;
+        }
+
+        /// <summary>A saved character comes back (module 13): progress, items with their GUIDs, resources, position, statuses.</summary>
+        public EntityId AddPlayer(Persistence.CharacterRecord record)
+        {
+            PlayerCharacter player = CreatePlayer(record.ClassId, record.DisplayName, record.CharacterId);
+            player.Level = Math.Max(_ctx.Content.Config.StartingLevel, record.Level);
+            player.Experience = record.Experience;
+            player.AttributePoints = record.AttributePoints;
+            player.ClassPoints = record.ClassPoints;
+            foreach (Persistence.StatValueRecord attribute in record.Attributes ?? new Persistence.StatValueRecord[0])
+            {
+                if (Enum.TryParse(attribute.Stat, out StatId stat))
+                {
+                    player.Attributes[stat] = attribute.Value;
+                }
+            }
+            foreach (ClassSkill skill in player.Class.Skills)
+            {
+                player.Mastery[skill.SkillId] = skill.StartingMastery;
+            }
+            foreach (Persistence.SkillValueRecord mastery in record.Mastery ?? new Persistence.SkillValueRecord[0])
+            {
+                player.Mastery[mastery.SkillId] = mastery.Value;
+            }
+            foreach (Persistence.ItemRecord item in record.Bag ?? new Persistence.ItemRecord[0])
+            {
+                ItemInstance instance = RestoreItem(item);
+                if (instance != null && item.BagIndex >= 0 && item.BagIndex < player.Bag.Size && player.Bag.Get(item.BagIndex) == null)
+                {
+                    player.Bag.Set(item.BagIndex, instance);
+                }
+            }
+            foreach (Persistence.ItemRecord item in record.Equipment ?? new Persistence.ItemRecord[0])
+            {
+                ItemInstance instance = RestoreItem(item);
+                if (instance != null && !string.IsNullOrEmpty(item.SlotId))
+                {
+                    player.Equipment[item.SlotId] = instance;
+                }
+            }
+            _stats.Recalculate(player);
+            ServerWorld world = _ctx.World;
+            ref VitalsData vitals = ref world.Vitals.Get(player.EntityId);
+            vitals.Health = record.Health > 0f ? Math.Min(record.Health, vitals.MaxHealth) : vitals.MaxHealth;
+            ref ManaData mana = ref world.Mana.Get(player.EntityId);
+            mana.Main = Math.Min(record.MainMana, mana.MaxMain);
+            mana.Reserve = Math.Min(record.ReserveMana, mana.MaxReserve);
+            ResourceSystem.UpdateLock(ref mana);
+            float half = _ctx.Content.Config.WorldHalfSize;
+            world.Transforms.Get(player.EntityId).Position = new Vec3(Math.Max(-half, Math.Min(half, record.PositionX)), 0f, Math.Max(-half, Math.Min(half, record.PositionZ)));
+            foreach (Persistence.StatusRecord status in record.Statuses ?? new Persistence.StatusRecord[0])
+            {
+                _statuses.Restore(player.EntityId, status.StatusId, status.Stacks, status.Remaining, status.Power, status.ShieldLeft);
+            }
+            Log.Info(LogTags.Server, $"Player {player.EntityId} restored: '{record.DisplayName}' ({record.ClassId}, level {player.Level})");
+            return player.EntityId;
+        }
+
+        /// <summary>Everything that survives a restart (module 13). Account login and timestamps are set by the caller.</summary>
+        public Persistence.CharacterRecord ExportPlayer(EntityId id)
+        {
+            PlayerCharacter player = _ctx.GetPlayer(id);
+            if (player == null)
+            {
+                return null;
+            }
+            ServerWorld world = _ctx.World;
+            var attributes = new List<Persistence.StatValueRecord>();
+            foreach (var pair in player.Attributes)
+            {
+                attributes.Add(new Persistence.StatValueRecord { Stat = pair.Key.ToString(), Value = pair.Value });
+            }
+            var mastery = new List<Persistence.SkillValueRecord>();
+            foreach (var pair in player.Mastery)
+            {
+                mastery.Add(new Persistence.SkillValueRecord { SkillId = pair.Key, Value = pair.Value });
+            }
+            var bag = new List<Persistence.ItemRecord>();
+            for (int i = 0; i < player.Bag.Size; i++)
+            {
+                ItemInstance item = player.Bag.Get(i);
+                if (item != null)
+                {
+                    bag.Add(ExportItem(item, i, null));
+                }
+            }
+            var equipment = new List<Persistence.ItemRecord>();
+            foreach (var pair in player.Equipment)
+            {
+                equipment.Add(ExportItem(pair.Value, -1, pair.Key));
+            }
+            VitalsData vitals = world.Vitals.Get(id);
+            ManaData mana = world.Mana.Get(id);
+            Vec3 position = vitals.IsDead ? _respawn.PlayerSpawn() : world.Transforms.Get(id).Position;
+            return new Persistence.CharacterRecord
+            {
+                SchemaVersion = Persistence.CharacterMigrations.Current,
+                ClassId = player.Class.Id,
+                DisplayName = world.Identities.Get(id).DisplayName,
+                CharacterId = player.CharacterId,
+                Level = player.Level,
+                Experience = player.Experience,
+                AttributePoints = player.AttributePoints,
+                ClassPoints = player.ClassPoints,
+                Attributes = attributes.ToArray(),
+                Mastery = mastery.ToArray(),
+                Bag = bag.ToArray(),
+                Equipment = equipment.ToArray(),
+                Health = vitals.IsDead ? vitals.MaxHealth : vitals.Health,
+                MainMana = mana.Main,
+                ReserveMana = mana.Reserve,
+                PositionX = position.X,
+                PositionZ = position.Z,
+                Statuses = _statuses.Export(id),
+            };
+        }
+
+        private PlayerCharacter CreatePlayer(string classId, string displayName, string characterId)
+        {
+            if (!_ctx.Content.Classes.TryGetValue(classId ?? string.Empty, out ClassDefinition cls))
             {
                 throw new ArgumentException($"Unknown class '{classId}'");
             }
@@ -121,30 +258,46 @@ namespace Game.Server
             world.Mana.Add(id, new ManaData());
             world.CombatStates.Add(id, new CombatStateData());
             world.Casts.Add(id, new CastData());
-
             var player = new PlayerCharacter
             {
                 EntityId = id,
-                CharacterId = $"character-{_nextCharacterNumber++}",
+                CharacterId = characterId ?? $"character-{_nextCharacterNumber++}",
                 Class = cls,
                 Level = cfg.StartingLevel,
                 Bag = new Inventory(_ctx.Content.BagSize),
             };
-            foreach (var pair in cls.StartingAttributes)
-            {
-                player.Attributes[pair.Key] = pair.Value;
-            }
-            foreach (ClassSkill skill in cls.Skills)
-            {
-                player.Mastery[skill.SkillId] = skill.StartingMastery;
-            }
             _ctx.Players.Add(id, player);
-            _stats.Recalculate(player);
-            _inventory.GiveStartingItems(player);
-            FillResources(id);
-            Log.Info(LogTags.Server, $"Player {id} joined as '{classId}'");
-            return id;
+            return player;
         }
+
+        private ItemInstance RestoreItem(Persistence.ItemRecord record)
+        {
+            if (!_ctx.Content.Items.ContainsKey(record.DefinitionId ?? string.Empty) || !Guid.TryParse(record.InstanceId, out Guid instanceId))
+            {
+                Log.Warning(LogTags.Items, $"Saved item '{record.DefinitionId}' ({record.InstanceId}) is not in the content: skipped");
+                return null;
+            }
+            return new ItemInstance
+            {
+                InstanceId = instanceId,
+                DefinitionId = record.DefinitionId,
+                Count = Math.Max(1, record.Count),
+                UpgradeLevel = record.UpgradeLevel,
+                BoundTo = record.BoundTo,
+                CreatedAt = _ctx.Time,
+            };
+        }
+
+        private static Persistence.ItemRecord ExportItem(ItemInstance item, int bagIndex, string slotId) => new Persistence.ItemRecord
+        {
+            BagIndex = bagIndex,
+            SlotId = slotId,
+            InstanceId = item.SourceId,
+            DefinitionId = item.DefinitionId,
+            Count = item.Count,
+            UpgradeLevel = item.UpgradeLevel,
+            BoundTo = item.BoundTo,
+        };
 
         /// <summary>Removes a player and its entity (disconnect or character switch).</summary>
         public void RemovePlayer(EntityId id)

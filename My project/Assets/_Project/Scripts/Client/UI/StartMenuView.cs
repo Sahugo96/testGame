@@ -13,12 +13,17 @@ namespace Game.Client.UI
     public sealed class StartMenuView : MonoBehaviour
     {
         private const int SortingOrder = 100;
-        private static readonly Vector2 PanelSize = new Vector2(520f, 470f);
+        private static readonly Vector2 PanelSize = new Vector2(520f, 590f);
         private const float RowHeight = 40f;
         private const float LabelWidth = 150f;
         private const int NameLimit = 16;
         private const int AddressLimit = 64;
         private const int PortLimit = 5;
+        private const int LoginLimit = 20;
+        private const int PasswordLimit = 64;
+        private const string LoginKey = "menu.login";
+        private const string PasswordKey = "menu.password";
+        private const string AccountHintKey = "menu.account_hint";
         private const string TitleKey = "menu.title";
         private const string NameKey = "menu.name";
         private const string ClassKey = "menu.class";
@@ -35,6 +40,8 @@ namespace Game.Client.UI
         private GameObject _root;
         private InputField _name;
         private InputField _address;
+        private InputField _login;
+        private InputField _password;
         private InputField _port;
         private Text _status;
         private string _classId;
@@ -75,6 +82,14 @@ namespace Game.Client.UI
             _name = Field(panel.transform, NameKey, ref y, NameLimit, string.Empty);
             ClassRow(panel.transform, ref y);
             _address = Field(panel.transform, AddressKey, ref y, AddressLimit, DefaultAddress);
+            _login = Field(panel.transform, LoginKey, ref y, LoginLimit, string.Empty);
+            _password = Field(panel.transform, PasswordKey, ref y, PasswordLimit, string.Empty);
+            _password.contentType = InputField.ContentType.Password;
+            Text hint = UiFactory.Label("AccountHint", panel.transform, ctx.Font, HudLayout.FontSmall, TextAnchor.UpperLeft, HudPalette.TextDim);
+            UiFactory.Place(hint.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(HudLayout.Margin + LabelWidth, y),
+                new Vector2(PanelSize.x - LabelWidth - HudLayout.Margin * 2f, RowHeight));
+            hint.text = ctx.Text.Get(AccountHintKey);
+            y -= RowHeight;
             _port = Field(panel.transform, PortKey, ref y, PortLimit, ctx.Content.Config.DefaultPort.ToString());
             _port.contentType = InputField.ContentType.IntegerNumber;
             y -= HudLayout.Gap * 2f;
@@ -99,6 +114,11 @@ namespace Game.Client.UI
 
         public string ClassId => _classId;
 
+        /// <summary>Account for joining a server (module 13); single player and host use the local account.</summary>
+        public string Login => _login.text.Trim();
+
+        public string Password => _password.text;
+
         public void Show(string status)
         {
             _root.SetActive(true);
@@ -111,8 +131,16 @@ namespace Game.Client.UI
 
         public void SetStatus(string status) => _status.text = status ?? string.Empty;
 
-        public void Prefill(string playerName, string classId, string address, int port)
+        public void Prefill(string playerName, string classId, string address, int port, string login, string password)
         {
+            if (!string.IsNullOrEmpty(login))
+            {
+                _login.text = login;
+            }
+            if (!string.IsNullOrEmpty(password))
+            {
+                _password.text = password;
+            }
             if (!string.IsNullOrEmpty(playerName))
             {
                 _name.text = playerName;

@@ -12,6 +12,9 @@ namespace Game.Host
         public bool Host;
         /// <summary>-bots N with -connect: N headless bots instead of a player (module 3 load tests).</summary>
         public int Bots;
+        /// <summary>-login / -password: account for -connect (module 13).</summary>
+        public string Login;
+        public string Password;
         public string ConnectAddress;
         public int Port;
         public string PlayerName;
@@ -27,6 +30,14 @@ namespace Game.Host
                 {
                     case "-server":
                         options.DedicatedServer = true;
+                        break;
+                    case "-login":
+                        options.Login = next;
+                        i++;
+                        break;
+                    case "-password":
+                        options.Password = next;
+                        i++;
                         break;
                     case "-bots":
                         int.TryParse(next, out options.Bots);

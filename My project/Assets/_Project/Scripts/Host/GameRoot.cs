@@ -17,6 +17,7 @@ using Game.Network;
 using Game.Server;
 using Game.Server.Items;
 using Game.Server.Net;
+using Game.Server.Persistence;
 using Game.Shared.Content;
 using Game.Shared.Core;
 using UnityEngine;
@@ -73,6 +74,13 @@ namespace Game.Host
         private string _address;
         private int _port;
         private Task<NetworkClientSession> _pendingJoin;
+        private FileStorage _storage;
+        private CharacterPersistence _persistence;
+        private bool _backedUp;
+        private string _login;
+        private string _password;
+        private string _token;
+        private const string SavesFolder = "Saves";
 
         private void Start()
         {
@@ -107,7 +115,7 @@ namespace Game.Host
             BuildClient();
             if (options.AutoStart)
             {
-                _menu.Prefill(options.PlayerName, options.ClassId ?? _content.Config.DefaultClassId, options.ConnectAddress, _port);
+                _menu.Prefill(options.PlayerName, options.ClassId ?? _content.Config.DefaultClassId, options.ConnectAddress, _port, options.Login, options.Password);
                 if (options.Host)
                 {
                     StartHost(_menu.PlayerName, _menu.ClassId, _port);
@@ -140,11 +148,16 @@ namespace Game.Host
             {
                 CompleteJoin();
             }
+            _persistence?.Update(dt);
             if (_connection == null)
             {
                 return;
             }
             _connection.Update(dt);
+            if (_connection is RemoteServerConnection remote && remote.Token != null)
+            {
+                _token = remote.Token;
+            }
             if (_connection == null)
             {
                 return;
@@ -234,7 +247,7 @@ namespace Game.Host
             _server = CreateServer();
             try
             {
-                _networkHost = new ServerNetworkHost(_server, port);
+                _networkHost = new ServerNetworkHost(_server, port, _persistence);
             }
             catch (Exception exception)
             {
@@ -251,9 +264,18 @@ namespace Game.Host
         {
             Leave();
             Remember(playerName, classId, address, port);
+            if (_login != _menu.Login)
+            {
+                _token = null;
+            }
+            _login = _menu.Login;
+            _password = _menu.Password;
+            string login = _login;
+            string password = _password;
+            string token = _token;
             ShowMenu(_ctx.Text.Get(ConnectingKey));
             // Connecting may take up to ConnectTimeoutMs: do it off the main thread so the window keeps drawing.
-            _pendingJoin = Task.Run(() => NetworkClientSession.Connect(address, port, playerName, classId));
+            _pendingJoin = Task.Run(() => NetworkClientSession.Connect(address, port, playerName, classId, login, password, token));
         }
 
         private void CompleteJoin()
@@ -280,7 +302,13 @@ namespace Game.Host
 
         private void JoinLocal()
         {
-            EntityId player = _server.AddPlayer(_classId, string.IsNullOrWhiteSpace(_playerName) ? null : _playerName.Trim());
+            EntityId player = _persistence.Enter(CharacterPersistence.LocalLogin, null, null, _playerName, _classId, true, out string error, out _);
+            if (!player.IsValid)
+            {
+                Leave();
+                ShowMenu(_ctx.Text.Get(error));
+                return;
+            }
             var local = new LocalServerConnection(_server, player);
             if (_networkHost != null)
             {
@@ -329,6 +357,8 @@ namespace Game.Host
             UnbindConnection();
             _networkHost?.Dispose();
             _networkHost = null;
+            _persistence?.SaveAll();
+            _persistence = null;
             _server = null;
             _mode = Mode.None;
         }
@@ -357,9 +387,9 @@ namespace Game.Host
                 return;
             }
             _ctx.State.Unbind(_connection);
-            if (_connection is LocalServerConnection local && _server != null)
+            if (_connection is LocalServerConnection local && _persistence != null)
             {
-                _server.RemovePlayer(local.LocalPlayerId);
+                _persistence.Leave(local.LocalPlayerId);
             }
             (_connection as IDisposable)?.Dispose();
             _connection = null;
@@ -372,8 +402,9 @@ namespace Game.Host
         private void StartDedicated()
         {
             _server = CreateServer();
-            _networkHost = new ServerNetworkHost(_server, _port);
+            _networkHost = new ServerNetworkHost(_server, _port, _persistence);
             _mode = Mode.Dedicated;
+            Log.Info(LogTags.Server, $"Saves: {_storage.Root}");
             Application.targetFrameRate = _content.Config.TickRate * DedicatedFrameRateFactor;
             Log.Info(LogTags.Server, $"Dedicated server started on port {_networkHost.Port}. Addresses: {LocalAddresses()}");
             WritePidFile();
@@ -399,6 +430,7 @@ namespace Game.Host
 
         private void UpdateDedicated(float dt)
         {
+            _persistence?.Update(dt);
             _dedicatedAccumulator += dt;
             while (_dedicatedAccumulator >= _server.TickInterval)
             {
@@ -442,7 +474,23 @@ namespace Game.Host
             return reason.StartsWith(NetworkConstants.ErrorKeyPrefix, StringComparison.Ordinal) ? _ctx.Text.Get(reason) : reason;
         }
 
-        private GameServer CreateServer() => new GameServer(_content, new SystemRandom(Environment.TickCount), new InMemoryAuditLog());
+        /// <summary>
+        /// A server with saves (module 13): accounts and characters in persistentDataPath/Saves, the item audit log on disk,
+        /// the unique item registry; the folder is backed up once per launch (the newest BackupsToKeep copies stay).
+        /// </summary>
+        private GameServer CreateServer()
+        {
+            _storage = new FileStorage(Path.Combine(Application.persistentDataPath, SavesFolder), new UnityJsonCodec());
+            if (!_backedUp)
+            {
+                _storage.Backup(_content.Config.BackupsToKeep);
+                _backedUp = true;
+            }
+            var server = new GameServer(_content, new SystemRandom(Environment.TickCount), new FileAuditLog(_storage.AuditPath));
+            server.Context.Items.UniqueRegistry = _storage;
+            _persistence = new CharacterPersistence(server, _storage, _storage);
+            return server;
+        }
 
         private void Remember(string playerName, string classId, string address, int port)
         {

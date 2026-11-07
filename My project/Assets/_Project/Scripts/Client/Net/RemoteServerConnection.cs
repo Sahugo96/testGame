@@ -27,6 +27,9 @@ namespace Game.Client.Net
 
         public bool IsReady => _session.IsWelcomed;
 
+        /// <summary>Session token from the server (module 13): reconnects without the password.</summary>
+        public string Token => _session.Token;
+
         public bool IsClosed => _session.IsClosed;
 
         public string CloseReason => _session.Error ?? _session.CloseReason;
