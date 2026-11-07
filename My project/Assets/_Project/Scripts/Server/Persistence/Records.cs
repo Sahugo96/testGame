@@ -15,6 +15,8 @@ namespace Game.Server.Persistence
         public string PasswordSalt;
         public int PasswordIterations;
         public string CreatedAt;
+        /// <summary>Account setting (question 77): manual pickup. Stored inverted so older accounts (field missing = false) keep auto-pickup.</summary>
+        public bool ManualLoot;
     }
 
     [Serializable]

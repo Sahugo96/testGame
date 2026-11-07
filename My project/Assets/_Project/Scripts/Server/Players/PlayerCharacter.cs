@@ -27,6 +27,8 @@ namespace Game.Server.Players
         public readonly WeaponSwapState WeaponSwap = new WeaponSwapState();
         public CraftData Craft;
         public EntityId TargetId;
+        /// <summary>Account setting (developer decision, question 77): drops go straight into the bag; off — they lie on the ground to be picked up.</summary>
+        public bool AutoLoot = true;
         public MoveCommand LastMove;
         public readonly PlayerOutbox Outbox = new PlayerOutbox();
         public readonly Queue<IGameCommand> PendingCommands = new Queue<IGameCommand>();

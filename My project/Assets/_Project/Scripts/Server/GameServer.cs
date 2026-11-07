@@ -99,6 +99,9 @@ namespace Game.Server
 
         public int CurrentTick => _tick;
 
+        /// <summary>An account setting of the player changed (auto-pickup): persistence saves the account.</summary>
+        public event Action<EntityId> AccountSettingsChanged;
+
         /// <summary>Raised after every tick when snapshots are ready (transports send them).</summary>
         public event Action Ticked;
 
@@ -373,6 +376,7 @@ namespace Game.Server
                 player.Outbox.State = _snapshots.BuildPlayer(player);
                 player.Outbox.State.Duel = _duels.Snapshot(player.EntityId);
                 player.Outbox.State.CraftRecipeId = player.Craft.Active ? player.Craft.RecipeId : null;
+                player.Outbox.State.AutoLoot = player.AutoLoot;
                 player.Outbox.State.CraftProgress = _crafting.Progress(player);
                 player.Outbox.State.Group = _groups.Snapshot(player.EntityId);
             }
@@ -417,6 +421,10 @@ namespace Game.Server
                     break;
                 case PickUpLootCommand pickUp:
                     _loot.PickUp(player, pickUp.LootId);
+                    break;
+                case SetAutoLootCommand autoLoot:
+                    player.AutoLoot = autoLoot.Enabled;
+                    AccountSettingsChanged?.Invoke(player.EntityId);
                     break;
                 case SpendAttributePointCommand spend:
                     _progression.SpendAttributePoint(player, spend);

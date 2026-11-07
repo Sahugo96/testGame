@@ -44,6 +44,8 @@ namespace Game.Client
 
         public void CancelCraft() => _connection.Send(new CancelCraftCommand());
 
+        public void SetAutoLoot(bool enabled) => _connection.Send(new SetAutoLootCommand { Enabled = enabled });
+
         public void PickUpLoot(EntityId lootId) => _connection.Send(new PickUpLootCommand { LootId = lootId });
 
         public void SpendAttributePoint(StatId attribute) => _connection.Send(new SpendAttributePointCommand { Attribute = attribute });

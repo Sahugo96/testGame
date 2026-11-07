@@ -38,6 +38,7 @@ namespace Game.Server.Persistence
             _accounts = accounts;
             _characters = characters;
             _config = server.Context.Content.Config;
+            _server.AccountSettingsChanged += SaveAccountSettings;
         }
 
         public int Online => _online.Count;
@@ -99,6 +100,8 @@ namespace Game.Server.Persistence
                 Save(id);
             }
             _online[id] = (login, classId);
+            AccountRecord account = _accounts.LoadAccount(login);
+            _server.GetPlayer(id).AutoLoot = account == null || !account.ManualLoot;
             newToken = trusted ? null : IssueToken(login);
             return id;
         }
@@ -125,6 +128,18 @@ namespace Game.Server.Persistence
             record.AccountLogin = owner.login;
             record.SavedAt = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
             _characters.SaveCharacter(record);
+        }
+
+        /// <summary>Account settings (auto-pickup) are saved at once; the local account gets a record on first change.</summary>
+        private void SaveAccountSettings(EntityId id)
+        {
+            if (!_online.TryGetValue(id, out var owner))
+            {
+                return;
+            }
+            AccountRecord account = _accounts.LoadAccount(owner.login) ?? new AccountRecord { SchemaVersion = 1, Login = owner.login };
+            account.ManualLoot = !_server.GetPlayer(id).AutoLoot;
+            _accounts.SaveAccount(account);
         }
 
         public void SaveAll()

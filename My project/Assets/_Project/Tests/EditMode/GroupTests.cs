@@ -275,6 +275,7 @@ namespace Game.Tests
             EntityId[] g = MakeGroup("mage", "mage");
             EntityId cube = PrepareCube(g[0]);
             int before = Shards(g[1]);
+            _h.Send(g[1], new SetAutoLootCommand { Enabled = false });
             Hit(g[0], cube);
             Kill(g[1], cube);
             EntityId loot = GroundLoot();

@@ -63,10 +63,10 @@ namespace Game.Server.Systems
         }
 
         /// <summary>
-        /// One drop of a dead mob (06, 7.8). Solo: straight into the killer's bag (question 68), on the ground for them if
-        /// the section is full. Group: "PickedUp" — on the ground for the eligible members, the first to pick it up gets it;
-        /// "Leader" — into the leader's bag, on the ground for the leader if full (or by "PickedUp" if the leader did not
-        /// fight); "RoundRobin" — by the queue, on the ground for everyone eligible if nobody has room.
+        /// One drop of a dead mob (06, 7.8; question 77). It goes to whom the mode gives it — the killer (solo, "PickedUp"),
+        /// the leader ("Leader", or "PickedUp" if the leader did not fight), the next in the queue ("RoundRobin"). With
+        /// auto-pickup on (account setting) it goes straight into their bag; with it off, or when the bag section is full,
+        /// it lies on the ground (for "PickedUp" — for all eligible members, the first to pick it up gets it).
         /// Returns who got it now, or null (on the ground).
         /// </summary>
         public PlayerCharacter Give(PlayerCharacter killer, EntityId mob, MobDropDto drop)
@@ -82,9 +82,19 @@ namespace Game.Server.Systems
                 case LootMode.RoundRobin:
                     return GiveRoundRobin(mob, drop, group);
                 default:
-                    Drop(mob, drop, EligibleMembers(group, mob), group.Id, LootMode.PickedUp);
-                    return null;
+                    return GivePickedUp(killer, mob, drop, group);
             }
+        }
+
+        /// <summary>"PickedUp": a killer with auto-pickup takes it at once (if it fits); otherwise it lies for the eligible members.</summary>
+        private PlayerCharacter GivePickedUp(PlayerCharacter killer, EntityId mob, MobDropDto drop, GroupData group)
+        {
+            if (killer.AutoLoot && IsEligible(killer.EntityId, mob) && _inventory.CanFit(killer, drop.ItemId, drop.Count))
+            {
+                return GiveTo(killer, drop.ItemId, drop.Count, group.Id, LootMode.PickedUp);
+            }
+            Drop(mob, drop, EligibleMembers(group, mob), group.Id, LootMode.PickedUp);
+            return null;
         }
 
         /// <summary>Picking up a drop from the ground: eligible, close enough, room in the bag; the first one wins (06, 7.8).</summary>
@@ -172,6 +182,11 @@ namespace Game.Server.Systems
                 Drop(mob, drop, EligibleMembers(group, mob), group.Id, LootMode.PickedUp);
                 return null;
             }
+            if (!leader.AutoLoot)
+            {
+                Drop(mob, drop, new[] { leader.EntityId }, group.Id, LootMode.Leader);
+                return null;
+            }
             if (!_inventory.CanFit(leader, drop.ItemId, drop.Count))
             {
                 leader.Outbox.Notifications.Add(new NotificationMessage
@@ -192,20 +207,31 @@ namespace Game.Server.Systems
             {
                 PlayerCharacter candidate = _ctx.GetPlayer(member);
                 // Ineligible players are skipped and keep their place; a full bag passes the item to the next one.
-                if (candidate == null || !IsEligible(member, mob) || !_inventory.CanFit(candidate, drop.ItemId, drop.Count))
+                if (candidate == null || !IsEligible(member, mob) || (candidate.AutoLoot && !_inventory.CanFit(candidate, drop.ItemId, drop.Count)))
                 {
                     continue;
                 }
                 _groups.MoveToQueueEnd(group.Id, member);
+                if (!candidate.AutoLoot)
+                {
+                    // Manual pickup (question 77): the item is theirs, but lies on the ground until they pick it up.
+                    Drop(mob, drop, new[] { member }, group.Id, LootMode.RoundRobin);
+                    return null;
+                }
                 return GiveTo(candidate, drop.ItemId, drop.Count, group.Id, LootMode.RoundRobin);
             }
             Drop(mob, drop, EligibleMembers(group, mob), group.Id, LootMode.RoundRobin);
             return null;
         }
 
-        /// <summary>Solo: into the bag, or onto the ground for the killer when the section is full.</summary>
+        /// <summary>Solo: auto-pickup — into the bag (on the ground if the section is full); manual — on the ground for the killer.</summary>
         private PlayerCharacter GiveOrDrop(PlayerCharacter killer, EntityId mob, MobDropDto drop, int groupId, LootMode mode)
         {
+            if (!killer.AutoLoot)
+            {
+                Drop(mob, drop, new[] { killer.EntityId }, groupId, mode);
+                return null;
+            }
             if (_inventory.CanFit(killer, drop.ItemId, drop.Count))
             {
                 return GiveTo(killer, drop.ItemId, drop.Count, groupId, mode);

@@ -30,6 +30,8 @@ namespace Game.Client.Localization
         public const string SettingsInfo = "ui.settings_info";
         public const string SwitchClass = "ui.switch_class";
         public const string LeaveGame = "ui.leave";
+        public const string AutoLootOn = "ui.autoloot_on";
+        public const string AutoLootOff = "ui.autoloot_off";
         public const string DuelChallenge = "duel.challenge";
         public const string DuelIncoming = "duel.incoming";
         public const string DuelOutgoing = "duel.outgoing";

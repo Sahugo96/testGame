@@ -35,6 +35,7 @@ namespace Game.Shared.Protocol
         public EquipmentSlotSnapshot[] Equipment;
         public StatSnapshot[] Stats;
         public CooldownGroupSnapshot[] ConsumableCooldowns;
+        public bool AutoLoot;
         public string CraftRecipeId;
         public float CraftProgress;
         public DuelSnapshot Duel;

@@ -24,6 +24,8 @@ namespace Game.Tests
             _outsider = _h.AddPlayer("mage");
             _h.Send(_a, new GroupInviteCommand { TargetId = _b });
             _h.Send(_b, new GroupInviteResponseCommand { Accept = true });
+            _h.Send(_a, new SetAutoLootCommand { Enabled = false });
+            _h.Send(_b, new SetAutoLootCommand { Enabled = false });
         }
 
         private EntityId KillCubeWithBoth()
@@ -108,6 +110,7 @@ namespace Game.Tests
         public void Solo_FullSection_DropsToTheGround_ForTheKiller()
         {
             EntityId solo = _h.AddPlayer("mage");
+            Assert.That(_h.Player(solo).AutoLoot, Is.True);
             BagSectionFill(solo);
             EntityId cube = _h.NearestMob(solo, "cube");
             _h.PlaceNear(solo, cube, 5f);
@@ -115,6 +118,32 @@ namespace Game.Tests
             EntityId loot = _h.World.Entities.First(id => _h.World.Loot.Has(id));
             Assert.That(_h.World.Loot.Get(loot).Eligible, Is.EqualTo(new[] { solo }));
             Assert.That(_h.Player(solo).Outbox.Notifications.Any(n => n.TextKey == NotificationKeys.LootOnGround), Is.True);
+        }
+
+        [Test]
+        public void AutoLoot_GoesStraightToTheBag_ManualLiesOnTheGround()
+        {
+            EntityId solo = _h.AddPlayer("mage");
+            EntityId cube = _h.NearestMob(solo, "cube");
+            _h.PlaceNear(solo, cube, 5f);
+            int before = Shards(solo);
+            _h.Send(solo, new UseSkillCommand { SkillId = "reserve_nova", TargetId = cube });
+            Assert.That(Shards(solo), Is.EqualTo(before + 1), "auto-pickup is on by default");
+            Assert.That(_h.Player(solo).Outbox.State.AutoLoot, Is.True);
+
+            _h.Send(solo, new SetAutoLootCommand { Enabled = false });
+            _h.Run(_h.Content.Mobs["cube"].RespawnSeconds + 0.1f);
+            cube = _h.NearestMob(solo, "cube");
+            _h.PlaceNear(solo, cube, 5f);
+            _h.Player(solo).SkillCooldowns.Clear();
+            _h.Mana(solo).Reserve = _h.Mana(solo).MaxReserve;
+            _h.Send(solo, new UseSkillCommand { SkillId = "reserve_nova", TargetId = cube });
+            Assert.That(Shards(solo), Is.EqualTo(before + 1), "manual: nothing in the bag yet");
+            EntityId loot = _h.World.Entities.First(id => _h.World.Loot.Has(id));
+            Assert.That(_h.World.Loot.Get(loot).Eligible, Is.EqualTo(new[] { solo }));
+            Go(solo, loot);
+            _h.Send(solo, new PickUpLootCommand { LootId = loot });
+            Assert.That(Shards(solo), Is.EqualTo(before + 2));
         }
 
         /// <summary>Fills the resources section (shards live there) with full stacks of other materials.</summary>

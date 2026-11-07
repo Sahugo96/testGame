@@ -112,6 +112,21 @@ namespace Game.Tests
         }
 
         [Test]
+        public void AutoLootSetting_IsSavedWithTheAccount()
+        {
+            var h = new ServerHarness();
+            FileStorage storage = Storage();
+            CharacterPersistence persistence = Persistence(h, storage);
+            EntityId id = persistence.Enter("gina", "secret1", null, "Джина", "mage", false, out _, out _);
+            h.Send(id, new SetAutoLootCommand { Enabled = false });
+            persistence.Leave(id);
+
+            var restarted = new ServerHarness();
+            EntityId back = Persistence(restarted, Storage()).Enter("gina", "secret1", null, "Джина", "warrior", false, out _, out _);
+            Assert.That(restarted.Player(back).AutoLoot, Is.False, "an account setting: the same for every character");
+        }
+
+        [Test]
         public void Account_StoresOnlyASaltedHash()
         {
             var h = new ServerHarness();

@@ -163,6 +163,10 @@ namespace Game.Network
                     w.Write((byte)MessageType.PickUpLoot);
                     Id(w, m.LootId);
                     break;
+                case SetAutoLootCommand m:
+                    w.Write((byte)MessageType.SetAutoLoot);
+                    w.Write(m.Enabled);
+                    break;
                 case WorldSnapshot m:
                     w.Write((byte)MessageType.World);
                     WriteWorld(w, m, null);
@@ -250,6 +254,8 @@ namespace Game.Network
                     return new CancelCraftCommand();
                 case MessageType.PickUpLoot:
                     return new PickUpLootCommand { LootId = Id(r) };
+                case MessageType.SetAutoLoot:
+                    return new SetAutoLootCommand { Enabled = r.ReadBoolean() };
                 case MessageType.World:
                     return ReadWorld(r);
                 case MessageType.PlayerState:
@@ -438,6 +444,7 @@ namespace Game.Network
                 Str(w, g.Group);
                 w.Write(g.Remaining);
             }
+            w.Write(m.AutoLoot);
             Str(w, m.CraftRecipeId);
             w.Write(m.CraftProgress);
             w.Write((byte)m.Duel.Phase);
@@ -592,6 +599,7 @@ namespace Game.Network
             {
                 m.ConsumableCooldowns[i] = new CooldownGroupSnapshot { Group = Str(r), Remaining = r.ReadSingle() };
             }
+            m.AutoLoot = r.ReadBoolean();
             m.CraftRecipeId = Str(r);
             m.CraftProgress = r.ReadSingle();
             m.Duel = new DuelSnapshot

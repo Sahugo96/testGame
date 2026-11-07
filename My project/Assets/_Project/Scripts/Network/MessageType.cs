@@ -27,6 +27,7 @@ namespace Game.Network
         CraftItem = 29,
         CancelCraft = 30,
         PickUpLoot = 31,
+        SetAutoLoot = 32,
         World = 40,
         PlayerState = 41,
         CombatEvent = 42,
