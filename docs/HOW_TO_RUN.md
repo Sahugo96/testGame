@@ -26,6 +26,15 @@
    ```
    При переключении Git может удалить папку `My project/UserSettings` — это нормально: там только раскладка окон редактора, Unity создаст её заново.
 
+Если Git (или GitHub Desktop) не даёт переключиться из-за файлов `My project/Temp/...` (`UnityLockfile`, `FSTimeGet-...`) или `My project/UserSettings/Layouts/default-6000.dwlt`:
+1. Закрой Unity полностью (`UnityLockfile` означает, что редактор ещё открыт).
+2. Отмени изменение раскладки окон (это только расположение панелей редактора):
+   ```bash
+   git restore "My project/UserSettings/Layouts/default-6000.dwlt"
+   ```
+3. Удали папку `My project\Temp` (временные файлы Unity, редактор создаст её заново). Если не удаляется — Unity ещё запущен.
+4. Снова `git checkout claude/vertical-slice`. В этой ветке `Temp` и `UserSettings` уже в `.gitignore`, больше они мешать не будут.
+
 Через GitHub Desktop: *Fetch origin* → в списке веток выбрать `claude/vertical-slice` → *Switch branch* (если спросит про изменения — выбрать *Leave my changes* / *Stash*).
 
 Обновить ветку позже (когда появятся новые коммиты):
