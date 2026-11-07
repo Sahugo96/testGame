@@ -6,13 +6,13 @@
 # See: https://github.com/github/gitignore/tree/main/Global
 #
 .utmp/
-/MyGame/[Ll]ibrary/
-# /MyGame/[Tt]emp/
-# /MyGame/[Oo]bj/
-# /MyGame/[Bb]uild/
-# /MyGame/[Bb]uilds/
-# /MyGame/[Ll]ogs/
-# /MyGame/[Uu]ser[Ss]ettings/
+/My project/[Ll]ibrary/
+# /My project/[Tt]emp/
+# /My project/[Oo]bj/
+# /My project/[Bb]uild/
+# /My project/[Bb]uilds/
+# /My project/[Ll]ogs/
+# /My project/[Uu]ser[Ss]ettings/
 *.log
 
 # Memory Profiler generated files
