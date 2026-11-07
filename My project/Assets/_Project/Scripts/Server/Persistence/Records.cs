@@ -17,6 +17,8 @@ namespace Game.Server.Persistence
         public string CreatedAt;
         /// <summary>Account setting (question 77): manual pickup. Stored inverted so older accounts (field missing = false) keep auto-pickup.</summary>
         public bool ManualLoot;
+        /// <summary>Friends list (module 14): character names.</summary>
+        public string[] Friends;
     }
 
     [Serializable]

@@ -27,6 +27,7 @@ namespace Game.Client.Input
         public readonly InputAction PointerPosition;
         public readonly InputAction CycleTarget;
         public readonly InputAction Cancel;
+        public readonly InputAction ChatSubmit;
         public readonly InputAction ModifierShift;
         public readonly InputAction ModifierCtrl;
         public readonly InputAction[] SkillSlots;
@@ -48,6 +49,8 @@ namespace Game.Client.Input
             PointerPosition = _map.AddAction("PointerPosition", InputActionType.Value, "<Mouse>/position");
             CycleTarget = _map.AddAction("CycleTarget", InputActionType.Button, "<Keyboard>/tab");
             Cancel = _map.AddAction("Cancel", InputActionType.Button, "<Keyboard>/escape");
+            ChatSubmit = _map.AddAction("ChatSubmit", InputActionType.Button, "<Keyboard>/enter");
+            ChatSubmit.AddBinding("<Keyboard>/numpadEnter");
             ModifierShift = _map.AddAction("ModifierShift", InputActionType.Button, "<Keyboard>/shift");
             ModifierCtrl = _map.AddAction("ModifierCtrl", InputActionType.Button, "<Keyboard>/ctrl");
 

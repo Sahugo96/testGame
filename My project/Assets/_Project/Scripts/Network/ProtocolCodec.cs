@@ -159,6 +159,66 @@ namespace Game.Network
                 case CancelCraftCommand _:
                     w.Write((byte)MessageType.CancelCraft);
                     break;
+                case FriendAddCommand m:
+                    w.Write((byte)MessageType.FriendAdd);
+                    Str(w, m.Name);
+                    break;
+                case FriendRemoveCommand m:
+                    w.Write((byte)MessageType.FriendRemove);
+                    Str(w, m.Name);
+                    break;
+                case GroupConvertToRaidCommand _:
+                    w.Write((byte)MessageType.GroupConvertToRaid);
+                    break;
+                case GroupMoveCommand m:
+                    w.Write((byte)MessageType.GroupMove);
+                    Id(w, m.MemberId);
+                    w.Write(m.Subgroup);
+                    break;
+                case GroupSetAssistantCommand m:
+                    w.Write((byte)MessageType.GroupSetAssistant);
+                    Id(w, m.MemberId);
+                    w.Write(m.Enabled);
+                    break;
+                case TradeRequestCommand m:
+                    w.Write((byte)MessageType.TradeRequest);
+                    Id(w, m.TargetId);
+                    break;
+                case TradeRespondCommand m:
+                    w.Write((byte)MessageType.TradeRespond);
+                    w.Write(m.Accept);
+                    break;
+                case TradeOfferCommand m:
+                    w.Write((byte)MessageType.TradeOffer);
+                    string[] offered = m.InstanceIds ?? new string[0];
+                    w.Write(offered.Length);
+                    foreach (string id in offered)
+                    {
+                        Str(w, id);
+                    }
+                    w.Write(m.Gold);
+                    break;
+                case TradeConfirmCommand _:
+                    w.Write((byte)MessageType.TradeConfirm);
+                    break;
+                case TradeCancelCommand _:
+                    w.Write((byte)MessageType.TradeCancel);
+                    break;
+                case SendChatCommand m:
+                    w.Write((byte)MessageType.SendChat);
+                    w.Write((byte)m.Channel);
+                    Str(w, m.Text);
+                    Str(w, m.Target);
+                    break;
+                case ChatMessage m:
+                    w.Write((byte)MessageType.Chat);
+                    w.Write((byte)m.Channel);
+                    Id(w, m.SenderId);
+                    Str(w, m.SenderName);
+                    Str(w, m.TargetName);
+                    Str(w, m.Text);
+                    Str(w, m.TextKey);
+                    break;
                 case InsertIngredientCommand m:
                     w.Write((byte)MessageType.InsertIngredient);
                     Str(w, m.ItemInstanceId);
@@ -259,6 +319,36 @@ namespace Game.Network
                     return new CraftItemCommand { RecipeId = Str(r), StationId = Id(r) };
                 case MessageType.CancelCraft:
                     return new CancelCraftCommand();
+                case MessageType.FriendAdd:
+                    return new FriendAddCommand { Name = Str(r) };
+                case MessageType.FriendRemove:
+                    return new FriendRemoveCommand { Name = Str(r) };
+                case MessageType.GroupConvertToRaid:
+                    return new GroupConvertToRaidCommand();
+                case MessageType.GroupMove:
+                    return new GroupMoveCommand { MemberId = Id(r), Subgroup = r.ReadInt32() };
+                case MessageType.GroupSetAssistant:
+                    return new GroupSetAssistantCommand { MemberId = Id(r), Enabled = r.ReadBoolean() };
+                case MessageType.TradeRequest:
+                    return new TradeRequestCommand { TargetId = Id(r) };
+                case MessageType.TradeRespond:
+                    return new TradeRespondCommand { Accept = r.ReadBoolean() };
+                case MessageType.TradeOffer:
+                    var offer = new TradeOfferCommand { InstanceIds = new string[Count(r)] };
+                    for (int i = 0; i < offer.InstanceIds.Length; i++)
+                    {
+                        offer.InstanceIds[i] = Str(r);
+                    }
+                    offer.Gold = r.ReadInt64();
+                    return offer;
+                case MessageType.TradeConfirm:
+                    return new TradeConfirmCommand();
+                case MessageType.TradeCancel:
+                    return new TradeCancelCommand();
+                case MessageType.SendChat:
+                    return new SendChatCommand { Channel = (ChatChannel)r.ReadByte(), Text = Str(r), Target = Str(r) };
+                case MessageType.Chat:
+                    return new ChatMessage { Channel = (ChatChannel)r.ReadByte(), SenderId = Id(r), SenderName = Str(r), TargetName = Str(r), Text = Str(r), TextKey = Str(r) };
                 case MessageType.InsertIngredient:
                     return new InsertIngredientCommand { ItemInstanceId = Str(r), SocketIndex = r.ReadInt32(), IngredientBagIndex = r.ReadInt32(), StationId = Id(r) };
                 case MessageType.PickUpLoot:
@@ -472,6 +562,14 @@ namespace Game.Network
             w.Write(m.Duel.CenterZ);
             w.Write(m.Duel.Radius);
             WriteGroup(w, m.Group ?? new GroupSnapshot());
+            FriendSnapshot[] friends = m.Friends ?? new FriendSnapshot[0];
+            w.Write(friends.Length);
+            foreach (FriendSnapshot f in friends)
+            {
+                Str(w, f.Name);
+                w.Write(f.Online);
+            }
+            WriteTrade(w, m.Trade ?? new TradeSnapshot());
         }
 
         private static void WriteGroup(BinaryWriter w, GroupSnapshot g)
@@ -480,6 +578,15 @@ namespace Game.Network
             Id(w, g.LeaderId);
             w.Write((byte)g.LootMode);
             Ids(w, g.Members);
+            w.Write(g.IsRaid);
+            int[] subgroups = g.Subgroups ?? new int[0];
+            w.Write(subgroups.Length);
+            foreach (int sub in subgroups)
+            {
+                w.Write((byte)sub);
+            }
+            Ids(w, g.Assistants);
+            Ids(w, g.Voters);
             Id(w, g.InviteFromId);
             w.Write(g.InviteRemaining);
             w.Write(g.VoteActive);
@@ -507,6 +614,10 @@ namespace Game.Network
                 LeaderId = Id(r),
                 LootMode = (LootMode)r.ReadByte(),
                 Members = Ids(r),
+                IsRaid = r.ReadBoolean(),
+                Subgroups = ReadSubgroups(r),
+                Assistants = Ids(r),
+                Voters = Ids(r),
                 InviteFromId = Id(r),
                 InviteRemaining = r.ReadSingle(),
                 VoteActive = r.ReadBoolean(),
@@ -523,6 +634,80 @@ namespace Game.Network
                 g.Log[i] = new GroupLogEntry { RecipientName = Str(r), ItemDefinitionId = Str(r), Count = r.ReadInt32(), Mode = (LootMode)r.ReadByte() };
             }
             return g;
+        }
+
+        /// <summary>
+        /// Element count of an array a client sends: never negative and never more than the bytes left (every element
+        /// takes at least one), so a forged count cannot make the server allocate a huge array.
+        /// </summary>
+        private static int Count(BinaryReader r)
+        {
+            int count = r.ReadInt32();
+            if (count < 0 || count > r.BaseStream.Length - r.BaseStream.Position)
+            {
+                throw new InvalidDataException("bad array length");
+            }
+            return count;
+        }
+
+        private static int[] ReadSubgroups(BinaryReader r)
+        {
+            var result = new int[r.ReadInt32()];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = r.ReadByte();
+            }
+            return result;
+        }
+
+        private static void WriteTrade(BinaryWriter w, TradeSnapshot t)
+        {
+            w.Write((byte)t.Phase);
+            Id(w, t.PartnerId);
+            w.Write(t.Remaining);
+            WriteTradeItems(w, t.MyItems);
+            w.Write(t.MyGold);
+            w.Write(t.MyConfirmed);
+            WriteTradeItems(w, t.TheirItems);
+            w.Write(t.TheirGold);
+            w.Write(t.TheirConfirmed);
+        }
+
+        private static TradeSnapshot ReadTrade(BinaryReader r) => new TradeSnapshot
+        {
+            Phase = (TradePhase)r.ReadByte(),
+            PartnerId = Id(r),
+            Remaining = r.ReadSingle(),
+            MyItems = ReadTradeItems(r),
+            MyGold = r.ReadInt64(),
+            MyConfirmed = r.ReadBoolean(),
+            TheirItems = ReadTradeItems(r),
+            TheirGold = r.ReadInt64(),
+            TheirConfirmed = r.ReadBoolean(),
+        };
+
+        private static void WriteTradeItems(BinaryWriter w, ItemSlotSnapshot[] items)
+        {
+            items = items ?? new ItemSlotSnapshot[0];
+            w.Write(items.Length);
+            foreach (ItemSlotSnapshot item in items)
+            {
+                w.Write(item.Index);
+                Str(w, item.InstanceId);
+                Str(w, item.DefinitionId);
+                w.Write(item.Count);
+                w.Write(item.UpgradeLevel);
+            }
+        }
+
+        private static ItemSlotSnapshot[] ReadTradeItems(BinaryReader r)
+        {
+            var items = new ItemSlotSnapshot[r.ReadInt32()];
+            for (int i = 0; i < items.Length; i++)
+            {
+                items[i] = new ItemSlotSnapshot { Index = r.ReadInt32(), InstanceId = Str(r), DefinitionId = Str(r), Count = r.ReadInt32(), UpgradeLevel = r.ReadInt32() };
+            }
+            return items;
         }
 
         private static void WriteItemDetails(BinaryWriter w, SocketSnapshot[] sockets, AffixSnapshot[] affixes)
@@ -666,6 +851,12 @@ namespace Game.Network
                 Phase = (DuelPhase)r.ReadByte(), OpponentId = Id(r), Remaining = r.ReadSingle(), CenterX = r.ReadSingle(), CenterZ = r.ReadSingle(), Radius = r.ReadSingle(),
             };
             m.Group = ReadGroup(r);
+            m.Friends = new FriendSnapshot[r.ReadInt32()];
+            for (int i = 0; i < m.Friends.Length; i++)
+            {
+                m.Friends[i] = new FriendSnapshot { Name = Str(r), Online = r.ReadBoolean() };
+            }
+            m.Trade = ReadTrade(r);
             return m;
         }
 

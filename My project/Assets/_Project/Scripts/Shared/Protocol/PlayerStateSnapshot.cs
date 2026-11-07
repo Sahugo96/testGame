@@ -41,5 +41,7 @@ namespace Game.Shared.Protocol
         public float CraftProgress;
         public DuelSnapshot Duel;
         public GroupSnapshot Group = new GroupSnapshot();
+        public FriendSnapshot[] Friends;
+        public TradeSnapshot Trade = new TradeSnapshot();
     }
 }

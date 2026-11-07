@@ -69,12 +69,9 @@ namespace Game.Server.Systems
             }
             Pick(player.EntityId);
             Pick(player.TargetId);
-            if (_groups.TryGetGroup(player.EntityId, out GroupData group))
+            foreach (EntityId member in _groups.CloseMates(player.EntityId))
             {
-                foreach (EntityId member in group.Members)
-                {
-                    Pick(member);
-                }
+                Pick(member);
             }
             if (_duels.TryGet(player.EntityId, out DuelData duel))
             {

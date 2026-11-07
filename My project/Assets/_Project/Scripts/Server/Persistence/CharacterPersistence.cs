@@ -39,6 +39,7 @@ namespace Game.Server.Persistence
             _characters = characters;
             _config = server.Context.Content.Config;
             _server.AccountSettingsChanged += SaveAccountSettings;
+            _server.Friends.NameExists = _characters.NameExists;
         }
 
         public int Online => _online.Count;
@@ -102,6 +103,7 @@ namespace Game.Server.Persistence
             _online[id] = (login, classId);
             AccountRecord account = _accounts.LoadAccount(login);
             _server.GetPlayer(id).AutoLoot = account == null || !account.ManualLoot;
+            _server.GetPlayer(id).Friends.AddRange(account?.Friends ?? new string[0]);
             newToken = trusted ? null : IssueToken(login);
             return id;
         }
@@ -139,6 +141,7 @@ namespace Game.Server.Persistence
             }
             AccountRecord account = _accounts.LoadAccount(owner.login) ?? new AccountRecord { SchemaVersion = 1, Login = owner.login };
             account.ManualLoot = !_server.GetPlayer(id).AutoLoot;
+            account.Friends = _server.GetPlayer(id).Friends.ToArray();
             _accounts.SaveAccount(account);
         }
 

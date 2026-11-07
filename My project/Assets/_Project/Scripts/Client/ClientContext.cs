@@ -26,6 +26,11 @@ namespace Game.Client
 
         public void RequestClassSwitch(string classId) => ClassSwitchRequested?.Invoke(classId);
 
+        /// <summary>Raised by the friends window: open the chat on the whisper channel to this character.</summary>
+        public event Action<string> WhisperRequested;
+
+        public void RequestWhisper(string name) => WhisperRequested?.Invoke(name);
+
         /// <summary>Raised by the settings window: leave the game and return to the start menu.</summary>
         public event Action LeaveRequested;
 

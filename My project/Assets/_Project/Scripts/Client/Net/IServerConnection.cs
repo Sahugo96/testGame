@@ -31,5 +31,8 @@ namespace Game.Client.Net
         event Action<CombatEventMessage> CombatEventReceived;
         event Action<CommandRejectedMessage> RejectedReceived;
         event Action<NotificationMessage> NotificationReceived;
+
+        /// <summary>Chat lines (module 14).</summary>
+        event Action<ChatMessage> ChatReceived;
     }
 }

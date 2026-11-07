@@ -36,6 +36,29 @@ namespace Game.Client.UI
             return rect;
         }
 
+        /// <summary>
+        /// A single-line text field: background, text without rich text (player input is shown as typed), a dim
+        /// placeholder and a character limit. Place the returned field's rect yourself.
+        /// </summary>
+        public static InputField Input(string name, Transform parent, Font font, int fontSize, int characterLimit, string placeholder)
+        {
+            Image background = Panel(name, parent, HudPalette.SlotFilled);
+            Text text = Label("Text", background.transform, font, fontSize, TextAnchor.MiddleLeft, HudPalette.Text);
+            Stretch(text.rectTransform, HudLayout.Gap * 2f);
+            text.supportRichText = false;
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            Text hint = Label("Placeholder", background.transform, font, fontSize, TextAnchor.MiddleLeft, HudPalette.TextDim);
+            Stretch(hint.rectTransform, HudLayout.Gap * 2f);
+            hint.text = placeholder ?? string.Empty;
+            InputField field = background.gameObject.AddComponent<InputField>();
+            field.targetGraphic = background;
+            field.textComponent = text;
+            field.placeholder = hint;
+            field.characterLimit = characterLimit;
+            field.lineType = InputField.LineType.SingleLine;
+            return field;
+        }
+
         public static Image Panel(string name, Transform parent, Color color, bool raycast = true)
         {
             RectTransform rect = Rect(name, parent);

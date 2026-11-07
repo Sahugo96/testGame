@@ -21,6 +21,9 @@ namespace Game.Server.Persistence
         void SaveCharacter(CharacterRecord character);
         /// <summary>Claims a character name for an account; false if another account owns it. Atomic.</summary>
         bool TryClaimName(string name, string login);
+
+        /// <summary>Whether a character with this name exists in the world (any account).</summary>
+        bool NameExists(string name);
     }
 
     /// <summary>One instance per unique definition (04, 7.11): TryReserve is atomic across threads (and later across servers).</summary>

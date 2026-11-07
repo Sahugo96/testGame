@@ -490,7 +490,8 @@ namespace Game.Server.Systems
             return null;
         }
 
-        private BagSection SectionOf(ItemDefinition definition) =>
+        /// <summary>The bag section an item goes to (by its category).</summary>
+        public BagSection SectionOf(ItemDefinition definition) =>
             _ctx.Content.BagSections[_ctx.Content.SectionIndexFor(definition.Category)];
 
         private void PlaceInBag(PlayerCharacter player, ItemInstance item)

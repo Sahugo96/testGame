@@ -34,6 +34,12 @@ namespace Game.Shared.Protocol
         public const string GroupMemberJoined = "notify.group_member_joined";
         public const string GroupMemberLeft = "notify.group_member_left";
         public const string GroupNewLeader = "notify.group_new_leader";
+        public const string GroupBecameRaid = "notify.group_became_raid";
+        public const string TradeRequested = "notify.trade_requested";
+        public const string TradeDone = "notify.trade_done";
+        public const string TradeCancelled = "notify.trade_cancelled";
+        public const string TradeFailed = "notify.trade_failed";
+        public const string TradeNoRoom = "notify.trade_no_room";
         public const string LootVoteStarted = "notify.loot_vote_started";
         public const string LootVotePassed = "notify.loot_vote_passed";
         public const string LootVoteFailed = "notify.loot_vote_failed";

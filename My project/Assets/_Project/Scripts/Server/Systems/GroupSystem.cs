@@ -42,6 +42,8 @@ namespace Game.Server.Systems
             return false;
         }
 
+        public bool TryGetGroupById(int groupId, out GroupData group) => _groups.TryGetValue(groupId, out group);
+
         public bool AreGroupmates(EntityId a, EntityId b) =>
             _byMember.TryGetValue(a, out int ga) && _byMember.TryGetValue(b, out int gb) && ga == gb;
 
@@ -55,12 +57,12 @@ namespace Game.Server.Systems
             }
             if (TryGetGroup(self, out GroupData group))
             {
-                if (group.LeaderId != self)
+                if (!CanManage(group, self))
                 {
                     CombatEvents.Reject(player, RejectReasons.GroupNotLeader);
                     return;
                 }
-                if (group.Members.Count >= Config.GroupMaxSize)
+                if (group.Members.Count >= MaxSize(group))
                 {
                     CombatEvents.Reject(player, RejectReasons.GroupFull);
                     return;
@@ -95,7 +97,7 @@ namespace Game.Server.Systems
                 return;
             }
             bool inviterHasGroup = TryGetGroup(invite.FromId, out GroupData group);
-            if (_ctx.GetPlayer(invite.FromId) == null || (inviterHasGroup && group.LeaderId != invite.FromId))
+            if (_ctx.GetPlayer(invite.FromId) == null || (inviterHasGroup && !CanManage(group, invite.FromId)))
             {
                 // The inviter left or is no longer a leader: the invite is void.
                 CombatEvents.Reject(player, RejectReasons.GroupNoInvite);
@@ -105,7 +107,7 @@ namespace Game.Server.Systems
             {
                 group = CreateGroup(invite.FromId);
             }
-            if (group.Members.Count >= Config.GroupMaxSize)
+            if (group.Members.Count >= MaxSize(group))
             {
                 CombatEvents.Reject(player, RejectReasons.GroupFull);
                 return;
@@ -177,6 +179,11 @@ namespace Game.Server.Systems
                 CombatEvents.Reject(player, RejectReasons.LootVoteCooldown);
                 return;
             }
+            if (!Voters(group).Contains(player.EntityId))
+            {
+                CombatEvents.Reject(player, RejectReasons.LootVoteNotVoter);
+                return;
+            }
             if (!HasQuorum(group))
             {
                 CombatEvents.Reject(player, RejectReasons.LootVoteNoQuorum);
@@ -203,6 +210,11 @@ namespace Game.Server.Systems
             if (!TryGetGroup(self, out GroupData group) || !group.Vote.Active || group.Vote.ProposalId != proposalId)
             {
                 CombatEvents.Reject(player, RejectReasons.LootVoteNotFound);
+                return;
+            }
+            if (!Voters(group).Contains(self))
+            {
+                CombatEvents.Reject(player, RejectReasons.LootVoteNotVoter);
                 return;
             }
             Log.Info(LogTags.Server, $"Group {group.Id}: {self} votes {(accept ? "for" : "against")} (vote {proposalId})");
@@ -310,6 +322,10 @@ namespace Game.Server.Systems
             snapshot.LeaderId = group.LeaderId;
             snapshot.LootMode = group.LootMode;
             snapshot.Members = group.Members.ToArray();
+            snapshot.IsRaid = group.IsRaid;
+            snapshot.Subgroups = group.Members.ConvertAll(m => group.Subgroups.TryGetValue(m, out int sub) ? sub : 0).ToArray();
+            snapshot.Assistants = new List<EntityId>(group.Assistants).ToArray();
+            snapshot.Voters = Voters(group).ToArray();
             snapshot.ProposeCooldownRemaining = Math.Max(0f, group.ProposeAllowedAt - _ctx.Time);
             snapshot.Log = group.Log.ToArray();
             if (group.Vote.Active)
@@ -324,6 +340,148 @@ namespace Game.Server.Systems
             return snapshot;
         }
 
+        /// <summary>Leader: the group becomes a raid (up to RaidMaxSize, subgroups of RaidSubgroupSize by join order).</summary>
+        public void ConvertToRaid(PlayerCharacter player)
+        {
+            if (!RequireLeader(player, out GroupData group))
+            {
+                return;
+            }
+            if (group.IsRaid)
+            {
+                CombatEvents.Reject(player, RejectReasons.GroupAlreadyRaid);
+                return;
+            }
+            group.IsRaid = true;
+            for (int i = 0; i < group.Members.Count; i++)
+            {
+                group.Subgroups[group.Members[i]] = i / Config.RaidSubgroupSize;
+            }
+            _groups[group.Id] = group;
+            CancelVote(group);
+            NotifyGroup(group, NotificationKeys.GroupBecameRaid, true);
+        }
+
+        /// <summary>Leader or assistant: move a raid member to another subgroup that has room.</summary>
+        public void MoveToSubgroup(PlayerCharacter player, EntityId member, int subgroup)
+        {
+            if (!TryGetGroup(player.EntityId, out GroupData group) || !CanManage(group, player.EntityId))
+            {
+                CombatEvents.Reject(player, RejectReasons.GroupNotLeader);
+                return;
+            }
+            if (!group.IsRaid || !group.Members.Contains(member) || subgroup < 0 || subgroup >= SubgroupCount
+                || CountIn(group, subgroup) >= Config.RaidSubgroupSize)
+            {
+                CombatEvents.Reject(player, RejectReasons.GroupSubgroupInvalid);
+                return;
+            }
+            group.Subgroups[member] = subgroup;
+            _groups[group.Id] = group;
+            CancelVote(group);
+        }
+
+        /// <summary>Leader: make a raid member an assistant (may invite and move members) or take it back.</summary>
+        public void SetAssistant(PlayerCharacter player, EntityId member, bool enabled)
+        {
+            if (!RequireLeader(player, out GroupData group))
+            {
+                return;
+            }
+            if (!group.IsRaid || !group.Members.Contains(member) || member == group.LeaderId)
+            {
+                CombatEvents.Reject(player, RejectReasons.GroupNotMember);
+                return;
+            }
+            if (enabled)
+            {
+                group.Assistants.Add(member);
+            }
+            else
+            {
+                group.Assistants.Remove(member);
+            }
+        }
+
+        /// <summary>
+        /// Who votes on the loot mode: everyone in a group; in a raid the raid leader and the subgroup leaders
+        /// (question 20; a subgroup leader is its first member by join order).
+        /// </summary>
+        public List<EntityId> Voters(GroupData group)
+        {
+            if (!group.IsRaid)
+            {
+                return new List<EntityId>(group.Members);
+            }
+            var voters = new List<EntityId> { group.LeaderId };
+            for (int subgroup = 0; subgroup < SubgroupCount; subgroup++)
+            {
+                foreach (EntityId member in group.Members)
+                {
+                    if (group.Subgroups[member] == subgroup)
+                    {
+                        if (!voters.Contains(member))
+                        {
+                            voters.Add(member);
+                        }
+                        break;
+                    }
+                }
+            }
+            return voters;
+        }
+
+        /// <summary>Members always visible and shown in the frames: the whole group, or the own subgroup in a raid.</summary>
+        public List<EntityId> CloseMates(EntityId member)
+        {
+            var result = new List<EntityId>();
+            if (!TryGetGroup(member, out GroupData group))
+            {
+                return result;
+            }
+            int own = group.Subgroups.TryGetValue(member, out int value) ? value : 0;
+            foreach (EntityId other in group.Members)
+            {
+                if (!group.IsRaid || group.Subgroups[other] == own)
+                {
+                    result.Add(other);
+                }
+            }
+            return result;
+        }
+
+        private int SubgroupCount => Config.RaidMaxSize / Config.RaidSubgroupSize;
+
+        private int MaxSize(GroupData group) => group.IsRaid ? Config.RaidMaxSize : Config.GroupMaxSize;
+
+        private static bool CanManage(GroupData group, EntityId id) => group.LeaderId == id || (group.IsRaid && group.Assistants.Contains(id));
+
+        private int CountIn(GroupData group, int subgroup)
+        {
+            int count = 0;
+            foreach (int value in group.Subgroups.Values)
+            {
+                count += value == subgroup ? 1 : 0;
+            }
+            return count;
+        }
+
+        private int FreeSubgroup(GroupData group)
+        {
+            if (!group.IsRaid)
+            {
+                return 0;
+            }
+            for (int subgroup = 0; subgroup < SubgroupCount; subgroup++)
+            {
+                if (CountIn(group, subgroup) < Config.RaidSubgroupSize)
+                {
+                    return subgroup;
+                }
+            }
+            return 0;
+        }
+
         private GroupData CreateGroup(EntityId leader)
         {
             var group = new GroupData
@@ -333,6 +491,8 @@ namespace Game.Server.Systems
                 Members = new List<EntityId>(),
                 LootMode = LootMode.PickedUp,
                 LootQueue = new List<EntityId>(),
+                Subgroups = new Dictionary<EntityId, int>(),
+                Assistants = new HashSet<EntityId>(),
                 Log = new List<GroupLogEntry>(),
             };
             _groups.Add(group.Id, group);
@@ -345,6 +505,7 @@ namespace Game.Server.Systems
         {
             group.Members.Add(member);
             group.LootQueue.Add(member);
+            group.Subgroups[member] = FreeSubgroup(group);
             _byMember[member] = group.Id;
             _groups[group.Id] = group;
             CancelVote(group);
@@ -356,6 +517,8 @@ namespace Game.Server.Systems
             GroupData group = _groups[_byMember[member]];
             group.Members.Remove(member);
             group.LootQueue.Remove(member);
+            group.Subgroups.Remove(member);
+            group.Assistants.Remove(member);
             _byMember.Remove(member);
             if (memberKey != null)
             {
@@ -400,7 +563,7 @@ namespace Game.Server.Systems
 
         private void ResolveIfUnanimous(GroupData group)
         {
-            foreach (EntityId member in group.Members)
+            foreach (EntityId member in Voters(group))
             {
                 // Disconnected members would not block the vote (question 21); in this stage everyone is online.
                 if (_ctx.GetPlayer(member) != null && !group.Vote.VotesFor.Contains(member))
@@ -427,15 +590,16 @@ namespace Game.Server.Systems
         /// <summary>Question 51: more than half of the members online (in a group of two — both).</summary>
         private bool HasQuorum(GroupData group)
         {
+            List<EntityId> voters = Voters(group);
             int online = 0;
-            foreach (EntityId member in group.Members)
+            foreach (EntityId member in voters)
             {
                 if (_ctx.GetPlayer(member) != null)
                 {
                     online++;
                 }
             }
-            return online * 2 > group.Members.Count;
+            return online * 2 > voters.Count;
         }
 
         private bool RequireLeader(PlayerCharacter player, out GroupData group)
@@ -453,8 +617,12 @@ namespace Game.Server.Systems
             return true;
         }
 
+        /// <summary>A group event also goes to the group chat as a system line (06 7.8: votes are shown in the group chat).</summary>
+        public event Action<int, string> SystemMessage;
+
         private void NotifyGroup(GroupData group, string key, bool positive)
         {
+            SystemMessage?.Invoke(group.Id, key);
             foreach (EntityId member in group.Members)
             {
                 Notify(member, key, positive);

@@ -12,6 +12,13 @@ namespace Game.Shared.Protocol
         public EntityId LeaderId;
         public LootMode LootMode;
         public EntityId[] Members = new EntityId[0];
+        /// <summary>Raid (06 7.8): subgroup of each member (parallel to Members) and assistants.</summary>
+        public bool IsRaid;
+        public int[] Subgroups = new int[0];
+        public EntityId[] Assistants = new EntityId[0];
+
+        /// <summary>Who votes on the loot mode: all members, or in a raid the leader and the first member of every subgroup.</summary>
+        public EntityId[] Voters = new EntityId[0];
 
         public EntityId InviteFromId;
         public float InviteRemaining;

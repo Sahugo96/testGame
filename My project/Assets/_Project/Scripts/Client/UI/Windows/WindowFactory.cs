@@ -17,6 +17,8 @@ namespace Game.Client.UI.Windows
         public const string Whetstone = "whetstone";
         public const string Group = "group";
         public const string CombatLog = "combatlog";
+        public const string Friends = "friends";
+        public const string Trade = "trade";
 
         /// <summary>Window opened by clicking a station of the given type (StationTypes), or null.</summary>
         public static string ForStation(string stationType)
@@ -53,6 +55,10 @@ namespace Game.Client.UI.Windows
                     return new CombatLogWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Group:
                     return new GroupWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case Friends:
+                    return new FriendsWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case Trade:
+                    return new TradeWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Settings:
                     return new SettingsWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 default:

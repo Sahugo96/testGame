@@ -39,6 +39,7 @@ namespace Game.Client.Net
         public event Action<CombatEventMessage> CombatEventReceived;
         public event Action<CommandRejectedMessage> RejectedReceived;
         public event Action<NotificationMessage> NotificationReceived;
+        public event Action<ChatMessage> ChatReceived;
 
         public void Send(IGameCommand command) => _session.Send(command);
 
@@ -60,6 +61,9 @@ namespace Game.Client.Net
                         break;
                     case CommandRejectedMessage rejected:
                         RejectedReceived?.Invoke(rejected);
+                        break;
+                    case ChatMessage chat:
+                        ChatReceived?.Invoke(chat);
                         break;
                     case NotificationMessage notification:
                         NotificationReceived?.Invoke(notification);

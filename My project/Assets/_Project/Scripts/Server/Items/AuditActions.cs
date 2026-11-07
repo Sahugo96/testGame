@@ -18,5 +18,7 @@ namespace Game.Server.Items
         public const string CurrencyCredit = "currency_credit";
         public const string SocketInsert = "socket_insert";
         public const string SocketDestroy = "socket_destroy";
+        /// <summary>An item changed hands in a trade (Reason = receiver).</summary>
+        public const string TradeGive = "trade_give";
     }
 }

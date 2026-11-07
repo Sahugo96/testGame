@@ -33,6 +33,9 @@ namespace Game.Server
         private readonly UpgradeSystem _upgrades;
         private readonly WalletSystem _wallet;
         private readonly SocketSystem _sockets;
+        private readonly ChatSystem _chat;
+        private readonly FriendSystem _friends;
+        private readonly TradeSystem _trade;
         private readonly DuelSystem _duels;
         private readonly GroupSystem _groups;
         private readonly LootSystem _loot;
@@ -81,6 +84,11 @@ namespace Game.Server
             _sockets = new SocketSystem(_ctx, _inventory, _stats);
             _upgrades = new UpgradeSystem(_ctx, _inventory, _stats, _wallet);
             _groups = new GroupSystem(_ctx);
+            _chat = new ChatSystem(_ctx, _groups);
+            _friends = new FriendSystem(_ctx, _chat);
+            _trade = new TradeSystem(_ctx, _inventory, _wallet, _resources);
+            _groups.SystemMessage += (groupId, key) => _chat.SystemToGroup(groupId, key, null);
+            _friends.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
             _loot = new LootSystem(_ctx, _groups, _inventory);
             _crafting = new CraftingSystem(_ctx, _inventory, _resources);
             _interest = new InterestSystem(_ctx, _groups, _duels);
@@ -351,6 +359,8 @@ namespace Game.Server
             _statuses.OnEntityRemoved(id);
             _threat.OnDied(id);
             _groups.OnPlayerRemoved(id);
+            _trade.OnPlayerGone(id);
+            _chat.OnPlayerRemoved(id);
             _ctx.Players.Remove(id);
             foreach (PlayerCharacter other in _ctx.Players.Values)
             {
@@ -397,6 +407,7 @@ namespace Game.Server
             _duels.Update();
             _crafting.Update(dt);
             _loot.Update();
+            _trade.Update();
             _groups.Update();
 
             WorldSnapshot worldSnapshot = _snapshots.BuildWorld(_tick);
@@ -417,6 +428,8 @@ namespace Game.Server
                 player.Outbox.State.AutoLoot = player.AutoLoot;
                 player.Outbox.State.CraftProgress = _crafting.Progress(player);
                 player.Outbox.State.Group = _groups.Snapshot(player.EntityId);
+                player.Outbox.State.Friends = _friends.Snapshot(player);
+                player.Outbox.State.Trade = _trade.Snapshot(player.EntityId);
             }
             _tickClock.Stop();
             Metrics.RecordTick(_tickClock.Elapsed.TotalMilliseconds, _ctx.Players.Count, worldSnapshot.Entities.Length, _interest.LastTickEntitiesSent);
@@ -456,6 +469,39 @@ namespace Game.Server
                     break;
                 case CancelCraftCommand _:
                     _crafting.Cancel(player, true);
+                    break;
+                case SendChatCommand chat:
+                    _chat.Send(player, chat);
+                    break;
+                case FriendAddCommand friendAdd:
+                    _friends.Add(player, friendAdd.Name);
+                    break;
+                case FriendRemoveCommand friendRemove:
+                    _friends.Remove(player, friendRemove.Name);
+                    break;
+                case GroupConvertToRaidCommand _:
+                    _groups.ConvertToRaid(player);
+                    break;
+                case GroupMoveCommand move:
+                    _groups.MoveToSubgroup(player, move.MemberId, move.Subgroup);
+                    break;
+                case GroupSetAssistantCommand assistant:
+                    _groups.SetAssistant(player, assistant.MemberId, assistant.Enabled);
+                    break;
+                case TradeRequestCommand tradeRequest:
+                    _trade.Request(player, tradeRequest.TargetId);
+                    break;
+                case TradeRespondCommand tradeRespond:
+                    _trade.Respond(player, tradeRespond.Accept);
+                    break;
+                case TradeOfferCommand tradeOffer:
+                    _trade.SetOffer(player, tradeOffer);
+                    break;
+                case TradeConfirmCommand _:
+                    _trade.Confirm(player);
+                    break;
+                case TradeCancelCommand _:
+                    _trade.Cancel(player);
                     break;
                 case InsertIngredientCommand insert:
                     _sockets.Insert(player, insert);
@@ -529,6 +575,9 @@ namespace Game.Server
                 }
             }
         }
+
+        /// <summary>Friends (module 14): persistence sets NameExists so offline characters can be added.</summary>
+        public FriendSystem Friends => _friends;
 
         /// <summary>Wallets (05, 7.14.2) for trade, tests and tools.</summary>
         public WalletSystem Wallet => _wallet;

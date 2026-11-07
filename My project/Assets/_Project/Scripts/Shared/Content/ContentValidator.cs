@@ -50,6 +50,14 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: LootSeconds must be > 0 and LootScatterRadius ≥ 0");
             }
+            if (cfg.RaidSubgroupSize <= 0 || cfg.RaidMaxSize < cfg.GroupMaxSize || cfg.RaidMaxSize % cfg.RaidSubgroupSize != 0)
+            {
+                errors.Add("config: RaidMaxSize ≥ GroupMaxSize and a multiple of RaidSubgroupSize");
+            }
+            if (cfg.ChatMaxLength <= 0 || cfg.ChatMinIntervalSeconds < 0f || cfg.FriendsMax <= 0 || cfg.TradeRange <= 0f || cfg.TradeRequestSeconds <= 0f || cfg.TradeMaxItems <= 0)
+            {
+                errors.Add("config: ChatMaxLength > 0 and ChatMinIntervalSeconds ≥ 0");
+            }
             if (cfg.ThreatPerDamage <= 0f || cfg.HealThreatFactor < 0f)
             {
                 errors.Add("config: ThreatPerDamage must be > 0 and HealThreatFactor ≥ 0");

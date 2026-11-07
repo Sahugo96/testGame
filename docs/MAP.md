@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 32)
+### `docs/00_INDEX.md` — индекс набора (версия набора 33)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v23)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v24)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,13 +37,13 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11)** | :258 |
-| 10 | Проблемы и долги (записи v9, v11–v23 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, лута) | :287 |
-| 11 | Журнал решений (последние — v23; замеры модуля 3 — v19) | :313 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :366 |
-| 13 | **Заморожено :376 / Гибко :387 / Отложено + крючки (с модулями) :392** | :372 |
-| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :407 |
-| — | Рекомендации 1,5–10,17–19 | :423 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11, 1.13 — модуль 14)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11–v24 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, 14, лута) | :288 |
+| 11 | Журнал решений (последние — v24; замеры модуля 3 — v19) | :315 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :369 |
+| 13 | **Заморожено :379 / Гибко :390 / Отложено + крючки (с модулями) :395** | :375 |
+| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :410 |
+| — | Рекомендации 1,5–10,17–19 | :426 |
 
 ### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v6)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
@@ -72,10 +72,10 @@
 - **7.14.3 Торговля** :55 — личные магазины (торговец-NPC, срок аренды, 1 на игрока, комиссия 15/10/5%) :57, рынок :63, почта (`MailMessage`) :69, безопасность :81
 - Вопросы 8, 33–35, 49, 50, 58, 62, 73 :89 · Рекомендации 11, 21–25 :103
 
-### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v9)
+### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v10)
 - **7.8 Группы и лут** :11 — группа/лидер :13, режимы лута :20, голосование и кворум (`LootModeVote`, `CmdVoteLootMode`) :28, правила раздачи (`LootEntry` :46) :37
 - **7.5 Подземелье на 50** :50 — структура :52, энкаунтеры :58, лут :63, тех. бюджет (тик 20–30 Гц) :65, UI рейда :70
-- Вопросы 6, 7, 20, 21, 51, 68, 71, 72, 77 :74 · Рекомендация 12 :88
+- Вопросы 6, 7, 20, 21, 51, 68, 71, 72, 77, 79 :74 · Рекомендация 12 :89
 
 ### `.cursor/rules/*.mdc` — производные от документов (README там же)
 `core-always` (приоритеты, запрет ECS) · `unity-csharp` (= 01 §6) · `ui-system` (= 02 7.13) · `player-system` (= 01 §6.1).
@@ -120,7 +120,7 @@
 | 11 | Предметы, инвентарь, кошелёк | 5, 10 | 04 7.9, 7.9.1, 7.14.1; 05 7.14.2 |
 | 12 | Профессии, крафт, улучшение своих предметов | 4, 11 | 05 7.4; 04 7.9 (слоты), 7.14.1 |
 | 13 | Аккаунты, PostgreSQL, реестр уникальных | 11 | 04 7.9 (божественные), 05 7.14 |
-| 14 | Социалка: чат, группы, голосование лута, рейд | 13 | 06 7.8 |
+| 14 | Социалка: чат, группы, голосование лута, рейд, друзья, обмен | 13 | 06 7.8, вопрос 79 |
 | 15 | Подземелье на 50 (инстанс — сцена в процессе сервера) | 3, 8–14 | 06 7.5 |
 | 16 | Зоны и масштаб; зоны и инстансы — отдельные процессы | 3, 13, 15 | 01 §4, 7.10 (`ZoneDefinition`) |
 | 17 | Настройки пользователя | 2, 7, 13 | 02 7.6 |
@@ -129,7 +129,7 @@
 | 20 | Торговля: магазины, рынок, почта, заказы улучшения с эскроу | 11, 12, 13, 14 | 05 7.14.3; 04 7.14.1 |
 | 21 | Полировка | все | — |
 
-Статус: модули 0, 2, 4, 5, 6, 7, 9, 11 — **в работе** (вертикальный срез, этап 1, ветка `claude/vertical-slice`, см. 01 §9); остальные — не начат.
+Статус: модули 0–14 — **в работе** (вертикальный срез, этапы 1–1.13, ветка `claude/vertical-slice`, см. 01 §8–§9); остальные — не начат.
 
 ## 4. Индекс сущностей (тип / команда → где определено)
 
@@ -181,9 +181,9 @@
 | 63, 64 | 03 | 65, 66 | 04 | 67 | 03 |
 | 68 | 06 | 69, 70 | 01 | 71, 72 | 06 |
 | 73 | 05 | 74 | 03 | 75, 76 | 01 |
-| 77 | 06 | 78 | 04 | | |
+| 77 | 06 | 78 | 04 | 79 | 06 |
 
-Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **78** (новый вопрос = 79). Номера не менять.
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **79** (новый вопрос = 80). Номера не менять.
 
 **Статус вопроса** виден в самой строке: `**РЕШЕНО (vN):** …` — решено разработчиком (ДЕФОЛТ снят); `**Отложено разработчиком:**` — вернуться позже, действует ДЕФОЛТ; без пометки — открыт, действует ДЕФОЛТ.
 Сводка: `grep -n 'РЕШЕНО\|Отложено разработчиком' docs/0*.md`.
@@ -231,6 +231,7 @@
 | Сеть: транспорт и кодек (вопрос 69) | `Network/` (`NetConnection` — кадры и потоки, `NetListener`, `NetworkClientSession`, `ProtocolCodec`, `MessageType`, `Hello`/`WelcomeMessage`, `NetworkConstants`) |
 | Сервер в сети (приём игроков, рассылка) | `Server/Net/ServerNetworkHost.cs` (частота — `config.NetworkWorldEveryTicks`, `NetworkStateEveryTicks`, порт — `DefaultPort`) |
 | **Кошелёк, слоты, ингредиенты, аффиксы** (модуль 11, вопрос 78) | данные `currencies.json`, `affixes.json`, `SocketCap` в `equipment_slots.json`, компоненты `Shared/Content/Items/SocketsComponent.cs`, `SocketIngredientComponent.cs`, `AffixesComponent.cs`; сервер `Server/Systems/WalletSystem.cs` (`Transact`), `SocketSystem.cs`, бросок слотов и аффиксов — `ItemFactory`, бонусы — `StatSystem`; протокол `Shared/Protocol/ItemDetailSnapshots.cs`, `InsertIngredientCommand`; клиент — `TooltipText`, валюты в `BackpackWindow`, вставка в `WhetstoneWindow`; тесты — `ItemsModule11Tests` |
+| **Чат, друзья, обмен, рейды** (модуль 14, вопрос 79) | сервер `Server/Systems/ChatSystem.cs`, `FriendSystem.cs`, `TradeSystem.cs` (+ `Server/World/TradeData.cs`), рейд — `GroupSystem` (`ConvertToRaid`, `MoveToSubgroup`, `SetAssistant`, `Voters`, `CloseMates`); друзья в аккаунте — `AccountRecord.Friends`; протокол `Shared/Protocol/ChatMessages.cs`, `SocialMessages.cs`, `TradeMessages.cs`, `GroupCommands.cs`; клиент — `Client/UI/Widgets/ChatWidget.cs` (Enter — `GameInput.ChatSubmit`), `UiFocus.cs` (клавиши игры не работают, пока поле ввода в фокусе), `Windows/FriendsWindow.cs`, `TradeWindow.cs`, `GroupWindow.cs` (рейд), `Widgets/PagerWidget.cs`, `GroupPromptWidget.cs` (запрос обмена), `TargetFrameWidget.cs` (кнопка «Обмен»); тесты `Tests/EditMode/SocialTests.cs` |
 | **Аккаунты и сохранения** (модуль 13, вопрос 76) | `Server/Persistence/` (`Records.cs` — записи, `Interfaces.cs` — репозитории и `IJsonCodec`, `FileStorage.cs`, `CharacterPersistence.cs` — вход, токены, автосохранение, `PasswordHasher.cs`, `CharacterMigrations.cs`, `FileAuditLog.cs`); `GameServer.AddPlayer(CharacterRecord)` / `ExportPlayer`; реестр уникальных — `ItemFactory.UniqueRegistry`; Unity — `Host/UnityJsonCodec.cs`, `GameRoot.CreateServer`; меню — поля логина в `StartMenuView`; протокол — `HelloMessage` (Login, Password, Token), `WelcomeMessage.Token`, ошибки `LoginErrors`; тесты — `PersistenceTests`, кодек тестов — `TestJsonCodec` |
 | **Interest management, метрики, боты** (модуль 3) | `Server/World/SpatialGrid.cs`, `Server/Systems/InterestSystem.cs`, `Server/ServerMetrics.cs`; трафик — `ProtocolCodec.EncodeWorld` (неизменные поля один раз) + кэш в `Client/Net/RemoteServerConnection.cs`, `NetConnection.BytesSent/Received`; боты — `Scripts/Bots/` (`Game.Bots`: `BotClient`, `BotSwarm`), запуск `-bots N -connect` (`Host/LaunchOptions.cs`, `GameRoot.StartBots`); вне Unity — `tools/LoadTest/` (README); тесты — `InterestTests`, `BotTests` |
 | **ИИ мобов** (модуль 10, вопрос 75) | данные `mobs.json` (`AiProfile`), `ai_profiles.json` → `AiProfile` (`Shared/Content/AiProfile.cs`), способности — навыки `mob_*` в `skills.json`; сервер `Server/Systems/MobAiSystem.cs`, `Server/World/MobAiData.cs` (Idle / Chase / Return); тесты — `Tests/EditMode/MobAiTests.cs` |
@@ -247,7 +248,7 @@
 | Сущности в мире | `Client/World/EntityViewManager.cs`, `EntityView.cs` |
 | Оверлей: корень, зоны, фабрика uGUI | `Client/UI/HudRoot.cs`, `UiFactory.cs`, `HudLayout.cs`, `HudPalette.cs` |
 | Виджеты оверлея | `Client/UI/Widgets/` (рамки, панель навыков, расходники, меню, мини-карта, сообщения, числа урона, таблички, тексты подсказок) |
-| Окна механик | `Client/UI/Windows/` (`WindowManager`, `WindowFactory`, `HudWindow` — база, `CharacterWindow` (+ раздача очков), `BackpackWindow` (вкладки-отсеки), `AnvilWindow`, `SkillBookWindow`, `MapWindow`, `SettingsWindow`, `PlaceholderWindow`) |
+| Окна механик | `Client/UI/Windows/` (`WindowManager`, `WindowFactory`, `HudWindow` — база, `CharacterWindow` (+ раздача очков), `BackpackWindow` (вкладки-отсеки), `AnvilWindow`, `SkillBookWindow`, `MapWindow`, `SettingsWindow`, `GroupWindow`, `FriendsWindow`, `TradeWindow`, `PlaceholderWindow`) |
 | Полоса опыта, сообщения и уведомления | `Client/UI/Widgets/ExperienceBarWidget.cs`, `MessageWidget.cs` |
 | NPC-станции (точильный камень — улучшение, наковальня — крафт) | данные `world.json → Stations` (`Type`: `StationTypes`); сервер `Server/World/StationData.cs`, `UpgradeSystem`, `CraftingSystem` (рецепты — `recipes.json`, `RecipeDto`); окна `WhetstoneWindow`, `AnvilWindow`, выбор окна — `WindowFactory.ForStation`; клиент — клик в `PlayerInputController` → `HudRoot.OpenStation` |
 | Кнопки окон слева от панели навыков | `Client/UI/Widgets/IconMenuWidget.cs` (зона `SkillBarLeft` в `hud_windows.json`) |

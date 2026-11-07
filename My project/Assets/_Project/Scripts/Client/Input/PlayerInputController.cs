@@ -31,6 +31,7 @@ namespace Game.Client.Input
             _camera = cameraRig;
             _views = views;
             _hud = hud;
+            hud.Chat.BindSubmit(() => input.ChatSubmit.WasPressedThisFrame());
         }
 
         private void Update()
@@ -40,6 +41,10 @@ namespace Game.Client.Input
                 return;
             }
             UpdateModifiers();
+            if (UpdateTyping())
+            {
+                return;
+            }
             bool pointerOverUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
             if (_input.LookHold.IsPressed())
             {
@@ -88,6 +93,33 @@ namespace Game.Client.Input
                     _ctx.Commands.SelectTarget(EntityId.None);
                 }
             }
+        }
+
+        /// <summary>
+        /// While a text field has focus the keys belong to it: the character stops, skills and hotkeys are skipped,
+        /// Enter sends the chat line, Esc leaves the field. Enter outside a field opens the chat. True = typing.
+        /// </summary>
+        private bool UpdateTyping()
+        {
+            if (_hud.Chat.IsTyping || UiFocus.IsTyping())
+            {
+                _ctx.Commands.Move(0f, 0f);
+                if (_input.Cancel.WasPressedThisFrame())
+                {
+                    _hud.Chat.Blur();
+                }
+                else if (_input.ChatSubmit.WasPressedThisFrame() && _hud.Chat.HasFocus)
+                {
+                    _hud.Chat.Submit();
+                }
+                return true;
+            }
+            if (_input.ChatSubmit.WasPressedThisFrame())
+            {
+                _hud.Chat.Focus();
+                return true;
+            }
+            return false;
         }
 
         private void UpdateModifiers()

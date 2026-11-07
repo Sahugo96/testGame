@@ -14,6 +14,7 @@ namespace Game.Client.UI.Widgets
         private readonly UiBar _health;
         private readonly Button _duel;
         private readonly Button _invite;
+        private readonly Button _trade;
         private readonly Text _targetOf;
         private readonly StatusRowWidget _statuses;
 
@@ -39,10 +40,23 @@ namespace Game.Client.UI.Widgets
             _invite = UiFactory.Button("Invite", _panel.transform, ctx.Font, ctx.Text.Get(UiKeys.GroupInviteButton), InviteToGroup);
             UiFactory.Place((RectTransform)_invite.transform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-HudLayout.Gap, 0f),
                 new Vector2(DuelButtonWidth, HudLayout.TargetFrameSize.y));
+            _trade = UiFactory.Button("Trade", _panel.transform, ctx.Font, ctx.Text.Get(UiKeys.TradeButton), RequestTrade);
+            UiFactory.Place((RectTransform)_trade.transform, new Vector2(1f, 0.5f), new Vector2(0f, 0.5f), new Vector2(DuelButtonWidth + HudLayout.Gap * 2f, 0f),
+                new Vector2(DuelButtonWidth, HudLayout.TargetFrameSize.y));
             _panel.gameObject.SetActive(false);
         }
 
         private const float DuelButtonWidth = 90f;
+
+        /// <summary>Offer a trade to the selected player (the server checks distance, combat and busy states).</summary>
+        private void RequestTrade()
+        {
+            PlayerStateSnapshot player = _ctx.State.Player;
+            if (player != null && _ctx.Commands != null)
+            {
+                _ctx.Commands.RequestTrade(player.TargetId);
+            }
+        }
         private const int TargetStatusColumns = 3;
         private const int TargetStatusMax = 6;
 
@@ -56,7 +70,7 @@ namespace Game.Client.UI.Widgets
             }
         }
 
-        /// <summary>The invite button: another player outside my group, and I can invite (no group yet, or I lead it).</summary>
+        /// <summary>The invite button: another player outside my group, and I can invite (no group yet, I lead it, or I assist the raid).</summary>
         private static bool CanInvite(PlayerStateSnapshot player, EntitySnapshot target)
         {
             if (target.Kind != EntityKind.Player || target.Id == player.EntityId)
@@ -68,7 +82,8 @@ namespace Game.Client.UI.Widgets
             {
                 return true;
             }
-            return group.LeaderId == player.EntityId && System.Array.IndexOf(group.Members, target.Id) < 0;
+            bool canManage = group.LeaderId == player.EntityId || (group.IsRaid && System.Array.IndexOf(group.Assistants, player.EntityId) >= 0);
+            return canManage && System.Array.IndexOf(group.Members, target.Id) < 0;
         }
 
         /// <summary>Challenge the selected player (the server checks distance, combat and busy states).</summary>
@@ -94,6 +109,8 @@ namespace Game.Client.UI.Widgets
             _ctx.State.TryGetEntity(player.TargetId, out EntitySnapshot target);
             _duel.gameObject.SetActive(target.Kind == EntityKind.Player && target.Id != player.EntityId && player.Duel.Phase == DuelPhase.None);
             _invite.gameObject.SetActive(CanInvite(player, target));
+            _trade.gameObject.SetActive(target.Kind == EntityKind.Player && target.Id != player.EntityId
+                && (player.Trade == null || player.Trade.Phase == TradePhase.None));
             _statuses.Refresh(target.Statuses);
             _targetOf.text = target.TargetOfId.IsValid ? _ctx.Text.Format(UiKeys.TargetOfTarget, EntityNames.Of(_ctx, target.TargetOfId)) : string.Empty;
             _name.text = string.IsNullOrEmpty(target.DisplayName) ? _ctx.Text.Get(target.NameKey) : target.DisplayName;

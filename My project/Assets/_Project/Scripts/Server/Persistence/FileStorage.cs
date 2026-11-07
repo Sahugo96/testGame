@@ -78,6 +78,15 @@ namespace Game.Server.Persistence
             }
         }
 
+        public bool NameExists(string name)
+        {
+            lock (_namesLock)
+            {
+                LoadNames();
+                return _names.ContainsKey((name ?? string.Empty).Trim().ToLowerInvariant());
+            }
+        }
+
         public bool TryReserve(string definitionId, string instanceId, string ownerId)
         {
             lock (_uniqueLock)

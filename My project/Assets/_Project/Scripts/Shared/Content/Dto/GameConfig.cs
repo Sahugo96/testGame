@@ -77,6 +77,18 @@ namespace Game.Shared.Content.Dto
         public long StartingGold;
         /// <summary>How many recent idempotency keys the wallet remembers (repeat protection).</summary>
         public int WalletIdempotencyMemory;
+        /// <summary>Chat (module 14): longest message and the shortest pause between two messages of a player.</summary>
+        public int ChatMaxLength;
+        public float ChatMinIntervalSeconds;
+        public int FriendsMax;
+        /// <summary>Raid (06 7.8, question 6): size and subgroup size.</summary>
+        public int RaidMaxSize;
+        public int RaidSubgroupSize;
+        /// <summary>Trade (module 14): how far apart the two may stand, how long a request waits.</summary>
+        public float TradeRange;
+        public float TradeRequestSeconds;
+        /// <summary>Most different items one side may put into a trade (module 14).</summary>
+        public int TradeMaxItems;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

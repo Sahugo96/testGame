@@ -37,6 +37,7 @@ namespace Game.Client.UI
         private GroupFramesWidget _groupFrames;
         private StatusRowWidget _playerStatuses;
         private GroupPromptWidget _groupPrompt;
+        private TradePhase _tradePhase;
         private DuelArenaView _arena;
         private string _classId;
 
@@ -47,6 +48,7 @@ namespace Game.Client.UI
 
         public SkillBarWidget SkillBar { get; private set; }
         public WindowManager Windows { get; private set; }
+        public ChatWidget Chat { get; private set; }
 
         public void Init(ClientContext ctx, EntityViewManager views, Func<Vector2> pointer)
         {
@@ -99,6 +101,7 @@ namespace Game.Client.UI
             UiFactory.Place(_info.rectTransform, Vector2.zero, Vector2.zero, new Vector2(0f, HudLayout.MenuButtonHeight + HudLayout.Gap),
                 new Vector2(InfoWidth, HudLayout.FontHuge * InfoLines));
             _info.text = string.Empty;
+            Chat = new ChatWidget(bottomLeft, ctx);
             _combatText = new CombatTextWidget(worldLayer, ctx, views);
             _nameplates = new NameplateWidget(worldLayer, ctx, views);
 
@@ -107,6 +110,7 @@ namespace Game.Client.UI
             ctx.State.CombatEvent += _combatText.Show;
             ctx.State.Rejected += _message.Show;
             ctx.State.Notification += _message.Show;
+            ctx.WhisperRequested += Chat.StartWhisper;
         }
 
         /// <summary>Persistent info line bottom-left (e.g. "hosting on port ..."); empty string hides it.</summary>
@@ -161,6 +165,8 @@ namespace Game.Client.UI
             _ctx.State.CombatEvent -= _combatText.Show;
             _ctx.State.Rejected -= _message.Show;
             _ctx.State.Notification -= _message.Show;
+            _ctx.WhisperRequested -= Chat.StartWhisper;
+            Chat.Destroy();
             _minimap.Destroy();
         }
 
@@ -194,9 +200,29 @@ namespace Game.Client.UI
             _duel.Refresh(state);
             _groupFrames.Refresh(state);
             _groupPrompt.Refresh(state);
+            SyncTradeWindow(state);
             SkillBar.Refresh(state);
             _consumables.Refresh(state);
             Windows.Refresh(state);
+        }
+
+        /// <summary>The trade window follows the server: it opens when a trade opens and closes when it ends.</summary>
+        private void SyncTradeWindow(PlayerStateSnapshot state)
+        {
+            TradePhase phase = state.Trade != null ? state.Trade.Phase : TradePhase.None;
+            if (phase == _tradePhase)
+            {
+                return;
+            }
+            _tradePhase = phase;
+            if (phase == TradePhase.Open)
+            {
+                Windows.Open(WindowFactory.Trade);
+            }
+            else if (Windows.IsOpen(WindowFactory.Trade))
+            {
+                Windows.Toggle(WindowFactory.Trade);
+            }
         }
 
         private void OnWorldChanged()

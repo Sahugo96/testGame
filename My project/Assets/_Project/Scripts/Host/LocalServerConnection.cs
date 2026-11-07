@@ -37,6 +37,7 @@ namespace Game.Host
         public event Action<CombatEventMessage> CombatEventReceived;
         public event Action<CommandRejectedMessage> RejectedReceived;
         public event Action<NotificationMessage> NotificationReceived;
+        public event Action<ChatMessage> ChatReceived;
 
         /// <summary>Called before each server tick (the network host polls its connections here).</summary>
         public Action BeforeTick;
@@ -84,6 +85,11 @@ namespace Game.Host
                 NotificationReceived?.Invoke(message);
             }
             outbox.Notifications.Clear();
+            foreach (ChatMessage message in outbox.Chat)
+            {
+                ChatReceived?.Invoke(message);
+            }
+            outbox.Chat.Clear();
             if (outbox.World != null)
             {
                 WorldReceived?.Invoke(outbox.World);

@@ -31,6 +31,25 @@ namespace Game.Shared.Protocol
         public EntityId MemberId;
     }
 
+    /// <summary>Leader: turn the group into a raid (06 7.8).</summary>
+    public struct GroupConvertToRaidCommand : IGameCommand
+    {
+    }
+
+    /// <summary>Raid leader or assistant: move a member to a subgroup.</summary>
+    public struct GroupMoveCommand : IGameCommand
+    {
+        public EntityId MemberId;
+        public int Subgroup;
+    }
+
+    /// <summary>Raid leader: make a member an assistant or take it back.</summary>
+    public struct GroupSetAssistantCommand : IGameCommand
+    {
+        public EntityId MemberId;
+        public bool Enabled;
+    }
+
     /// <summary>Any member: propose another loot mode (06, 7.8: unanimous vote).</summary>
     public struct LootModeProposeCommand : IGameCommand
     {

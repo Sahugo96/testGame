@@ -47,6 +47,28 @@ namespace Game.Client
         public void InsertIngredient(string itemInstanceId, int socketIndex, int ingredientBagIndex, EntityId stationId) =>
             _connection.Send(new InsertIngredientCommand { ItemInstanceId = itemInstanceId, SocketIndex = socketIndex, IngredientBagIndex = ingredientBagIndex, StationId = stationId });
 
+        public void SendChat(ChatChannel channel, string text, string target) => _connection.Send(new SendChatCommand { Channel = channel, Text = text, Target = target });
+
+        public void AddFriend(string name) => _connection.Send(new FriendAddCommand { Name = name });
+
+        public void RemoveFriend(string name) => _connection.Send(new FriendRemoveCommand { Name = name });
+
+        public void ConvertToRaid() => _connection.Send(new GroupConvertToRaidCommand());
+
+        public void MoveToSubgroup(EntityId member, int subgroup) => _connection.Send(new GroupMoveCommand { MemberId = member, Subgroup = subgroup });
+
+        public void SetAssistant(EntityId member, bool enabled) => _connection.Send(new GroupSetAssistantCommand { MemberId = member, Enabled = enabled });
+
+        public void RequestTrade(EntityId target) => _connection.Send(new TradeRequestCommand { TargetId = target });
+
+        public void RespondTrade(bool accept) => _connection.Send(new TradeRespondCommand { Accept = accept });
+
+        public void OfferTrade(string[] instanceIds, long gold) => _connection.Send(new TradeOfferCommand { InstanceIds = instanceIds, Gold = gold });
+
+        public void ConfirmTrade() => _connection.Send(new TradeConfirmCommand());
+
+        public void CancelTrade() => _connection.Send(new TradeCancelCommand());
+
         public void SetAutoLoot(bool enabled) => _connection.Send(new SetAutoLootCommand { Enabled = enabled });
 
         public void PickUpLoot(EntityId lootId) => _connection.Send(new PickUpLootCommand { LootId = lootId });

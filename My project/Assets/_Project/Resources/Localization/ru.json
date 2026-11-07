@@ -1663,6 +1663,262 @@
   {
    "Key": "item.golem_heart.desc",
    "Value": "Минерал для слота «минерал»: оборона +3%."
+  },
+  {
+   "Key": "window.friends",
+   "Value": "Друзья"
+  },
+  {
+   "Key": "window.trade",
+   "Value": "Обмен"
+  },
+  {
+   "Key": "chat.channel.say",
+   "Value": "Рядом"
+  },
+  {
+   "Key": "chat.channel.world",
+   "Value": "Мир"
+  },
+  {
+   "Key": "chat.channel.group",
+   "Value": "Группа"
+  },
+  {
+   "Key": "chat.channel.whisper",
+   "Value": "Шёпот"
+  },
+  {
+   "Key": "chat.channel.system",
+   "Value": "Система"
+  },
+  {
+   "Key": "chat.line",
+   "Value": "[{0}] {1}: {2}"
+  },
+  {
+   "Key": "chat.whisper_in",
+   "Value": "[Шёпот от {0}] {1}"
+  },
+  {
+   "Key": "chat.whisper_out",
+   "Value": "[Шёпот для {0}] {1}"
+  },
+  {
+   "Key": "chat.system_line",
+   "Value": "[Система] {0}"
+  },
+  {
+   "Key": "chat.placeholder",
+   "Value": "Enter — написать"
+  },
+  {
+   "Key": "chat.target_placeholder",
+   "Value": "Кому"
+  },
+  {
+   "Key": "ui.friends_add",
+   "Value": "Добавить"
+  },
+  {
+   "Key": "ui.friends_name",
+   "Value": "Имя персонажа"
+  },
+  {
+   "Key": "ui.friends_online",
+   "Value": "в сети"
+  },
+  {
+   "Key": "ui.friends_offline",
+   "Value": "не в сети"
+  },
+  {
+   "Key": "ui.friends_whisper",
+   "Value": "Шёпот"
+  },
+  {
+   "Key": "ui.friends_remove",
+   "Value": "Удалить"
+  },
+  {
+   "Key": "ui.friends_count",
+   "Value": "Друзей: {0} из {1}"
+  },
+  {
+   "Key": "ui.page_prev",
+   "Value": "<"
+  },
+  {
+   "Key": "ui.page_next",
+   "Value": ">"
+  },
+  {
+   "Key": "ui.page_line",
+   "Value": "{0}/{1}"
+  },
+  {
+   "Key": "ui.trade",
+   "Value": "Обмен"
+  },
+  {
+   "Key": "ui.trade_request_in",
+   "Value": "{0} предлагает обмен ({1} с)"
+  },
+  {
+   "Key": "ui.trade_request_out",
+   "Value": "Ждём ответа от {0} ({1} с)"
+  },
+  {
+   "Key": "ui.trade_mine",
+   "Value": "Вы отдаёте"
+  },
+  {
+   "Key": "ui.trade_theirs",
+   "Value": "{0} отдаёт"
+  },
+  {
+   "Key": "ui.trade_gold",
+   "Value": "Золото: {0}"
+  },
+  {
+   "Key": "ui.trade_set_gold",
+   "Value": "Указать золото"
+  },
+  {
+   "Key": "ui.trade_confirm",
+   "Value": "Подтвердить"
+  },
+  {
+   "Key": "ui.trade_cancel",
+   "Value": "Отменить"
+  },
+  {
+   "Key": "ui.trade_confirmed",
+   "Value": "Подтверждено"
+  },
+  {
+   "Key": "ui.trade_not_confirmed",
+   "Value": "Не подтверждено"
+  },
+  {
+   "Key": "ui.trade_bag_hint",
+   "Value": "Сумка: нажмите на предмет, чтобы предложить его"
+  },
+  {
+   "Key": "ui.click_to_offer",
+   "Value": "ЛКМ — предложить в обмен"
+  },
+  {
+   "Key": "ui.click_to_withdraw",
+   "Value": "ЛКМ — убрать из обмена"
+  },
+  {
+   "Key": "ui.group_convert_raid",
+   "Value": "Сделать рейдом"
+  },
+  {
+   "Key": "ui.raid_line",
+   "Value": "Рейд: {0} из {1}"
+  },
+  {
+   "Key": "ui.raid_member",
+   "Value": "[{0}] {1}"
+  },
+  {
+   "Key": "ui.raid_assistant_name",
+   "Value": "[П] {0}"
+  },
+  {
+   "Key": "ui.raid_move_up",
+   "Value": "Отряд −"
+  },
+  {
+   "Key": "ui.raid_move_down",
+   "Value": "Отряд +"
+  },
+  {
+   "Key": "ui.raid_assistant_on",
+   "Value": "Помощник"
+  },
+  {
+   "Key": "ui.raid_assistant_off",
+   "Value": "Снять пом."
+  },
+  {
+   "Key": "error.chat_too_fast",
+   "Value": "Слишком часто — подождите немного"
+  },
+  {
+   "Key": "error.chat_no_such_player",
+   "Value": "Такого персонажа нет в сети"
+  },
+  {
+   "Key": "error.chat_bad_channel",
+   "Value": "Неизвестный канал чата"
+  },
+  {
+   "Key": "error.friend_invalid",
+   "Value": "Такого персонажа нет"
+  },
+  {
+   "Key": "error.friend_already",
+   "Value": "Уже в списке друзей"
+  },
+  {
+   "Key": "error.friend_list_full",
+   "Value": "Список друзей заполнен"
+  },
+  {
+   "Key": "error.group_already_raid",
+   "Value": "Группа уже стала рейдом"
+  },
+  {
+   "Key": "error.group_subgroup_invalid",
+   "Value": "Нельзя переместить в этот отряд"
+  },
+  {
+   "Key": "error.loot_vote_not_voter",
+   "Value": "В рейде голосуют лидер и первые участники отрядов"
+  },
+  {
+   "Key": "error.trade_invalid",
+   "Value": "Обмен недоступен"
+  },
+  {
+   "Key": "error.trade_busy",
+   "Value": "Игрок занят"
+  },
+  {
+   "Key": "error.trade_too_far",
+   "Value": "Слишком далеко для обмена"
+  },
+  {
+   "Key": "error.trade_item_not_tradable",
+   "Value": "Этот предмет нельзя передать"
+  },
+  {
+   "Key": "notify.group_became_raid",
+   "Value": "Группа стала рейдом"
+  },
+  {
+   "Key": "notify.trade_requested",
+   "Value": "Вам предлагают обмен"
+  },
+  {
+   "Key": "notify.trade_done",
+   "Value": "Обмен завершён"
+  },
+  {
+   "Key": "notify.trade_cancelled",
+   "Value": "Обмен отменён"
+  },
+  {
+   "Key": "notify.trade_failed",
+   "Value": "Обмен не состоялся"
+  },
+  {
+   "Key": "notify.trade_no_room",
+   "Value": "Обмен не состоялся: нет места в сумке"
   }
  ]
 }

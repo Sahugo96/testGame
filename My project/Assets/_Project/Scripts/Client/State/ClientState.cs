@@ -32,6 +32,13 @@ namespace Game.Client.State
         public event Action<string> Rejected;
         public event Action<NotificationMessage> Notification;
 
+        /// <summary>Chat lines as they arrive (module 14); the last ChatLogSize are kept in ChatLog for the chat window.</summary>
+        public event Action<ChatMessage> Chat;
+
+        private const int ChatLogSize = 100;
+
+        public readonly List<ChatMessage> ChatLog = new List<ChatMessage>();
+
         public void Bind(IServerConnection connection)
         {
             _connection = connection;
@@ -40,16 +47,19 @@ namespace Game.Client.State
             connection.CombatEventReceived += OnCombatEvent;
             connection.RejectedReceived += OnRejected;
             connection.NotificationReceived += OnNotification;
+            connection.ChatReceived += OnChat;
         }
 
         public void Unbind(IServerConnection connection)
         {
             CombatLog.Clear();
+            ChatLog.Clear();
             connection.WorldReceived -= OnWorld;
             connection.PlayerStateReceived -= OnPlayer;
             connection.CombatEventReceived -= OnCombatEvent;
             connection.RejectedReceived -= OnRejected;
             connection.NotificationReceived -= OnNotification;
+            connection.ChatReceived -= OnChat;
             _entities.Clear();
             World = null;
             Player = null;
@@ -95,6 +105,16 @@ namespace Game.Client.State
         private void OnRejected(CommandRejectedMessage message) => Rejected?.Invoke(message.ReasonKey);
 
         private void OnNotification(NotificationMessage message) => Notification?.Invoke(message);
+
+        private void OnChat(ChatMessage message)
+        {
+            ChatLog.Add(message);
+            if (ChatLog.Count > ChatLogSize)
+            {
+                ChatLog.RemoveAt(0);
+            }
+            Chat?.Invoke(message);
+        }
 
         private void OnPlayer(PlayerStateSnapshot snapshot)
         {

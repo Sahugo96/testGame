@@ -20,6 +20,11 @@ namespace Game.Server.World
         /// <summary>Server time after which a new proposal is allowed (a failed vote delays the next one, question 21).</summary>
         public float ProposeAllowedAt;
         public List<GroupLogEntry> Log;
+        /// <summary>Raid (06 7.8, question 6): up to RaidMaxSize, subgroups of RaidSubgroupSize, assistants.</summary>
+        public bool IsRaid;
+        /// <summary>Member → subgroup index (0 for a normal group).</summary>
+        public Dictionary<EntityId, int> Subgroups;
+        public HashSet<EntityId> Assistants;
     }
 
     /// <summary>LootModeVote { proposalId, proposerId, newMode, votes[], expiresAt } (06, 7.8). The server counts the votes.</summary>

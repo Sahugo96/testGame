@@ -71,11 +71,21 @@
       "Singleton": true
     },
     {
+      "Id": "friends",
+      "NameKey": "window.friends",
+      "Icon": "friends",
+      "MenuZone": "BottomRight",
+      "MenuOrder": 1,
+      "HotkeyBinding": "<Keyboard>/f",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
       "Id": "settings",
       "NameKey": "window.settings",
       "Icon": "settings",
       "MenuZone": "BottomRight",
-      "MenuOrder": 1,
+      "MenuOrder": 2,
       "HotkeyBinding": "<Keyboard>/o",
       "OpenedBy": "Menu",
       "Singleton": true
@@ -98,6 +108,16 @@
       "MenuOrder": 0,
       "HotkeyBinding": "",
       "OpenedBy": "Npc",
+      "Singleton": true
+    },
+    {
+      "Id": "trade",
+      "NameKey": "window.trade",
+      "Icon": "trade",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Event",
       "Singleton": true
     }
   ]

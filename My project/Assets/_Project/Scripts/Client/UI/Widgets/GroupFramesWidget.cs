@@ -8,7 +8,7 @@ namespace Game.Client.UI.Widgets
 {
     /// <summary>
     /// Group frames under the player frame (02, 7.13 top-left zone): name with the leader mark and health of every other
-    /// member. A click selects the member as the target (for healing).
+    /// member. A click selects the member as the target (for healing). In a raid only the own subgroup is shown.
     /// </summary>
     public sealed class GroupFramesWidget
     {
@@ -23,7 +23,7 @@ namespace Game.Client.UI.Widgets
         public GroupFramesWidget(RectTransform zone, ClientContext ctx)
         {
             _ctx = ctx;
-            int count = ctx.Content.Config.GroupMaxSize - 1;
+            int count = System.Math.Max(ctx.Content.Config.GroupMaxSize, ctx.Content.Config.RaidSubgroupSize) - 1;
             _frames = new Image[count];
             _names = new Text[count];
             _health = new UiBar[count];
@@ -54,9 +54,11 @@ namespace Game.Client.UI.Widgets
             int shown = 0;
             if (group != null && group.InGroup)
             {
-                foreach (EntityId member in group.Members)
+                int own = SubgroupOf(group, state.EntityId);
+                for (int i = 0; i < group.Members.Length; i++)
                 {
-                    if (member == state.EntityId || shown >= _frames.Length)
+                    EntityId member = group.Members[i];
+                    if (member == state.EntityId || shown >= _frames.Length || (group.IsRaid && SubgroupAt(group, i) != own))
                     {
                         continue;
                     }
@@ -68,6 +70,10 @@ namespace Game.Client.UI.Widgets
                 _frames[i].gameObject.SetActive(false);
             }
         }
+
+        private static int SubgroupAt(GroupSnapshot group, int index) => index >= 0 && index < group.Subgroups.Length ? group.Subgroups[index] : 0;
+
+        private static int SubgroupOf(GroupSnapshot group, EntityId member) => SubgroupAt(group, System.Array.IndexOf(group.Members, member));
 
         private void Show(int slot, EntityId member, bool leader)
         {

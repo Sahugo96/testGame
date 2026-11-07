@@ -98,5 +98,13 @@
   "UniversalSocketType": "Universal",
   "GoldCurrencyId": "gold",
   "StartingGold": 100,
-  "WalletIdempotencyMemory": 10000
+  "WalletIdempotencyMemory": 10000,
+  "ChatMaxLength": 200,
+  "ChatMinIntervalSeconds": 0.5,
+  "FriendsMax": 50,
+  "RaidMaxSize": 50,
+  "RaidSubgroupSize": 5,
+  "TradeRange": 10,
+  "TradeRequestSeconds": 30,
+  "TradeMaxItems": 12
 }
