@@ -38,6 +38,10 @@
               "Value": 10
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -79,6 +83,10 @@
               "Value": 0.5
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -120,6 +128,10 @@
               "Value": 15
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -157,6 +169,10 @@
               "Value": 0.1
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -198,6 +214,10 @@
               "Value": 20
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -244,6 +264,10 @@
               "Value": -0.05
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -280,6 +304,10 @@
               "Value": 0.03
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -316,6 +344,10 @@
               "Value": 0.1
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -352,6 +384,10 @@
               "Value": 0.08
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -395,6 +431,10 @@
               "Value": 0.2
             }
           ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
         }
       ]
     },
@@ -475,6 +515,569 @@
           "MaxStack": 20
         }
       ]
+    },
+    {
+      "Id": "swordsman_sword",
+      "NameKey": "item.swordsman_sword.name",
+      "DescriptionKey": "item.swordsman_sword.desc",
+      "Icon": "swordsman_sword",
+      "Category": "Weapon",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "MainHand",
+          "Hands": 1
+        },
+        {
+          "Type": "Weapon",
+          "WeaponType": "Sword"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "DamageBonus",
+              "Op": "Add",
+              "Value": 0.15
+            },
+            {
+              "Stat": "CritChance",
+              "Op": "Add",
+              "Value": 0.02
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "swordsman_shield",
+      "NameKey": "item.swordsman_shield.name",
+      "DescriptionKey": "item.swordsman_shield.desc",
+      "Icon": "swordsman_shield",
+      "Category": "Weapon",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "OffHand",
+          "Hands": 1
+        },
+        {
+          "Type": "Weapon",
+          "WeaponType": "Shield"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.1
+            },
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 30
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "swordsman_armor",
+      "NameKey": "item.swordsman_armor.name",
+      "DescriptionKey": "item.swordsman_armor.desc",
+      "Icon": "swordsman_armor",
+      "Category": "Armor",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Body",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Plate"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.12
+            },
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 50
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "swordsman_helm",
+      "NameKey": "item.swordsman_helm.name",
+      "DescriptionKey": "item.swordsman_helm.desc",
+      "Icon": "swordsman_helm",
+      "Category": "Armor",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Head",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Plate"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.06
+            },
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 25
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "swordsman_gauntlets",
+      "NameKey": "item.swordsman_gauntlets.name",
+      "DescriptionKey": "item.swordsman_gauntlets.desc",
+      "Icon": "swordsman_gauntlets",
+      "Category": "Armor",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Hands",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Plate"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.04
+            },
+            {
+              "Stat": "CritChance",
+              "Op": "Add",
+              "Value": 0.02
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "swordsman_greaves",
+      "NameKey": "item.swordsman_greaves.name",
+      "DescriptionKey": "item.swordsman_greaves.desc",
+      "Icon": "swordsman_greaves",
+      "Category": "Armor",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Legs",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Plate"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.06
+            },
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 20
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "swordsman_boots",
+      "NameKey": "item.swordsman_boots.name",
+      "DescriptionKey": "item.swordsman_boots.desc",
+      "Icon": "swordsman_boots",
+      "Category": "Armor",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Feet",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Plate"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.03
+            },
+            {
+              "Stat": "MoveSpeed",
+              "Op": "Add",
+              "Value": 0.3
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "adept_gloves",
+      "NameKey": "item.adept_gloves.name",
+      "DescriptionKey": "item.adept_gloves.desc",
+      "Icon": "adept_gloves",
+      "Category": "Armor",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "mage"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Hands",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Cloth"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "CritChance",
+              "Op": "Add",
+              "Value": 0.02
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "adept_trousers",
+      "NameKey": "item.adept_trousers.name",
+      "DescriptionKey": "item.adept_trousers.desc",
+      "Icon": "adept_trousers",
+      "Category": "Armor",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "mage"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Legs",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Cloth"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "MaxMainMana",
+              "Op": "Add",
+              "Value": 10
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "adept_boots",
+      "NameKey": "item.adept_boots.name",
+      "DescriptionKey": "item.adept_boots.desc",
+      "Icon": "adept_boots",
+      "Category": "Armor",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "mage"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Feet",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Cloth"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "MoveSpeed",
+              "Op": "Add",
+              "Value": 0.3
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "amber_amulet",
+      "NameKey": "item.amber_amulet.name",
+      "DescriptionKey": "item.amber_amulet.desc",
+      "Icon": "amber_amulet",
+      "Category": "Jewelry",
+      "Rarity": "Rare",
+      "ItemLevel": 3,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Necklace",
+          "Hands": 1
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 20
+            },
+            {
+              "Stat": "MainManaRegen",
+              "Op": "Add",
+              "Value": 0.5
+            }
+          ]
+        },
+        {
+          "Type": "Upgradeable",
+          "Rules": "default"
+        }
+      ]
+    },
+    {
+      "Id": "philosopher_stone_shard",
+      "NameKey": "item.philosopher_stone_shard.name",
+      "DescriptionKey": "item.philosopher_stone_shard.desc",
+      "Icon": "philosopher_stone_shard",
+      "Category": "UpgradeMaterial",
+      "Rarity": "Rare",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Stackable",
+          "MaxStack": 99
+        }
+      ]
+    },
+    {
+      "Id": "iron_ore",
+      "NameKey": "item.iron_ore.name",
+      "DescriptionKey": "item.iron_ore.desc",
+      "Icon": "iron_ore",
+      "Category": "Material",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Stackable",
+          "MaxStack": 99
+        }
+      ]
+    },
+    {
+      "Id": "cube_fragment",
+      "NameKey": "item.cube_fragment.name",
+      "DescriptionKey": "item.cube_fragment.desc",
+      "Icon": "cube_fragment",
+      "Category": "Loot",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Stackable",
+          "MaxStack": 50
+        }
+      ]
+    },
+    {
+      "Id": "smith_letter",
+      "NameKey": "item.smith_letter.name",
+      "DescriptionKey": "item.smith_letter.desc",
+      "Icon": "smith_letter",
+      "Category": "Quest",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnPickup",
+      "Components": []
     }
   ]
 }

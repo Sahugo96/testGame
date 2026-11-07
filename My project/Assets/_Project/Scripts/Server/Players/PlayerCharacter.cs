@@ -14,6 +14,9 @@ namespace Game.Server.Players
         public string CharacterId;
         public ClassDefinition Class;
         public int Level;
+        public int Experience;
+        public int AttributePoints;
+        public int ClassPoints;
         public readonly StatSheet Stats = new StatSheet();
         public readonly Dictionary<StatId, float> Attributes = new Dictionary<StatId, float>();
         public Inventory Bag;

@@ -12,5 +12,6 @@ namespace Game.Shared.Content
         SocketIngredient,
         Catalyst,
         Quest,
+        Loot,
     }
 }

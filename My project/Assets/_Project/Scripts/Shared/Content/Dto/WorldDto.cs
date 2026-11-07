@@ -9,5 +9,6 @@ namespace Game.Shared.Content.Dto
         public float PlayerSpawnX;
         public float PlayerSpawnZ;
         public SpawnDto[] Spawns;
+        public StationDto[] Stations;
     }
 }

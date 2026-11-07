@@ -1,0 +1,49 @@
+{
+  "Sections": [
+    {
+      "Id": "equipment",
+      "NameKey": "bag.equipment",
+      "Size": 30,
+      "Categories": [
+        "Weapon",
+        "Armor",
+        "Jewelry"
+      ]
+    },
+    {
+      "Id": "consumables",
+      "NameKey": "bag.consumables",
+      "Size": 20,
+      "Categories": [
+        "Consumable"
+      ]
+    },
+    {
+      "Id": "loot",
+      "NameKey": "bag.loot",
+      "Size": 20,
+      "Categories": [
+        "Loot"
+      ]
+    },
+    {
+      "Id": "resources",
+      "NameKey": "bag.resources",
+      "Size": 30,
+      "Categories": [
+        "Material",
+        "UpgradeMaterial",
+        "SocketIngredient",
+        "Catalyst"
+      ]
+    },
+    {
+      "Id": "quest",
+      "NameKey": "bag.quest",
+      "Size": 10,
+      "Categories": [
+        "Quest"
+      ]
+    }
+  ]
+}

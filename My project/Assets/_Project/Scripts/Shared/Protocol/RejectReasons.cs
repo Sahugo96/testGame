@@ -20,5 +20,10 @@ namespace Game.Shared.Protocol
         public const string BagFull = "error.bag_full";
         public const string NotConsumable = "error.not_consumable";
         public const string ResourceFull = "error.resource_full";
+        public const string NotNearStation = "error.not_near_station";
+        public const string NoMaterials = "error.no_materials";
+        public const string MaxUpgradeLevel = "error.max_upgrade_level";
+        public const string CannotUpgrade = "error.cannot_upgrade";
+        public const string NoAttributePoints = "error.no_attribute_points";
     }
 }

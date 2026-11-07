@@ -1,0 +1,84 @@
+{
+  "Levels": [
+    {
+      "Level": 1,
+      "ExperienceToNext": 100
+    },
+    {
+      "Level": 2,
+      "ExperienceToNext": 150
+    },
+    {
+      "Level": 3,
+      "ExperienceToNext": 200
+    },
+    {
+      "Level": 4,
+      "ExperienceToNext": 250
+    },
+    {
+      "Level": 5,
+      "ExperienceToNext": 300
+    },
+    {
+      "Level": 6,
+      "ExperienceToNext": 350
+    },
+    {
+      "Level": 7,
+      "ExperienceToNext": 400
+    },
+    {
+      "Level": 8,
+      "ExperienceToNext": 450
+    },
+    {
+      "Level": 9,
+      "ExperienceToNext": 500
+    },
+    {
+      "Level": 10,
+      "ExperienceToNext": 550
+    },
+    {
+      "Level": 11,
+      "ExperienceToNext": 600
+    },
+    {
+      "Level": 12,
+      "ExperienceToNext": 650
+    },
+    {
+      "Level": 13,
+      "ExperienceToNext": 700
+    },
+    {
+      "Level": 14,
+      "ExperienceToNext": 750
+    },
+    {
+      "Level": 15,
+      "ExperienceToNext": 800
+    },
+    {
+      "Level": 16,
+      "ExperienceToNext": 850
+    },
+    {
+      "Level": 17,
+      "ExperienceToNext": 900
+    },
+    {
+      "Level": 18,
+      "ExperienceToNext": 950
+    },
+    {
+      "Level": 19,
+      "ExperienceToNext": 1000
+    },
+    {
+      "Level": 20,
+      "ExperienceToNext": 0
+    }
+  ]
+}

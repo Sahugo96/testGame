@@ -1,6 +1,9 @@
 namespace Game.Server.Items
 {
-    /// <summary>Bag of a character: fixed number of slots (config BagSize), each holds one instance or nothing.</summary>
+    /// <summary>
+    /// Bag of a character: one flat array split into sections (tabs) by content (bag_sections.json).
+    /// Placement rules (which section, stacking) live in InventorySystem; this class only stores.
+    /// </summary>
     public sealed class Inventory
     {
         private readonly ItemInstance[] _slots;
@@ -13,9 +16,9 @@ namespace Game.Server.Items
 
         public void Set(int index, ItemInstance item) => _slots[index] = item;
 
-        public int FindFreeSlot()
+        public int FindFreeSlot(int start, int count)
         {
-            for (int i = 0; i < _slots.Length; i++)
+            for (int i = start; i < start + count && i < _slots.Length; i++)
             {
                 if (_slots[i] == null)
                 {
@@ -25,12 +28,12 @@ namespace Game.Server.Items
             return -1;
         }
 
-        public int FreeSlotCount()
+        public int FreeSlotCount(int start, int count)
         {
             int free = 0;
-            foreach (ItemInstance slot in _slots)
+            for (int i = start; i < start + count && i < _slots.Length; i++)
             {
-                if (slot == null)
+                if (_slots[i] == null)
                 {
                     free++;
                 }
@@ -38,15 +41,16 @@ namespace Game.Server.Items
             return free;
         }
 
-        /// <summary>Puts the item into the first free slot; returns the slot or -1 if the bag is full.</summary>
-        public int Add(ItemInstance item)
+        public int IndexOf(ItemInstance item)
         {
-            int index = FindFreeSlot();
-            if (index >= 0)
+            for (int i = 0; i < _slots.Length; i++)
             {
-                _slots[index] = item;
+                if (_slots[i] == item)
+                {
+                    return i;
+                }
             }
-            return index;
+            return -1;
         }
     }
 }

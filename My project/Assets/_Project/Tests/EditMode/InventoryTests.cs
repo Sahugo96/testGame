@@ -21,7 +21,7 @@ namespace Game.Tests
             Assert.That(player.Equipment["MainHand"].DefinitionId, Is.EqualTo("apprentice_staff"));
             Assert.That(player.Equipment["Head"].DefinitionId, Is.EqualTo("cloth_hood"));
             Assert.That(h.BagIndexOf(mage, "health_potion"), Is.GreaterThanOrEqualTo(0));
-            Assert.That(h.Audit.Entries.Count(e => e.Action == AuditActions.Create), Is.EqualTo(8));
+            Assert.That(h.Audit.Entries.Count(e => e.Action == AuditActions.Create), Is.EqualTo(h.Content.Classes["mage"].StartingItems.Count));
             Assert.That(h.Audit.Entries.Count(e => e.Action == AuditActions.Equip), Is.EqualTo(3));
             Assert.That(player.Equipment["Head"].BoundTo, Is.EqualTo(player.CharacterId), "OnEquip binding");
         }

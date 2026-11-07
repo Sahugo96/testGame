@@ -18,5 +18,6 @@ namespace Game.Shared.Content.Dto
         public string CooldownGroup;
         public float Cooldown;
         public int MaxStack;
+        public string Rules;
     }
 }

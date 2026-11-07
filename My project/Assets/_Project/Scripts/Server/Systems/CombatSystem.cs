@@ -15,8 +15,8 @@ namespace Game.Server.Systems
         private readonly ServerContext _ctx;
         private readonly ResourceSystem _resources;
 
-        /// <summary>Called when an entity dies, so casts can be cancelled.</summary>
-        public event Action<EntityId> Died;
+        /// <summary>Called when an entity dies: (victim, killer). Casts are cancelled, rewards are given.</summary>
+        public event Action<EntityId, EntityId> Died;
 
         public CombatSystem(ServerContext ctx, ResourceSystem resources)
         {
@@ -113,7 +113,7 @@ namespace Game.Server.Systems
                 TargetId = target,
                 Kind = CombatEventKind.Death,
             });
-            Died?.Invoke(target);
+            Died?.Invoke(target, killer);
         }
 
         private void ReadOffense(EntityId source, out float damageBonus, out float critChance, out float critSize)

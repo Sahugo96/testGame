@@ -38,19 +38,33 @@ namespace Game.Server.Systems
             }
             foreach (ItemInstance item in player.Equipment.Values)
             {
-                StatsComponent stats = _ctx.Content.Items[item.DefinitionId].Get<StatsComponent>();
+                ItemDefinition definition = _ctx.Content.Items[item.DefinitionId];
+                StatsComponent stats = definition.Get<StatsComponent>();
                 if (stats == null)
                 {
                     continue;
                 }
+                float upgrade = UpgradeMultiplier(definition, item.UpgradeLevel);
                 foreach (StatModifier template in stats.Modifiers)
                 {
-                    sheet.AddModifier(new StatModifier(template.Stat, template.Op, template.Value, item.SourceId));
+                    float value = template.Op == ModifierOp.Multiply ? template.Value : template.Value * upgrade;
+                    sheet.AddModifier(new StatModifier(template.Stat, template.Op, value, item.SourceId));
                 }
             }
             sheet.SetCap(StatId.Defense, _ctx.Content.Config.DefenseCap);
             sheet.SetCap(StatId.CritChance, _ctx.Content.Config.CritChanceCap);
             Apply(player);
+        }
+
+        /// <summary>Upgrade level strengthens the item's additive and percent bonuses (04, 7.14.1).</summary>
+        public float UpgradeMultiplier(ItemDefinition definition, int upgradeLevel)
+        {
+            UpgradeableComponent upgradeable = definition.Get<UpgradeableComponent>();
+            if (upgradeable == null || upgradeLevel <= 0 || !_ctx.Content.UpgradeRules.TryGetValue(upgradeable.RulesId, out var rule))
+            {
+                return 1f;
+            }
+            return UpgradeMath.StatMultiplier(upgradeLevel, rule.StatBonusPerLevel);
         }
 
         private void Apply(PlayerCharacter player)

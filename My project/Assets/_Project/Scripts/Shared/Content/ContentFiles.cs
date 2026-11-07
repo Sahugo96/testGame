@@ -14,5 +14,8 @@ namespace Game.Shared.Content
         public MobsFileDto Mobs;
         public WorldDto World;
         public HudWindowsFileDto HudWindows;
+        public BagSectionsFileDto BagSections;
+        public UpgradeRulesFileDto UpgradeRules;
+        public LevelsFileDto Levels;
     }
 }

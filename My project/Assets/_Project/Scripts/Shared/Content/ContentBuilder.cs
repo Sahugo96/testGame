@@ -47,6 +47,31 @@ namespace Game.Shared.Content
             }
             db.EquipmentSlots.AddRange(files.EquipmentSlots?.Slots ?? new EquipmentSlotDto[0]);
             db.HudWindows.AddRange(files.HudWindows?.Windows ?? new HudWindowDto[0]);
+            int start = 0;
+            foreach (BagSectionDto dto in files.BagSections?.Sections ?? new BagSectionDto[0])
+            {
+                var section = new BagSection { Id = dto.Id, NameKey = dto.NameKey, Start = start, Size = dto.Size };
+                foreach (string category in dto.Categories ?? new string[0])
+                {
+                    section.Categories.Add(EnumParser.Parse<ItemCategory>(category, $"bag section '{dto.Id}'", errors));
+                }
+                db.BagSections.Add(section);
+                start += dto.Size;
+            }
+            foreach (UpgradeRuleDto dto in files.UpgradeRules?.Rules ?? new UpgradeRuleDto[0])
+            {
+                AddUnique(db.UpgradeRules, dto.Id, dto, "upgrade_rules", errors);
+            }
+            var levels = new List<LevelDto>(files.Levels?.Levels ?? new LevelDto[0]);
+            levels.Sort((a, b) => a.Level.CompareTo(b.Level));
+            for (int i = 0; i < levels.Count; i++)
+            {
+                if (levels[i].Level != i + 1)
+                {
+                    errors.Add($"levels: expected level {i + 1}, found {levels[i].Level}");
+                }
+                db.ExperienceToNext.Add(levels[i].ExperienceToNext);
+            }
             ContentValidator.Validate(db, registry, knownEffectKeys, errors);
             return db;
         }

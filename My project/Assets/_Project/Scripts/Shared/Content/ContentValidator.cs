@@ -14,10 +14,19 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: TickRate must be > 0");
             }
-            if (cfg.BagSize <= 0)
+            if (db.BagSections.Count == 0 || db.BagSize <= 0)
             {
-                errors.Add("config: BagSize must be > 0");
+                errors.Add("bag_sections: at least one section with Size > 0 is required");
             }
+            if (cfg.InteractRange <= 0f)
+            {
+                errors.Add("config: InteractRange must be > 0");
+            }
+            if (db.MaxLevel == 0)
+            {
+                errors.Add("levels: the level table is empty");
+            }
+            ValidateUpgradeRules(db, errors);
             if (!db.Classes.ContainsKey(cfg.DefaultClassId ?? string.Empty))
             {
                 errors.Add($"config: DefaultClassId '{cfg.DefaultClassId}' is not a class");
@@ -86,6 +95,15 @@ namespace Game.Shared.Content
                 {
                     errors.Add($"item '{item.Id}': Equipment needs an EquipSlot");
                 }
+                if (db.SectionIndexFor(item.Category) < 0)
+                {
+                    errors.Add($"item '{item.Id}': no backpack section takes category '{item.Category}'");
+                }
+                UpgradeableComponent upgradeable = item.Get<UpgradeableComponent>();
+                if (upgradeable != null && !db.UpgradeRules.ContainsKey(upgradeable.RulesId ?? string.Empty))
+                {
+                    errors.Add($"item '{item.Id}': unknown upgrade rules '{upgradeable.RulesId}'");
+                }
                 foreach (string classId in item.ClassRestriction)
                 {
                     if (!db.Classes.ContainsKey(classId))
@@ -113,6 +131,16 @@ namespace Game.Shared.Content
                 }
             }
 
+            foreach (MobDto mob in db.Mobs.Values)
+            {
+                foreach (MobDropDto drop in mob.Drops ?? new MobDropDto[0])
+                {
+                    if (!db.Items.ContainsKey(drop.ItemId ?? string.Empty))
+                    {
+                        errors.Add($"mob '{mob.Id}': unknown drop item '{drop.ItemId}'");
+                    }
+                }
+            }
             if (db.World != null)
             {
                 foreach (SpawnDto spawn in db.World.Spawns ?? new SpawnDto[0])
@@ -122,10 +150,32 @@ namespace Game.Shared.Content
                         errors.Add($"world: unknown mob '{spawn.MobId}'");
                     }
                 }
+                foreach (StationDto station in db.World.Stations ?? new StationDto[0])
+                {
+                    if (station.Type != StationTypes.Anvil)
+                    {
+                        errors.Add($"world: unknown station type '{station.Type}' of '{station.Id}'");
+                    }
+                }
             }
             else
             {
                 errors.Add("world: file is missing");
+            }
+        }
+
+        private static void ValidateUpgradeRules(ContentDatabase db, List<string> errors)
+        {
+            foreach (UpgradeRuleDto rule in db.UpgradeRules.Values)
+            {
+                if (!db.Items.ContainsKey(rule.MaterialItemId ?? string.Empty))
+                {
+                    errors.Add($"upgrade_rules '{rule.Id}': unknown material '{rule.MaterialItemId}'");
+                }
+                if (rule.Steps == null || rule.Steps.Length != rule.MaxLevel)
+                {
+                    errors.Add($"upgrade_rules '{rule.Id}': Steps must have exactly MaxLevel ({rule.MaxLevel}) entries");
+                }
             }
         }
     }

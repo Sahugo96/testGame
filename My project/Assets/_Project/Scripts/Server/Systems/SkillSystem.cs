@@ -29,7 +29,7 @@ namespace Game.Server.Systems
             _resources = resources;
             _combat = combat;
             _effects = effects;
-            _combat.Died += CancelCast;
+            _combat.Died += (victim, killer) => CancelCast(victim);
         }
 
         /// <summary>Variant actually used for a modifier: missing or not yet unlocked variants fall back to Default.</summary>

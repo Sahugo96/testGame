@@ -10,5 +10,6 @@ namespace Game.Server.Players
         public PlayerStateSnapshot State;
         public readonly List<CombatEventMessage> CombatEvents = new List<CombatEventMessage>();
         public readonly List<CommandRejectedMessage> Rejections = new List<CommandRejectedMessage>();
+        public readonly List<NotificationMessage> Notifications = new List<NotificationMessage>();
     }
 }

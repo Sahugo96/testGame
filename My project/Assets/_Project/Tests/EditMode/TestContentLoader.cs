@@ -26,6 +26,9 @@ namespace Game.Tests
                 Mobs = Read<MobsFileDto>(ContentFileNames.Mobs),
                 World = Read<WorldDto>(ContentFileNames.World),
                 HudWindows = Read<HudWindowsFileDto>(ContentFileNames.HudWindows),
+                BagSections = Read<BagSectionsFileDto>(ContentFileNames.BagSections),
+                UpgradeRules = Read<UpgradeRulesFileDto>(ContentFileNames.UpgradeRules),
+                Levels = Read<LevelsFileDto>(ContentFileNames.Levels),
             };
         }
 

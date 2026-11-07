@@ -21,6 +21,56 @@
       "MobId": "sturdy_dummy",
       "X": 0,
       "Z": 18
+    },
+    {
+      "MobId": "cube",
+      "X": -10,
+      "Z": 6
+    },
+    {
+      "MobId": "cube",
+      "X": -13,
+      "Z": 9
+    },
+    {
+      "MobId": "cube",
+      "X": -16,
+      "Z": 4
+    },
+    {
+      "MobId": "cube",
+      "X": -12,
+      "Z": 13
+    },
+    {
+      "MobId": "cube",
+      "X": -18,
+      "Z": 10
+    },
+    {
+      "MobId": "cube",
+      "X": -9,
+      "Z": 15
+    },
+    {
+      "MobId": "cube",
+      "X": -15,
+      "Z": 16
+    },
+    {
+      "MobId": "cube",
+      "X": -20,
+      "Z": 14
+    }
+  ],
+  "Stations": [
+    {
+      "Id": "anvil_1",
+      "Type": "Anvil",
+      "NameKey": "npc.anvil",
+      "X": -6,
+      "Z": -5,
+      "VisualColor": "#5A5F66"
     }
   ]
 }

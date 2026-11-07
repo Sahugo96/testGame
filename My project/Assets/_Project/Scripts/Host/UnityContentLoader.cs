@@ -20,6 +20,9 @@ namespace Game.Host
                 Mobs = Load<MobsFileDto>(ContentFileNames.Mobs),
                 World = Load<WorldDto>(ContentFileNames.World),
                 HudWindows = Load<HudWindowsFileDto>(ContentFileNames.HudWindows),
+                BagSections = Load<BagSectionsFileDto>(ContentFileNames.BagSections),
+                UpgradeRules = Load<UpgradeRulesFileDto>(ContentFileNames.UpgradeRules),
+                Levels = Load<LevelsFileDto>(ContentFileNames.Levels),
             };
         }
 

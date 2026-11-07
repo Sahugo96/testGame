@@ -13,5 +13,8 @@ namespace Game.Shared.Content
         public const string Mobs = "mobs";
         public const string World = "world";
         public const string HudWindows = "hud_windows";
+        public const string BagSections = "bag_sections";
+        public const string UpgradeRules = "upgrade_rules";
+        public const string Levels = "levels";
     }
 }

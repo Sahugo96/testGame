@@ -21,9 +21,9 @@ namespace Game.Shared.Content.Dto
         public float DefenseCap;
         public float CritChanceCap;
         public int MinDamage;
-        public int BagSize;
         public int AttributePointsPerLevel;
         public float TargetCycleRange;
+        public float InteractRange;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

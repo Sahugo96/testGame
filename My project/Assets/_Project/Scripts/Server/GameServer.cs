@@ -27,6 +27,8 @@ namespace Game.Server
         private readonly StatSystem _stats;
         private readonly RespawnSystem _respawn;
         private readonly SnapshotBuilder _snapshots;
+        private readonly ProgressionSystem _progression;
+        private readonly UpgradeSystem _upgrades;
         private int _tick;
         private int _nextCharacterNumber = 1;
 
@@ -53,7 +55,11 @@ namespace Game.Server
             _inventory = new InventorySystem(_ctx, _stats, _resources);
             _respawn = new RespawnSystem(_ctx);
             _snapshots = new SnapshotBuilder(_ctx, _skills);
+            _progression = new ProgressionSystem(_ctx, _stats);
+            _upgrades = new UpgradeSystem(_ctx, _inventory, _stats);
+            _combat.Died += OnKilled;
             SpawnMobs();
+            SpawnStations();
         }
 
         public ServerContext Context => _ctx;
@@ -84,7 +90,7 @@ namespace Game.Server
                 CharacterId = $"character-{_nextCharacterNumber++}",
                 Class = cls,
                 Level = cfg.StartingLevel,
-                Bag = new Inventory(cfg.BagSize),
+                Bag = new Inventory(_ctx.Content.BagSize),
             };
             foreach (var pair in cls.StartingAttributes)
             {
@@ -179,6 +185,12 @@ namespace Game.Server
                 case UseConsumableCommand consume:
                     _inventory.UseConsumable(player, consume);
                     break;
+                case UpgradeItemCommand upgrade:
+                    _upgrades.TryUpgrade(player, upgrade);
+                    break;
+                case SpendAttributePointCommand spend:
+                    _progression.SpendAttributePoint(player, spend);
+                    break;
                 default:
                     Log.Warning(LogTags.Server, $"Unknown command {command.GetType().Name}");
                     break;
@@ -198,6 +210,50 @@ namespace Game.Server
                 world.Vitals.Add(id, new VitalsData { Health = mob.MaxHealth, MaxHealth = mob.MaxHealth, HealthRegen = mob.HealthRegen, Defense = mob.Defense });
                 world.CombatStates.Add(id, new CombatStateData());
                 world.Mobs.Add(id, new MobData { SpawnPosition = position, RespawnSeconds = mob.RespawnSeconds });
+            }
+        }
+
+        /// <summary>Kill rewards: experience and drops go straight to the killing player (solo; group loot is module 14).</summary>
+        private void OnKilled(EntityId victim, EntityId killer)
+        {
+            PlayerCharacter player = _ctx.GetPlayer(killer);
+            if (player == null || victim == killer || !_ctx.World.Mobs.Has(victim))
+            {
+                return;
+            }
+            MobDto mob = _ctx.Content.Mobs[_ctx.World.Identities.Get(victim).DefinitionId];
+            _progression.AwardExperience(player, mob.ExperienceReward);
+            foreach (MobDropDto drop in mob.Drops ?? new MobDropDto[0])
+            {
+                if (_ctx.Random.NextFloat() >= drop.Chance)
+                {
+                    continue;
+                }
+                int before = _inventory.CountItems(player, drop.ItemId);
+                _inventory.GiveItem(player, drop.ItemId, drop.Count);
+                int given = _inventory.CountItems(player, drop.ItemId) - before;
+                if (given > 0)
+                {
+                    player.Outbox.Notifications.Add(new NotificationMessage
+                    {
+                        TextKey = NotificationKeys.Loot,
+                        Number = given,
+                        ItemNameKey = _ctx.Content.Items[drop.ItemId].NameKey,
+                        IsPositive = true,
+                    });
+                }
+            }
+        }
+
+        private void SpawnStations()
+        {
+            ServerWorld world = _ctx.World;
+            foreach (StationDto station in _ctx.Content.World.Stations ?? new StationDto[0])
+            {
+                EntityId id = world.CreateEntity();
+                world.Identities.Add(id, new IdentityData { Kind = EntityKind.Npc, DefinitionId = station.Id, NameKey = station.NameKey, Faction = null });
+                world.Transforms.Add(id, new TransformData { Position = new Vec3(station.X, 0f, station.Z) });
+                world.Stations.Add(id, new StationData { StationId = station.Id, Type = station.Type });
             }
         }
 

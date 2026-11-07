@@ -8,5 +8,9 @@ namespace Game.Server.Items
         public const string Unequip = "unequip";
         public const string Consume = "consume";
         public const string Destroy = "destroy";
+        public const string StackAdd = "stack_add";
+        public const string UpgradeSuccess = "upgrade_success";
+        public const string UpgradeFail = "upgrade_fail";
+        public const string MaterialSpent = "material_spent";
     }
 }

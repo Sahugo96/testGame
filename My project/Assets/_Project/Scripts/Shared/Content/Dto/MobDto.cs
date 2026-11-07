@@ -14,5 +14,8 @@ namespace Game.Shared.Content.Dto
         public float Defense;
         public float RespawnSeconds;
         public string VisualColor;
+        public string VisualShape;
+        public int ExperienceReward;
+        public MobDropDto[] Drops;
     }
 }

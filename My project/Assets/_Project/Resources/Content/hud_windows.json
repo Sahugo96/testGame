@@ -59,6 +59,16 @@
       "HotkeyBinding": "<Keyboard>/o",
       "OpenedBy": "Menu",
       "Singleton": true
+    },
+    {
+      "Id": "anvil",
+      "NameKey": "window.anvil",
+      "Icon": "anvil",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Npc",
+      "Singleton": true
     }
   ]
 }

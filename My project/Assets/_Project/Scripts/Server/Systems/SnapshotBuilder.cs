@@ -36,7 +36,7 @@ namespace Game.Server.Systems
             {
                 IdentityData identity = world.Identities.Get(id);
                 TransformData transform = world.Transforms.Get(id);
-                VitalsData vitals = world.Vitals.Get(id);
+                VitalsData vitals = world.Vitals.Has(id) ? world.Vitals.Get(id) : default;
                 entities.Add(new EntitySnapshot
                 {
                     Id = id,
@@ -67,6 +67,10 @@ namespace Game.Server.Systems
                 EntityId = id,
                 ClassId = player.Class.Id,
                 Level = player.Level,
+                Experience = player.Experience,
+                ExperienceToNext = _ctx.Content.ExperienceFor(player.Level),
+                AttributePoints = player.AttributePoints,
+                ClassPoints = player.ClassPoints,
                 Health = vitals.Health,
                 MaxHealth = vitals.MaxHealth,
                 MainMana = mana.Main,

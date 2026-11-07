@@ -10,5 +10,6 @@ namespace Game.Shared.Content.Items
         public const string Stats = "Stats";
         public const string Consumable = "Consumable";
         public const string Stackable = "Stackable";
+        public const string Upgradeable = "Upgradeable";
     }
 }

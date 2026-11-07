@@ -17,6 +17,42 @@ namespace Game.Shared.Content
         public readonly Dictionary<string, MobDto> Mobs = new Dictionary<string, MobDto>();
         public readonly List<HudWindowDto> HudWindows = new List<HudWindowDto>();
         public readonly HashSet<(string, string)> HostileFactions = new HashSet<(string, string)>();
+        public readonly List<BagSection> BagSections = new List<BagSection>();
+        public readonly Dictionary<string, UpgradeRuleDto> UpgradeRules = new Dictionary<string, UpgradeRuleDto>();
+
+        /// <summary>Experience to the next level by level (index = level - 1); the last level is the cap.</summary>
+        public readonly List<int> ExperienceToNext = new List<int>();
+
+        public int BagSize
+        {
+            get
+            {
+                int size = 0;
+                foreach (BagSection section in BagSections)
+                {
+                    size += section.Size;
+                }
+                return size;
+            }
+        }
+
+        public int MaxLevel => ExperienceToNext.Count;
+
+        /// <summary>Section index for an item category, or -1 when no section takes it.</summary>
+        public int SectionIndexFor(ItemCategory category)
+        {
+            for (int i = 0; i < BagSections.Count; i++)
+            {
+                if (BagSections[i].Categories.Contains(category))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /// <summary>Experience needed from this level to the next; 0 at the level cap.</summary>
+        public int ExperienceFor(int level) => level >= 1 && level < MaxLevel ? ExperienceToNext[level - 1] : 0;
 
         public bool AreHostile(string factionA, string factionB) =>
             factionA != factionB && (HostileFactions.Contains((factionA, factionB)) || HostileFactions.Contains((factionB, factionA)));

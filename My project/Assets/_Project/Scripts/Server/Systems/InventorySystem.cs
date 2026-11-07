@@ -30,16 +30,144 @@ namespace Game.Server.Systems
         {
             foreach (StartingItemDto start in player.Class.StartingItems)
             {
-                ItemInstance item = _ctx.Items.Create(start.ItemId, start.Count, player.CharacterId, _ctx.Time);
-                if (item == null || player.Bag.Add(item) < 0)
+                ItemInstance item = GiveItem(player, start.ItemId, start.Count);
+                if (item != null && start.Equip)
+                {
+                    Equip(player, new EquipItemCommand { BagIndex = player.Bag.IndexOf(item) });
+                }
+            }
+        }
+
+        /// <summary>
+        /// Puts items into the bag section of their category: tops up existing stacks first, then creates new instances
+        /// through the item factory (only the server creates items). Returns the first new instance, if any.
+        /// Items that do not fit are lost and reported (loot tables with LootEntry arrive in module 10).
+        /// </summary>
+        public ItemInstance GiveItem(PlayerCharacter player, string definitionId, int count)
+        {
+            if (!_ctx.Content.Items.TryGetValue(definitionId, out ItemDefinition definition) || count <= 0)
+            {
+                return null;
+            }
+            BagSection section = SectionOf(definition);
+            int remaining = count;
+            if (definition.MaxStack > 1)
+            {
+                for (int i = section.Start; i < section.Start + section.Size && remaining > 0; i++)
+                {
+                    ItemInstance stack = player.Bag.Get(i);
+                    if (stack == null || stack.DefinitionId != definitionId || stack.Count >= definition.MaxStack)
+                    {
+                        continue;
+                    }
+                    int added = System.Math.Min(remaining, definition.MaxStack - stack.Count);
+                    stack.Count += added;
+                    remaining -= added;
+                    Audit(AuditActions.StackAdd, player, stack, added);
+                }
+            }
+            ItemInstance first = null;
+            while (remaining > 0)
+            {
+                int index = player.Bag.FindFreeSlot(section.Start, section.Size);
+                if (index < 0)
+                {
+                    player.Outbox.Notifications.Add(new NotificationMessage
+                    {
+                        TextKey = NotificationKeys.BagFullItemLost,
+                        Number = remaining,
+                        ItemNameKey = definition.NameKey,
+                    });
+                    break;
+                }
+                ItemInstance created = _ctx.Items.Create(definitionId, remaining, player.CharacterId, _ctx.Time);
+                player.Bag.Set(index, created);
+                remaining -= created.Count;
+                if (first == null)
+                {
+                    first = created;
+                }
+            }
+            return first;
+        }
+
+        public int CountItems(PlayerCharacter player, string definitionId)
+        {
+            int total = 0;
+            for (int i = 0; i < player.Bag.Size; i++)
+            {
+                ItemInstance item = player.Bag.Get(i);
+                if (item != null && item.DefinitionId == definitionId)
+                {
+                    total += item.Count;
+                }
+            }
+            return total;
+        }
+
+        /// <summary>Removes count units of an item from the bag (all or nothing) and audits it.</summary>
+        public bool ConsumeItems(PlayerCharacter player, string definitionId, int count)
+        {
+            if (CountItems(player, definitionId) < count)
+            {
+                return false;
+            }
+            int remaining = count;
+            for (int i = 0; i < player.Bag.Size && remaining > 0; i++)
+            {
+                ItemInstance item = player.Bag.Get(i);
+                if (item == null || item.DefinitionId != definitionId)
                 {
                     continue;
                 }
-                if (start.Equip)
+                int taken = System.Math.Min(remaining, item.Count);
+                item.Count -= taken;
+                remaining -= taken;
+                Audit(AuditActions.MaterialSpent, player, item, taken);
+                if (item.Count <= 0)
                 {
-                    Equip(player, new EquipItemCommand { BagIndex = FindInBag(player, item) });
+                    player.Bag.Set(i, null);
                 }
             }
+            return true;
+        }
+
+        /// <summary>Finds an owned item (bag or equipment) by instance id.</summary>
+        public ItemInstance FindOwned(PlayerCharacter player, string instanceId, out string equippedSlotId)
+        {
+            equippedSlotId = null;
+            for (int i = 0; i < player.Bag.Size; i++)
+            {
+                ItemInstance item = player.Bag.Get(i);
+                if (item != null && item.SourceId == instanceId)
+                {
+                    return item;
+                }
+            }
+            foreach (var pair in player.Equipment)
+            {
+                if (pair.Value.SourceId == instanceId)
+                {
+                    equippedSlotId = pair.Key;
+                    return pair.Value;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>Destroys an owned item (bag or equipment) and audits it.</summary>
+        public void DestroyOwned(PlayerCharacter player, ItemInstance item, string equippedSlotId)
+        {
+            if (equippedSlotId != null)
+            {
+                player.Equipment.Remove(equippedSlotId);
+                _stats.Recalculate(player);
+            }
+            else
+            {
+                player.Bag.Set(player.Bag.IndexOf(item), null);
+            }
+            Audit(AuditActions.Destroy, player, item, item.Count);
         }
 
         public void Equip(PlayerCharacter player, EquipItemCommand command)
@@ -101,8 +229,9 @@ namespace Game.Server.Systems
                     displaced.Add(mainHand);
                 }
             }
-            // The freed bag slot of the new item can take one displaced item.
-            if (displaced.Count > 1 + player.Bag.FreeSlotCount())
+            // The freed bag slot of the new item (same section: equipment) can take one displaced item.
+            BagSection section = SectionOf(definition);
+            if (displaced.Count > 1 + player.Bag.FreeSlotCount(section.Start, section.Size))
             {
                 CombatEvents.Reject(player, RejectReasons.BagFull);
                 return;
@@ -113,7 +242,7 @@ namespace Game.Server.Systems
             {
                 ItemInstance removed = player.Equipment[slotId];
                 player.Equipment.Remove(slotId);
-                player.Bag.Add(removed);
+                PlaceInBag(player, removed);
                 Audit(AuditActions.Unequip, player, removed);
             }
             player.Equipment[slot.Id] = item;
@@ -143,13 +272,14 @@ namespace Game.Server.Systems
             {
                 return;
             }
-            if (player.Bag.FindFreeSlot() < 0)
+            BagSection section = SectionOf(_ctx.Content.Items[item.DefinitionId]);
+            if (player.Bag.FindFreeSlot(section.Start, section.Size) < 0)
             {
                 CombatEvents.Reject(player, RejectReasons.BagFull);
                 return;
             }
             player.Equipment.Remove(command.SlotId);
-            player.Bag.Add(item);
+            PlaceInBag(player, item);
             Audit(AuditActions.Unequip, player, item);
             RegisterCombatSwap(player, slot);
             _stats.Recalculate(player);
@@ -313,19 +443,18 @@ namespace Game.Server.Systems
             return null;
         }
 
-        private static int FindInBag(PlayerCharacter player, ItemInstance item)
+        private BagSection SectionOf(ItemDefinition definition) =>
+            _ctx.Content.BagSections[_ctx.Content.SectionIndexFor(definition.Category)];
+
+        private void PlaceInBag(PlayerCharacter player, ItemInstance item)
         {
-            for (int i = 0; i < player.Bag.Size; i++)
-            {
-                if (player.Bag.Get(i) == item)
-                {
-                    return i;
-                }
-            }
-            return -1;
+            BagSection section = SectionOf(_ctx.Content.Items[item.DefinitionId]);
+            player.Bag.Set(player.Bag.FindFreeSlot(section.Start, section.Size), item);
         }
 
-        private void Audit(string action, PlayerCharacter player, ItemInstance item) =>
+        private void Audit(string action, PlayerCharacter player, ItemInstance item) => Audit(action, player, item, item.Count);
+
+        private void Audit(string action, PlayerCharacter player, ItemInstance item, int count) =>
             _ctx.Audit.Write(new AuditEntry
             {
                 Time = _ctx.Time,
@@ -333,7 +462,7 @@ namespace Game.Server.Systems
                 ActorId = player.CharacterId,
                 InstanceId = item.SourceId,
                 DefinitionId = item.DefinitionId,
-                Count = item.Count,
+                Count = count,
             });
     }
 }

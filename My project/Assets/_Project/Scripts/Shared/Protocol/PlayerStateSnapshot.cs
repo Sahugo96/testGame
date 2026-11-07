@@ -8,6 +8,10 @@ namespace Game.Shared.Protocol
         public EntityId EntityId;
         public string ClassId;
         public int Level;
+        public int Experience;
+        public int ExperienceToNext;
+        public int AttributePoints;
+        public int ClassPoints;
         public float Health;
         public float MaxHealth;
         public float MainMana;

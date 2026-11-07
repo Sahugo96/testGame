@@ -80,6 +80,14 @@ namespace Game.Shared.Content.Items
                 }
                 return new StackableComponent { MaxStack = dto.MaxStack };
             });
+            registry.Register(ItemComponentTypes.Upgradeable, needsEquipment, (dto, ctx, err) =>
+            {
+                if (string.IsNullOrEmpty(dto.Rules))
+                {
+                    err.Add($"{ctx}: Upgradeable.Rules is empty");
+                }
+                return new UpgradeableComponent { RulesId = dto.Rules };
+            });
             return registry;
         }
     }

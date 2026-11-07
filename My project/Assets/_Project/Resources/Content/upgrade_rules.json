@@ -1,0 +1,63 @@
+{
+  "Rules": [
+    {
+      "Id": "default",
+      "MaxLevel": 10,
+      "MaterialItemId": "philosopher_stone_shard",
+      "MaterialCount": 1,
+      "StatBonusPerLevel": 0.1,
+      "Steps": [
+        {
+          "SuccessChance": 1.0,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.95,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.9,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.85,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.8,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.75,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.7,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.65,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.6,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        },
+        {
+          "SuccessChance": 0.55,
+          "LevelLossOnFail": 1,
+          "BreakChance": 0
+        }
+      ]
+    }
+  ]
+}

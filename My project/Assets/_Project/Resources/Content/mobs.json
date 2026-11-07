@@ -8,7 +8,10 @@
       "HealthRegen": 10,
       "Defense": 0.1,
       "RespawnSeconds": 5,
-      "VisualColor": "#C0504D"
+      "VisualColor": "#C0504D",
+      "VisualShape": "Capsule",
+      "ExperienceReward": 0,
+      "Drops": []
     },
     {
       "Id": "sturdy_dummy",
@@ -18,7 +21,34 @@
       "HealthRegen": 15,
       "Defense": 0.5,
       "RespawnSeconds": 8,
-      "VisualColor": "#8064A2"
+      "VisualColor": "#8064A2",
+      "VisualShape": "Capsule",
+      "ExperienceReward": 0,
+      "Drops": []
+    },
+    {
+      "Id": "cube",
+      "NameKey": "mob.cube",
+      "Faction": "Training",
+      "MaxHealth": 1,
+      "HealthRegen": 0,
+      "Defense": 0,
+      "RespawnSeconds": 5,
+      "VisualColor": "#E6B422",
+      "VisualShape": "Cube",
+      "ExperienceReward": 10,
+      "Drops": [
+        {
+          "ItemId": "cube_fragment",
+          "Chance": 0.5,
+          "Count": 1
+        },
+        {
+          "ItemId": "philosopher_stone_shard",
+          "Chance": 0.1,
+          "Count": 1
+        }
+      ]
     }
   ]
 }

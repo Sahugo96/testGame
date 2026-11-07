@@ -14,7 +14,6 @@
   "DefenseCap": 1.0,
   "CritChanceCap": 3.0,
   "MinDamage": 1,
-  "BagSize": 30,
   "AttributePointsPerLevel": 5,
   "TargetCycleRange": 30,
   "MainHandSwapCooldownSeconds": 15,
@@ -26,5 +25,11 @@
   "SkillBarRows": 3,
   "SkillBarSlotsPerRow": 12,
   "ConsumableBarSlots": 8,
-  "HostileFactions": [ { "A": "Players", "B": "Training" } ]
+  "HostileFactions": [
+    {
+      "A": "Players",
+      "B": "Training"
+    }
+  ],
+  "InteractRange": 4
 }

@@ -5,5 +5,6 @@ namespace Game.Shared.Protocol
     {
         Player,
         Mob,
+        Npc,
     }
 }
