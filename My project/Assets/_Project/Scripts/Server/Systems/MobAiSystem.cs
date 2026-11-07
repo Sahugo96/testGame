@@ -12,7 +12,7 @@ namespace Game.Server.Systems
     /// mobs answer only to threat (being hurt). A fighting mob chases the player with the most threat (module 8) and uses
     /// the first ready ability in range (abilities are skills: Default variant effects, cooldown and range, no costs).
     /// It returns home (leash) when it gets farther than LeashRadius from its spawn or has nobody left to fight: threat and
-    /// statuses are cleared and health is restored on arrival. The ground is flat, so movement is a straight line
+    /// statuses are cleared and health is restored on arrival. Herd mobs call idle kin nearby into the fight (question 75). The ground is flat, so movement is a straight line
     /// (NavMesh — when zones have obstacles, question 75). Stun and root stop moving, stun and silence stop abilities.
     /// </summary>
     public sealed class MobAiSystem
@@ -90,6 +90,31 @@ namespace Game.Server.Systems
             {
                 ai.State = MobAiState.Chase;
                 ai.TargetId = target;
+                if (profile.Herd)
+                {
+                    CallKin(id, target, profile.AssistRadius);
+                }
+            }
+        }
+
+        /// <summary>Herd mobs (question 75): idle living kin (same definition) within the radius take the same enemy.</summary>
+        private void CallKin(EntityId caller, EntityId enemy, float radius)
+        {
+            ServerWorld world = _ctx.World;
+            string kind = world.Identities.Get(caller).DefinitionId;
+            Vec3 origin = world.Transforms.Get(caller).Position;
+            foreach (EntityId other in world.Entities)
+            {
+                if (other == caller || !world.MobAi.Has(other) || !world.IsAlive(other) || world.MobAi.Get(other).State != MobAiState.Idle
+                    || world.Identities.Get(other).DefinitionId != kind
+                    || Vec3.DistanceXZ(world.Transforms.Get(other).Position, origin) > radius)
+                {
+                    continue;
+                }
+                if (!_threat.TopThreat(other).IsValid)
+                {
+                    _threat.Add(other, enemy, _ctx.Content.Config.MobAggroThreat);
+                }
             }
         }
 

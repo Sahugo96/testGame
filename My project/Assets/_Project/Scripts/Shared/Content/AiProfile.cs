@@ -21,6 +21,9 @@ namespace Game.Shared.Content
         public float MoveSpeed;
         public float AggroRadius;
         public float LeashRadius;
+        /// <summary>Herd mobs call kin (same mob definition) within AssistRadius into the fight; loners fight alone (question 75).</summary>
+        public bool Herd;
+        public float AssistRadius;
         public readonly List<string> Abilities = new List<string>();
     }
 }

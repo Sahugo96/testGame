@@ -57,5 +57,17 @@
   "HealThreatFactor": 0.5,
   "MobGlobalCooldownSeconds": 1.0,
   "MobAggroThreat": 1.0,
-  "MobReturnArriveDistance": 0.5
+  "MobReturnArriveDistance": 0.5,
+  "GroupXpGapShares": [
+    1.0,
+    0.86,
+    0.72,
+    0.69,
+    0.66,
+    0.64,
+    0.52,
+    0.39,
+    0.26,
+    0.13
+  ]
 }

@@ -72,6 +72,8 @@ namespace Game.Shared.Content
                     MoveSpeed = dto.MoveSpeed,
                     AggroRadius = dto.AggroRadius,
                     LeashRadius = dto.LeashRadius,
+                    Herd = dto.Herd,
+                    AssistRadius = dto.AssistRadius,
                 };
                 profile.Abilities.AddRange(dto.Abilities ?? new string[0]);
                 AddUnique(db.AiProfiles, dto.Id, profile, "ai_profiles", errors);

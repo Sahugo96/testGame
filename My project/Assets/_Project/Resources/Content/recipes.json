@@ -7,7 +7,7 @@
       "RequiredLevel": 1,
       "Station": "Anvil",
       "CraftTime": 2,
-      "SuccessChance": 0.9,
+      "SuccessChance": 0.2,
       "XpReward": 10,
       "Inputs": [ { "ItemId": "iron_ore", "Count": 3 } ],
       "Outputs": [ { "ItemId": "iron_helm", "Count": 1 } ]
@@ -19,7 +19,7 @@
       "RequiredLevel": 1,
       "Station": "Anvil",
       "CraftTime": 2.5,
-      "SuccessChance": 0.8,
+      "SuccessChance": 0.12,
       "XpReward": 15,
       "Inputs": [ { "ItemId": "iron_ore", "Count": 4 }, { "ItemId": "philosopher_stone_shard", "Count": 1 } ],
       "Outputs": [ { "ItemId": "iron_sword", "Count": 1 } ]
@@ -31,7 +31,7 @@
       "RequiredLevel": 1,
       "Station": "Anvil",
       "CraftTime": 3,
-      "SuccessChance": 0.6,
+      "SuccessChance": 0.05,
       "XpReward": 25,
       "Inputs": [ { "ItemId": "iron_ore", "Count": 5 }, { "ItemId": "philosopher_stone_shard", "Count": 2 } ],
       "Outputs": [ { "ItemId": "swordsman_helm", "Count": 1 } ]

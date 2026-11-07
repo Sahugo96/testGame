@@ -32,6 +32,11 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: GroupMaxSize ≥ 2; GroupInviteSeconds, LootVoteSeconds, LootRadius, GroupLogSize > 0; LootVoteRepeatSeconds ≥ 0");
             }
+            if (cfg.GroupXpGapShares == null || cfg.GroupXpGapShares.Length == 0 || cfg.GroupXpGapShares[0] != 1f
+                || System.Array.Exists(cfg.GroupXpGapShares, v => v < 0f || v > 1f))
+            {
+                errors.Add("config: GroupXpGapShares must start with 1 and hold values in [0, 1]");
+            }
             if (cfg.ThreatPerDamage <= 0f || cfg.HealThreatFactor < 0f)
             {
                 errors.Add("config: ThreatPerDamage must be > 0 and HealThreatFactor ≥ 0");
@@ -197,6 +202,10 @@ namespace Game.Shared.Content
                 if (profile.Behavior != AiBehavior.Passive && (profile.MoveSpeed <= 0f || profile.LeashRadius <= 0f || profile.Abilities.Count == 0))
                 {
                     errors.Add($"ai_profiles '{profile.Id}': a fighting profile needs MoveSpeed, LeashRadius and at least one ability");
+                }
+                if (profile.Herd && profile.AssistRadius <= 0f)
+                {
+                    errors.Add($"ai_profiles '{profile.Id}': a herd profile needs AssistRadius > 0");
                 }
                 if (profile.Behavior == AiBehavior.Aggressive && profile.AggroRadius <= 0f)
                 {

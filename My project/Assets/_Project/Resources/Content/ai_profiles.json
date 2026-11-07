@@ -1,7 +1,7 @@
 {
   "Profiles": [
-    { "Id": "passive", "Behavior": "Passive", "MoveSpeed": 0, "AggroRadius": 0, "LeashRadius": 0, "Abilities": [] },
-    { "Id": "wolf", "Behavior": "Aggressive", "MoveSpeed": 4.5, "AggroRadius": 8, "LeashRadius": 25, "Abilities": [ "mob_bite" ] },
-    { "Id": "golem", "Behavior": "Defensive", "MoveSpeed": 3, "AggroRadius": 0, "LeashRadius": 20, "Abilities": [ "mob_slam", "mob_smash" ] }
+    { "Id": "passive", "Behavior": "Passive", "MoveSpeed": 0, "AggroRadius": 0, "LeashRadius": 0, "Abilities": [], "Herd": false, "AssistRadius": 0},
+    { "Id": "wolf", "Behavior": "Aggressive", "MoveSpeed": 4.5, "AggroRadius": 8, "LeashRadius": 25, "Abilities": ["mob_bite"], "Herd": true, "AssistRadius": 12},
+    { "Id": "golem", "Behavior": "Defensive", "MoveSpeed": 3, "AggroRadius": 0, "LeashRadius": 20, "Abilities": ["mob_slam", "mob_smash"], "Herd": false, "AssistRadius": 0}
   ]
 }

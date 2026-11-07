@@ -19,6 +19,9 @@ namespace Game.Shared.Content.Dto
         public float MoveSpeed;
         public float AggroRadius;
         public float LeashRadius;
+        /// <summary>Herd: kin within AssistRadius join the fight (developer decision, question 75); false — a loner.</summary>
+        public bool Herd;
+        public float AssistRadius;
         /// <summary>Skill ids in priority order; the mob uses the Default variant (no costs, its cooldown and range).</summary>
         public string[] Abilities;
     }

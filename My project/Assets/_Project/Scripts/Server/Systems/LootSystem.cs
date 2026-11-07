@@ -80,6 +80,31 @@ namespace Game.Server.Systems
             }
         }
 
+        /// <summary>
+        /// Who shares the kill's experience (question 72): solo — the killer; in a group — the killer and living members
+        /// within LootRadius of the death spot (temporarily, DEFAULT: being near is enough, taking part is not required).
+        /// </summary>
+        public List<PlayerCharacter> ExperienceRecipients(PlayerCharacter killer, EntityId mob)
+        {
+            var recipients = new List<PlayerCharacter> { killer };
+            if (!_groups.TryGetGroup(killer.EntityId, out GroupData group))
+            {
+                return recipients;
+            }
+            Vec3 deathSpot = _ctx.World.Transforms.Get(mob).Position;
+            foreach (EntityId member in group.Members)
+            {
+                PlayerCharacter player = _ctx.GetPlayer(member);
+                if (player == null || player == killer || !_ctx.World.IsAlive(member)
+                    || Vec3.DistanceXZ(_ctx.World.Transforms.Get(member).Position, deathSpot) > _ctx.Content.Config.LootRadius)
+                {
+                    continue;
+                }
+                recipients.Add(player);
+            }
+            return recipients;
+        }
+
         /// <summary>The fight is over: forget who took part (after the drops were handed out).</summary>
         public void OnMobLooted(EntityId mob) => _participants.Remove(mob);
 

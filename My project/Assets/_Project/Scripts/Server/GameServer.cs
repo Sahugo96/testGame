@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Game.Server.Effects;
 using Game.Server.Items;
 using Game.Server.Players;
@@ -8,6 +9,7 @@ using Game.Shared.Content;
 using Game.Shared.Content.Dto;
 using Game.Shared.Core;
 using Game.Shared.Protocol;
+using Game.Shared.Rules;
 
 namespace Game.Server
 {
@@ -349,7 +351,20 @@ namespace Game.Server
             if (player != null && victim != killer)
             {
                 MobDto mob = _ctx.Content.Mobs[_ctx.World.Identities.Get(victim).DefinitionId];
-                _progression.AwardExperience(player, mob.ExperienceReward);
+                List<PlayerCharacter> recipients = _loot.ExperienceRecipients(player, victim);
+                var levels = new int[recipients.Count];
+                for (int i = 0; i < levels.Length; i++)
+                {
+                    levels[i] = recipients[i].Level;
+                }
+                int[] shares = GroupExperienceMath.Split(mob.ExperienceReward, levels, _ctx.Content.Config.GroupXpGapShares);
+                for (int i = 0; i < recipients.Count; i++)
+                {
+                    if (shares[i] > 0)
+                    {
+                        _progression.AwardExperience(recipients[i], shares[i]);
+                    }
+                }
                 foreach (MobDropDto drop in mob.Drops ?? new MobDropDto[0])
                 {
                     if (_ctx.Random.NextFloat() < drop.Chance)

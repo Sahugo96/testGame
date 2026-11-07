@@ -52,6 +52,8 @@ namespace Game.Shared.Content.Dto
         public float MobGlobalCooldownSeconds;
         public float MobAggroThreat;
         public float MobReturnArriveDistance;
+        /// <summary>Group experience (question 72): share of an equal part by level gap to the top member (index = gap); a gap ≥ length gets nothing.</summary>
+        public float[] GroupXpGapShares;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

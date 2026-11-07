@@ -128,6 +128,47 @@ namespace Game.Tests
             Assert.That(Ai(wolf).State, Is.Not.EqualTo(MobAiState.Chase));
         }
 
+        private int Chasing(string mobId)
+        {
+            int count = 0;
+            foreach (EntityId id in _h.World.Entities)
+            {
+                if (_h.World.MobAi.Has(id) && _h.World.Identities.Get(id).DefinitionId == mobId && _h.World.MobAi.Get(id).State == MobAiState.Chase)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        [Test]
+        public void HerdMobs_CallKin_LonersFightAlone()
+        {
+            // Make wolves defensive so only the one we hit reacts by itself (question 75: herd vs loners).
+            _h.Content.AiProfiles["wolf"].Behavior = Game.Shared.Content.AiBehavior.Defensive;
+            EntityId wolf = _h.NearestMob(_player, "wolf");
+            _h.Server.Threat.Add(wolf, _player, 1f);
+            _h.Run(0.1f);
+            Assert.That(Chasing("wolf"), Is.GreaterThan(1), "the pack joins");
+
+            var h2 = new ServerHarness();
+            h2.Content.AiProfiles["wolf"].Behavior = Game.Shared.Content.AiBehavior.Defensive;
+            h2.Content.AiProfiles["wolf"].Herd = false;
+            EntityId p2 = h2.AddPlayer("warrior");
+            EntityId wolf2 = h2.NearestMob(p2, "wolf");
+            h2.Server.Threat.Add(wolf2, p2, 1f);
+            h2.Run(0.1f);
+            int alone = 0;
+            foreach (EntityId id in h2.World.Entities)
+            {
+                if (h2.World.MobAi.Has(id) && h2.World.MobAi.Get(id).State == MobAiState.Chase)
+                {
+                    alone++;
+                }
+            }
+            Assert.That(alone, Is.EqualTo(1), "a loner fights alone");
+        }
+
         [Test]
         public void KillingAWolf_GivesExperience_FromData()
         {

@@ -339,6 +339,32 @@ namespace Game.Tests
         }
 
         [Test]
+        public void ExperienceSplit_DeveloperExample()
+        {
+            // Question 72: two level 20, one 18, one 15 and six ≤ 10 → 33%, 33%, 18%, 16%; the ≤ 10 get nothing.
+            int[] levels = { 20, 20, 18, 15, 10, 9, 8, 7, 6, 5 };
+            int[] shares = Game.Shared.Rules.GroupExperienceMath.Split(100, levels, _h.Content.Config.GroupXpGapShares);
+            Assert.That(shares, Is.EqualTo(new[] { 33, 33, 18, 16, 0, 0, 0, 0, 0, 0 }));
+            Assert.That(Game.Shared.Rules.GroupExperienceMath.Split(10, new[] { 5, 5 }, _h.Content.Config.GroupXpGapShares),
+                Is.EqualTo(new[] { 5, 5 }), "equal levels: equal parts");
+        }
+
+        [Test]
+        public void GroupKill_SharesExperience_WithMembersNearby()
+        {
+            EntityId[] g = MakeGroup("mage", "mage");
+            EntityId cube = PrepareCube(g[0]);
+            Hit(g[0], cube);
+            _h.World.Transforms.Get(g[1]).Position = _h.World.Transforms.Get(g[0]).Position;
+            int xp0 = _h.Player(g[0]).Experience;
+            int xp1 = _h.Player(g[1]).Experience;
+            Kill(g[0], cube);
+            int reward = _h.Content.Mobs["cube"].ExperienceReward;
+            Assert.That(_h.Player(g[0]).Experience - xp0 + _h.Player(g[1]).Experience - xp1, Is.EqualTo(reward));
+            Assert.That(_h.Player(g[1]).Experience - xp1, Is.EqualTo(reward / 2), "same level: half each");
+        }
+
+        [Test]
         public void Codec_RoundTripsGroupState()
         {
             EntityId[] g = MakeGroup("mage", "warrior");
