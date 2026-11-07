@@ -32,6 +32,8 @@ namespace Game.Client.UI
         private ExperienceBarWidget _experience;
         private EntityViewManager _views;
         private Text _info;
+        private DuelWidget _duel;
+        private DuelArenaView _arena;
         private string _classId;
 
         private const float InfoWidth = 520f;
@@ -81,6 +83,9 @@ namespace Game.Client.UI
             new MenuBarWidget(bottomRight, ctx, MenuZones.BottomRight, true, Windows.Toggle);
             _experience = new ExperienceBarWidget(bottomRight, ctx, HudLayout.MenuButtonHeight + HudLayout.Gap);
             _message = new MessageWidget(hudLayer, ctx);
+            _duel = new DuelWidget(hudLayer, ctx);
+            _arena = new GameObject("DuelArena").AddComponent<DuelArenaView>();
+            _arena.Init(ctx);
             _info = UiFactory.Label("Info", bottomLeft, ctx.Font, HudLayout.FontSmall, TextAnchor.LowerLeft, HudPalette.TextDim);
             UiFactory.Place(_info.rectTransform, Vector2.zero, Vector2.zero, new Vector2(0f, HudLayout.MenuButtonHeight + HudLayout.Gap),
                 new Vector2(InfoWidth, HudLayout.FontHuge * InfoLines));
@@ -149,6 +154,7 @@ namespace Game.Client.UI
             _message.Tick(dt);
             _combatText.Tick(dt);
             _nameplates.Tick();
+            _arena.Tick();
         }
 
         private void OnPlayerChanged()
@@ -162,6 +168,7 @@ namespace Game.Client.UI
             _playerFrame.Refresh(state);
             _experience.Refresh(state);
             _targetFrame.Refresh(state);
+            _duel.Refresh(state);
             SkillBar.Refresh(state);
             _consumables.Refresh(state);
             Windows.Refresh(state);

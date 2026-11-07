@@ -153,6 +153,15 @@ namespace Game.Server.Systems
             }
         }
 
+        /// <summary>Cancels the caster's cast if it is aimed at the given target (a duel ended: no late hits).</summary>
+        public void CancelCastAt(EntityId caster, EntityId target)
+        {
+            if (_ctx.World.Casts.Has(caster) && _ctx.World.Casts.Get(caster).IsCasting && _ctx.World.Casts.Get(caster).TargetId == target)
+            {
+                CancelCast(caster);
+            }
+        }
+
         public void CancelCast(EntityId caster)
         {
             if (!_ctx.World.Casts.Has(caster))
@@ -230,7 +239,7 @@ namespace Game.Server.Systems
                     target = caster;
                     return true;
                 case TargetType.Ally:
-                    if (!target.IsValid || !world.IsAlive(target) || _combat.AreHostile(caster, target))
+                    if (!target.IsValid || !world.IsAlive(target) || !_combat.CanAssist(caster, target))
                     {
                         target = caster;
                         return true;

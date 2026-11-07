@@ -28,6 +28,16 @@ namespace Game.Shared.Content.Dto
         public int NetworkWorldEveryTicks;
         public int NetworkStateEveryTicks;
         public int MaxPlayerNameLength;
+        /// <summary>Duels (temporary defaults, question 70): request range and lifetime, countdown, duration limit, arena radius.</summary>
+        public float DuelRequestRange;
+        public float DuelRequestSeconds;
+        public float DuelCountdownSeconds;
+        public float DuelMaxSeconds;
+        public float DuelRadius;
+        /// <summary>A duel is not fought to death: the loser keeps this much health.</summary>
+        public float DuelLoserHealth;
+        /// <summary>CombatContext hook (01 §13): damage multiplier when a player hits a player.</summary>
+        public float PvpDamageMultiplier;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

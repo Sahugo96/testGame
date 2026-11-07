@@ -30,6 +30,15 @@ namespace Game.Client.Localization
         public const string SettingsInfo = "ui.settings_info";
         public const string SwitchClass = "ui.switch_class";
         public const string LeaveGame = "ui.leave";
+        public const string DuelChallenge = "duel.challenge";
+        public const string DuelIncoming = "duel.incoming";
+        public const string DuelOutgoing = "duel.outgoing";
+        public const string DuelCountdown = "duel.countdown";
+        public const string DuelActive = "duel.active";
+        public const string DuelAccept = "duel.accept";
+        public const string DuelDecline = "duel.decline";
+        public const string DuelCancel = "duel.cancel";
+        public const string DuelSurrender = "duel.surrender";
         public const string WeaponSwapLocked = "hud.weapon_swap_locked";
         public const string WeaponSwapRisk = "hud.weapon_swap_risk";
         public const string CritTier = "hud.crit_tier";

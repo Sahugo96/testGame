@@ -29,6 +29,7 @@ namespace Game.Server
         private readonly SnapshotBuilder _snapshots;
         private readonly ProgressionSystem _progression;
         private readonly UpgradeSystem _upgrades;
+        private readonly DuelSystem _duels;
         private int _tick;
         private int _nextCharacterNumber = 1;
 
@@ -43,7 +44,8 @@ namespace Game.Server
                 Items = new ItemFactory(content, audit),
             };
             _resources = new ResourceSystem(_ctx);
-            _combat = new CombatSystem(_ctx, _resources);
+            _duels = new DuelSystem(_ctx, _resources);
+            _combat = new CombatSystem(_ctx, _resources, _duels);
             var effects = new EffectHandlerRegistry();
             effects.Register(new DamageEffectHandler(_combat));
             effects.Register(new HealEffectHandler(_combat));
@@ -58,6 +60,7 @@ namespace Game.Server
             _progression = new ProgressionSystem(_ctx, _stats);
             _upgrades = new UpgradeSystem(_ctx, _inventory, _stats);
             _combat.Died += OnKilled;
+            _duels.Ended += OnDuelEnded;
             SpawnMobs();
             SpawnStations();
         }
@@ -118,10 +121,12 @@ namespace Game.Server
         /// <summary>Removes a player and its entity (disconnect or character switch).</summary>
         public void RemovePlayer(EntityId id)
         {
-            if (!_ctx.Players.Remove(id))
+            if (!_ctx.Players.ContainsKey(id))
             {
                 return;
             }
+            _duels.OnPlayerRemoved(id);
+            _ctx.Players.Remove(id);
             foreach (PlayerCharacter other in _ctx.Players.Values)
             {
                 if (other.TargetId == id)
@@ -158,12 +163,14 @@ namespace Game.Server
             _inventory.Update(dt);
             _resources.Update(dt);
             _respawn.Update(dt);
+            _duels.Update();
 
             WorldSnapshot worldSnapshot = _snapshots.BuildWorld(_tick);
             foreach (PlayerCharacter player in _ctx.Players.Values)
             {
                 player.Outbox.World = worldSnapshot;
                 player.Outbox.State = _snapshots.BuildPlayer(player);
+                player.Outbox.State.Duel = _duels.Snapshot(player.EntityId);
             }
             Ticked?.Invoke();
         }
@@ -199,10 +206,26 @@ namespace Game.Server
                 case SpendAttributePointCommand spend:
                     _progression.SpendAttributePoint(player, spend);
                     break;
+                case DuelRequestCommand duelRequest:
+                    _duels.Request(player, duelRequest.TargetId);
+                    break;
+                case DuelResponseCommand duelResponse:
+                    _duels.Respond(player, duelResponse.Accept);
+                    break;
+                case DuelSurrenderCommand _:
+                    _duels.Surrender(player);
+                    break;
                 default:
                     Log.Warning(LogTags.Server, $"Unknown command {command.GetType().Name}");
                     break;
             }
+        }
+
+        /// <summary>After a duel nobody keeps hitting: casts aimed at the former opponent are cancelled.</summary>
+        private void OnDuelEnded(EntityId a, EntityId b)
+        {
+            _skills.CancelCastAt(a, b);
+            _skills.CancelCastAt(b, a);
         }
 
         private void SpawnMobs()

@@ -11,5 +11,7 @@ namespace Game.Client.World
         public static readonly Color Dead = new Color(0.35f, 0.35f, 0.35f);
         public static readonly Color Ground = new Color(0.33f, 0.45f, 0.3f);
         public static readonly Color TargetMarker = new Color(1f, 0.85f, 0.2f);
+        public static readonly Color DuelArena = new Color(0.9f, 0.2f, 0.2f);
+        public static readonly Color DuelArenaCountdown = new Color(1f, 0.75f, 0.2f);
     }
 }

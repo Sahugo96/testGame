@@ -35,5 +35,6 @@ namespace Game.Shared.Protocol
         public EquipmentSlotSnapshot[] Equipment;
         public StatSnapshot[] Stats;
         public CooldownGroupSnapshot[] ConsumableCooldowns;
+        public DuelSnapshot Duel;
     }
 }

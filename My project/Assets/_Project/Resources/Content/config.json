@@ -35,5 +35,12 @@
   "DefaultPort": 7777,
   "NetworkWorldEveryTicks": 2,
   "NetworkStateEveryTicks": 3,
-  "MaxPlayerNameLength": 16
+  "MaxPlayerNameLength": 16,
+  "DuelRequestRange": 10,
+  "DuelRequestSeconds": 20,
+  "DuelCountdownSeconds": 3,
+  "DuelMaxSeconds": 180,
+  "DuelRadius": 25,
+  "DuelLoserHealth": 1,
+  "PvpDamageMultiplier": 1
 }

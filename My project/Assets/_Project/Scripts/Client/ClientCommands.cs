@@ -41,5 +41,11 @@ namespace Game.Client
             _connection.Send(new UpgradeItemCommand { ItemInstanceId = itemInstanceId, StationId = stationId });
 
         public void SpendAttributePoint(StatId attribute) => _connection.Send(new SpendAttributePointCommand { Attribute = attribute });
+
+        public void RequestDuel(EntityId target) => _connection.Send(new DuelRequestCommand { TargetId = target });
+
+        public void RespondDuel(bool accept) => _connection.Send(new DuelResponseCommand { Accept = accept });
+
+        public void SurrenderDuel() => _connection.Send(new DuelSurrenderCommand());
     }
 }

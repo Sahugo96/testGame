@@ -995,6 +995,98 @@
   {
    "Key": "ui.leave",
    "Value": "Выйти в главное меню"
+  },
+  {
+   "Key": "duel.challenge",
+   "Value": "Дуэль"
+  },
+  {
+   "Key": "duel.incoming",
+   "Value": "{0} вызывает вас на дуэль ({1} с)"
+  },
+  {
+   "Key": "duel.outgoing",
+   "Value": "Вызов на дуэль отправлен: {0} ({1} с)"
+  },
+  {
+   "Key": "duel.countdown",
+   "Value": "Дуэль с {0} начнётся через {1}"
+  },
+  {
+   "Key": "duel.active",
+   "Value": "Дуэль с {0}: осталось {1} с. Не выходите из круга!"
+  },
+  {
+   "Key": "duel.accept",
+   "Value": "Принять"
+  },
+  {
+   "Key": "duel.decline",
+   "Value": "Отклонить"
+  },
+  {
+   "Key": "duel.cancel",
+   "Value": "Отменить"
+  },
+  {
+   "Key": "duel.surrender",
+   "Value": "Сдаться"
+  },
+  {
+   "Key": "notify.duel_requested",
+   "Value": "Вас вызывают на дуэль"
+  },
+  {
+   "Key": "notify.duel_declined",
+   "Value": "Вызов на дуэль отклонён"
+  },
+  {
+   "Key": "notify.duel_expired",
+   "Value": "Время ответа на вызов истекло"
+  },
+  {
+   "Key": "notify.duel_cancelled",
+   "Value": "Дуэль отменена"
+  },
+  {
+   "Key": "notify.duel_started",
+   "Value": "Дуэль началась!"
+  },
+  {
+   "Key": "notify.duel_won",
+   "Value": "Победа в дуэли!"
+  },
+  {
+   "Key": "notify.duel_lost",
+   "Value": "Поражение в дуэли"
+  },
+  {
+   "Key": "notify.duel_left_area",
+   "Value": "Вы покинули круг дуэли — поражение"
+  },
+  {
+   "Key": "notify.duel_draw",
+   "Value": "Дуэль окончена: ничья"
+  },
+  {
+   "Key": "error.duel_busy",
+   "Value": "Вы уже участвуете в дуэли или ждёте ответа"
+  },
+  {
+   "Key": "error.duel_target_busy",
+   "Value": "Этот игрок уже занят дуэлью"
+  },
+  {
+   "Key": "error.duel_in_combat",
+   "Value": "Нельзя начать дуэль в бою"
+  },
+  {
+   "Key": "error.duel_not_player",
+   "Value": "Вызвать на дуэль можно только другого игрока"
+  },
+  {
+   "Key": "error.duel_no_request",
+   "Value": "Нет активного вызова на дуэль"
   }
  ]
 }

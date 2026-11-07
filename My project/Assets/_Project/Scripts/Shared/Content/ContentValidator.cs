@@ -22,6 +22,11 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: DefaultPort, NetworkWorldEveryTicks, NetworkStateEveryTicks, MaxPlayerNameLength must be > 0");
             }
+            if (cfg.DuelRequestRange <= 0f || cfg.DuelRequestSeconds <= 0f || cfg.DuelCountdownSeconds < 0f || cfg.DuelMaxSeconds <= 0f
+                || cfg.DuelRadius <= 0f || cfg.DuelLoserHealth <= 0f || cfg.PvpDamageMultiplier <= 0f)
+            {
+                errors.Add("config: Duel* values and PvpDamageMultiplier must be > 0 (DuelCountdownSeconds ≥ 0)");
+            }
             if (cfg.InteractRange <= 0f)
             {
                 errors.Add("config: InteractRange must be > 0");

@@ -12,6 +12,7 @@ namespace Game.Client.UI.Widgets
         private readonly Image _panel;
         private readonly Text _name;
         private readonly UiBar _health;
+        private readonly Button _duel;
 
         public TargetFrameWidget(RectTransform zone, ClientContext ctx)
         {
@@ -24,7 +25,22 @@ namespace Game.Client.UI.Widgets
             _health = UiFactory.Bar("Health", _panel.transform, ctx.Font, HudPalette.Health);
             UiFactory.Place(_health.Rect, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(0f, -HudLayout.BarHeight - HudLayout.Gap * 2f), new Vector2(width, HudLayout.BarHeight));
+            _duel = UiFactory.Button("Duel", _panel.transform, ctx.Font, ctx.Text.Get(UiKeys.DuelChallenge), RequestDuel);
+            UiFactory.Place((RectTransform)_duel.transform, new Vector2(1f, 0.5f), new Vector2(0f, 0.5f), new Vector2(HudLayout.Gap, 0f),
+                new Vector2(DuelButtonWidth, HudLayout.TargetFrameSize.y));
             _panel.gameObject.SetActive(false);
+        }
+
+        private const float DuelButtonWidth = 90f;
+
+        /// <summary>Challenge the selected player (the server checks distance, combat and busy states).</summary>
+        private void RequestDuel()
+        {
+            PlayerStateSnapshot player = _ctx.State.Player;
+            if (player != null && _ctx.Commands != null)
+            {
+                _ctx.Commands.RequestDuel(player.TargetId);
+            }
         }
 
         public void Refresh(PlayerStateSnapshot player)
@@ -36,6 +52,7 @@ namespace Game.Client.UI.Widgets
                 return;
             }
             _ctx.State.TryGetEntity(player.TargetId, out EntitySnapshot target);
+            _duel.gameObject.SetActive(target.Kind == EntityKind.Player && target.Id != player.EntityId && player.Duel.Phase == DuelPhase.None);
             _name.text = string.IsNullOrEmpty(target.DisplayName) ? _ctx.Text.Get(target.NameKey) : target.DisplayName;
             _health.Set(target.MaxHealth > 0f ? target.Health / target.MaxHealth : 0f,
                 _ctx.Text.Format(UiKeys.ValueOfMax, Mathf.CeilToInt(target.Health), Mathf.RoundToInt(target.MaxHealth)));

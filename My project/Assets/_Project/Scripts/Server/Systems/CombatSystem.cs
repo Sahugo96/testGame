@@ -14,16 +14,22 @@ namespace Game.Server.Systems
     {
         private readonly ServerContext _ctx;
         private readonly ResourceSystem _resources;
+        private readonly DuelSystem _duels;
 
         /// <summary>Called when an entity dies: (victim, killer). Casts are cancelled, rewards are given.</summary>
         public event Action<EntityId, EntityId> Died;
 
-        public CombatSystem(ServerContext ctx, ResourceSystem resources)
+        public CombatSystem(ServerContext ctx, ResourceSystem resources, DuelSystem duels)
         {
             _ctx = ctx;
             _resources = resources;
+            _duels = duels;
         }
 
+        /// <summary>
+        /// Hostility rules (module 6 hook): factions, plus active duel opponents. Accepted duelists are closed to outsiders:
+        /// nobody else can attack them and they cannot attack anyone else's targets among players.
+        /// </summary>
         public bool AreHostile(EntityId a, EntityId b)
         {
             ServerWorld world = _ctx.World;
@@ -31,8 +37,25 @@ namespace Game.Server.Systems
             {
                 return false;
             }
+            if (_duels.AreOpponents(a, b))
+            {
+                return true;
+            }
             return _ctx.Content.AreHostile(world.Identities.Get(a).Faction, world.Identities.Get(b).Faction);
         }
+
+        /// <summary>Helpful effects (heals): not on enemies, and nobody outside a duel can help a duelist (or vice versa).</summary>
+        public bool CanAssist(EntityId a, EntityId b)
+        {
+            if (a == b)
+            {
+                return true;
+            }
+            return !AreHostile(a, b) && !_duels.IsLockedIn(a) && !_duels.IsLockedIn(b);
+        }
+
+        public CombatContext ContextFor(EntityId source, EntityId target) =>
+            new CombatContext(source, target, source != target && _ctx.Players.ContainsKey(source) && _ctx.Players.ContainsKey(target));
 
         public int DealDamage(EntityId source, EntityId target, string skillId, float baseAmount, float efficiency)
         {
@@ -42,6 +65,11 @@ namespace Game.Server.Systems
                 return 0;
             }
             GameConfig cfg = _ctx.Content.Config;
+            CombatContext context = ContextFor(source, target);
+            if (context.IsPvp)
+            {
+                baseAmount *= cfg.PvpDamageMultiplier;
+            }
             ReadOffense(source, out float damageBonus, out float critChance, out float critSize);
             CritRoll crit = CombatMath.RollCrit(critChance, critSize, cfg.CritChanceCap, _ctx.Random);
             ref VitalsData vitals = ref world.Vitals.Get(target);
@@ -63,7 +91,16 @@ namespace Game.Server.Systems
             });
             if (vitals.Health <= 0f)
             {
-                Kill(target, source);
+                if (_duels.AreOpponents(source, target))
+                {
+                    // A duel is not to the death (question 70): the loser keeps a little health.
+                    vitals.Health = cfg.DuelLoserHealth;
+                    _duels.DefeatByOpponent(source, target);
+                }
+                else
+                {
+                    Kill(target, source);
+                }
             }
             return amount;
         }
@@ -113,6 +150,7 @@ namespace Game.Server.Systems
                 TargetId = target,
                 Kind = CombatEventKind.Death,
             });
+            _duels.OnDied(target);
             Died?.Invoke(target, killer);
         }
 

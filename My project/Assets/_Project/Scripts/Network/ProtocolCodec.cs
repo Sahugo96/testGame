@@ -90,6 +90,17 @@ namespace Game.Network
                     w.Write((byte)MessageType.SpendAttributePoint);
                     w.Write((int)m.Attribute);
                     break;
+                case DuelRequestCommand m:
+                    w.Write((byte)MessageType.DuelRequest);
+                    Id(w, m.TargetId);
+                    break;
+                case DuelResponseCommand m:
+                    w.Write((byte)MessageType.DuelResponse);
+                    w.Write(m.Accept);
+                    break;
+                case DuelSurrenderCommand _:
+                    w.Write((byte)MessageType.DuelSurrender);
+                    break;
                 case WorldSnapshot m:
                     w.Write((byte)MessageType.World);
                     WriteWorld(w, m);
@@ -150,6 +161,12 @@ namespace Game.Network
                     return new UpgradeItemCommand { ItemInstanceId = Str(r), StationId = Id(r) };
                 case MessageType.SpendAttributePoint:
                     return new SpendAttributePointCommand { Attribute = (StatId)r.ReadInt32() };
+                case MessageType.DuelRequest:
+                    return new DuelRequestCommand { TargetId = Id(r) };
+                case MessageType.DuelResponse:
+                    return new DuelResponseCommand { Accept = r.ReadBoolean() };
+                case MessageType.DuelSurrender:
+                    return new DuelSurrenderCommand();
                 case MessageType.World:
                     return ReadWorld(r);
                 case MessageType.PlayerState:
@@ -290,6 +307,12 @@ namespace Game.Network
                 Str(w, g.Group);
                 w.Write(g.Remaining);
             }
+            w.Write((byte)m.Duel.Phase);
+            Id(w, m.Duel.OpponentId);
+            w.Write(m.Duel.Remaining);
+            w.Write(m.Duel.CenterX);
+            w.Write(m.Duel.CenterZ);
+            w.Write(m.Duel.Radius);
         }
 
         private static PlayerStateSnapshot ReadState(BinaryReader r)
@@ -355,6 +378,10 @@ namespace Game.Network
             {
                 m.ConsumableCooldowns[i] = new CooldownGroupSnapshot { Group = Str(r), Remaining = r.ReadSingle() };
             }
+            m.Duel = new DuelSnapshot
+            {
+                Phase = (DuelPhase)r.ReadByte(), OpponentId = Id(r), Remaining = r.ReadSingle(), CenterX = r.ReadSingle(), CenterZ = r.ReadSingle(), Radius = r.ReadSingle(),
+            };
             return m;
         }
 
