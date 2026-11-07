@@ -1,0 +1,10 @@
+{
+  "Rules": [
+    { "SkillId": "fireball", "EmpoweredUnlock": 0.3, "WeakenedUnlock": 0.1, "MasteryPerUse": 0.01 },
+    { "SkillId": "arcane_mend", "EmpoweredUnlock": 0.4, "WeakenedUnlock": 0.1, "MasteryPerUse": 0.01 },
+    { "SkillId": "reserve_nova", "EmpoweredUnlock": 0.5, "WeakenedUnlock": 0.2, "MasteryPerUse": 0.01 },
+    { "SkillId": "power_strike", "EmpoweredUnlock": 0.3, "WeakenedUnlock": 0.1, "MasteryPerUse": 0.01 },
+    { "SkillId": "blood_strike", "EmpoweredUnlock": 0.5, "WeakenedUnlock": 0.2, "MasteryPerUse": 0.01 },
+    { "SkillId": "second_wind", "EmpoweredUnlock": 0.5, "WeakenedUnlock": 0.2, "MasteryPerUse": 0.01 }
+  ]
+}

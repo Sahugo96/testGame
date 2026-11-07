@@ -1,0 +1,112 @@
+{
+  "Slots": [
+    {
+      "Id": "Head",
+      "SlotType": "Head",
+      "Group": "Clothing",
+      "NameKey": "slot.head",
+      "MinRingSlots": 0,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Body",
+      "SlotType": "Body",
+      "Group": "Clothing",
+      "NameKey": "slot.body",
+      "MinRingSlots": 0,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Hands",
+      "SlotType": "Hands",
+      "Group": "Clothing",
+      "NameKey": "slot.hands",
+      "MinRingSlots": 0,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Legs",
+      "SlotType": "Legs",
+      "Group": "Clothing",
+      "NameKey": "slot.legs",
+      "MinRingSlots": 0,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Feet",
+      "SlotType": "Feet",
+      "Group": "Clothing",
+      "NameKey": "slot.feet",
+      "MinRingSlots": 0,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Ring1",
+      "SlotType": "Ring",
+      "Group": "Jewelry",
+      "NameKey": "slot.ring1",
+      "MinRingSlots": 1,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Ring2",
+      "SlotType": "Ring",
+      "Group": "Jewelry",
+      "NameKey": "slot.ring2",
+      "MinRingSlots": 2,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Ring3",
+      "SlotType": "Ring",
+      "Group": "Jewelry",
+      "NameKey": "slot.ring3",
+      "MinRingSlots": 3,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Ring4",
+      "SlotType": "Ring",
+      "Group": "Jewelry",
+      "NameKey": "slot.ring4",
+      "MinRingSlots": 4,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "Necklace",
+      "SlotType": "Necklace",
+      "Group": "Jewelry",
+      "NameKey": "slot.necklace",
+      "MinRingSlots": 0,
+      "IsMainHand": false,
+      "IsOffHand": false
+    },
+    {
+      "Id": "MainHand",
+      "SlotType": "MainHand",
+      "Group": "Weapon",
+      "NameKey": "slot.mainhand",
+      "MinRingSlots": 0,
+      "IsMainHand": true,
+      "IsOffHand": false
+    },
+    {
+      "Id": "OffHand",
+      "SlotType": "OffHand",
+      "Group": "Weapon",
+      "NameKey": "slot.offhand",
+      "MinRingSlots": 0,
+      "IsMainHand": false,
+      "IsOffHand": true
+    }
+  ]
+}

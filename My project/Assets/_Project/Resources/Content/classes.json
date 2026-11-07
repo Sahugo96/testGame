@@ -1,0 +1,93 @@
+{
+  "Classes": [
+    {
+      "Id": "mage",
+      "NameKey": "class.mage.name",
+      "DescriptionKey": "class.mage.desc",
+      "Role": "Damage",
+      "PrimaryAttribute": "Intelligence",
+      "BaseStats": [
+        { "Stat": "MaxHealth", "Value": 0 },
+        { "Stat": "MaxMainMana", "Value": 85 },
+        { "Stat": "MaxReserveMana", "Value": 85 },
+        { "Stat": "HealthRegen", "Value": 2 },
+        { "Stat": "MainManaRegen", "Value": 3 },
+        { "Stat": "Defense", "Value": 0.05 },
+        { "Stat": "CritChance", "Value": 0.1 },
+        { "Stat": "CritSize", "Value": 1.5 },
+        { "Stat": "MoveSpeed", "Value": 5 }
+      ],
+      "StartingAttributes": [
+        { "Stat": "Strength", "Value": 5 },
+        { "Stat": "Intelligence", "Value": 15 },
+        { "Stat": "Stamina", "Value": 8 }
+      ],
+      "AttributeEffects": [
+        { "Attribute": "Intelligence", "Stat": "DamageBonus", "PerPoint": 0.01 },
+        { "Attribute": "Intelligence", "Stat": "MaxMainMana", "PerPoint": 1 },
+        { "Attribute": "Intelligence", "Stat": "MaxReserveMana", "PerPoint": 1 },
+        { "Attribute": "Stamina", "Stat": "MaxHealth", "PerPoint": 10 }
+      ],
+      "Skills": [
+        { "SkillId": "fireball", "LevelUnlock": 1, "StartingMastery": 0.35 },
+        { "SkillId": "arcane_mend", "LevelUnlock": 1, "StartingMastery": 0.2 },
+        { "SkillId": "reserve_nova", "LevelUnlock": 1, "StartingMastery": 0.2 }
+      ],
+      "EquipmentRules": { "RingSlots": 4, "AllowedArmorTypes": [ "Cloth" ], "AllowedWeaponTypes": [ "Staff", "Wand" ] },
+      "StartingItems": [
+        { "ItemId": "apprentice_staff", "Count": 1, "Equip": true },
+        { "ItemId": "cloth_hood", "Count": 1, "Equip": true },
+        { "ItemId": "cloth_robe", "Count": 1, "Equip": true },
+        { "ItemId": "ring_of_focus", "Count": 1, "Equip": false },
+        { "ItemId": "iron_helm", "Count": 1, "Equip": false },
+        { "ItemId": "health_potion", "Count": 5, "Equip": false },
+        { "ItemId": "main_mana_potion", "Count": 5, "Equip": false },
+        { "ItemId": "reserve_mana_potion", "Count": 3, "Equip": false }
+      ]
+    },
+    {
+      "Id": "warrior",
+      "NameKey": "class.warrior.name",
+      "DescriptionKey": "class.warrior.desc",
+      "Role": "Tank",
+      "PrimaryAttribute": "Strength",
+      "BaseStats": [
+        { "Stat": "MaxHealth", "Value": 0 },
+        { "Stat": "MaxMainMana", "Value": 86 },
+        { "Stat": "MaxReserveMana", "Value": 100 },
+        { "Stat": "HealthRegen", "Value": 4 },
+        { "Stat": "MainManaRegen", "Value": 4 },
+        { "Stat": "Defense", "Value": 0.15 },
+        { "Stat": "CritChance", "Value": 0.15 },
+        { "Stat": "CritSize", "Value": 1.5 },
+        { "Stat": "MoveSpeed", "Value": 5 }
+      ],
+      "StartingAttributes": [
+        { "Stat": "Strength", "Value": 15 },
+        { "Stat": "Intelligence", "Value": 3 },
+        { "Stat": "Stamina", "Value": 14 }
+      ],
+      "AttributeEffects": [
+        { "Attribute": "Strength", "Stat": "DamageBonus", "PerPoint": 0.01 },
+        { "Attribute": "Stamina", "Stat": "MaxHealth", "PerPoint": 10 },
+        { "Attribute": "Stamina", "Stat": "MaxMainMana", "PerPoint": 1 }
+      ],
+      "Skills": [
+        { "SkillId": "power_strike", "LevelUnlock": 1, "StartingMastery": 0.35 },
+        { "SkillId": "blood_strike", "LevelUnlock": 1, "StartingMastery": 0.2 },
+        { "SkillId": "second_wind", "LevelUnlock": 1, "StartingMastery": 0.2 }
+      ],
+      "EquipmentRules": { "RingSlots": 2, "AllowedArmorTypes": [ "Leather", "Plate" ], "AllowedWeaponTypes": [ "Sword", "Axe", "Shield" ] },
+      "StartingItems": [
+        { "ItemId": "iron_sword", "Count": 1, "Equip": true },
+        { "ItemId": "wooden_shield", "Count": 1, "Equip": true },
+        { "ItemId": "iron_helm", "Count": 1, "Equip": true },
+        { "ItemId": "plate_armor", "Count": 1, "Equip": true },
+        { "ItemId": "great_axe", "Count": 1, "Equip": false },
+        { "ItemId": "leather_gloves", "Count": 1, "Equip": false },
+        { "ItemId": "health_potion", "Count": 5, "Equip": false },
+        { "ItemId": "main_mana_potion", "Count": 3, "Equip": false }
+      ]
+    }
+  ]
+}

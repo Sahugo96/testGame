@@ -1,0 +1,26 @@
+{
+  "PlayerSpawnX": 0,
+  "PlayerSpawnZ": 0,
+  "Spawns": [
+    {
+      "MobId": "training_dummy",
+      "X": 6,
+      "Z": 10
+    },
+    {
+      "MobId": "training_dummy",
+      "X": -6,
+      "Z": 10
+    },
+    {
+      "MobId": "training_dummy",
+      "X": 2,
+      "Z": 2.5
+    },
+    {
+      "MobId": "sturdy_dummy",
+      "X": 0,
+      "Z": 18
+    }
+  ]
+}

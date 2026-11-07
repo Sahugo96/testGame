@@ -1,0 +1,480 @@
+{
+  "Items": [
+    {
+      "Id": "apprentice_staff",
+      "NameKey": "item.apprentice_staff.name",
+      "DescriptionKey": "item.apprentice_staff.desc",
+      "Icon": "apprentice_staff",
+      "Category": "Weapon",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "MainHand",
+          "Hands": 2
+        },
+        {
+          "Type": "Weapon",
+          "WeaponType": "Staff"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "DamageBonus",
+              "Op": "Add",
+              "Value": 0.1
+            },
+            {
+              "Stat": "MaxMainMana",
+              "Op": "Add",
+              "Value": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "cloth_hood",
+      "NameKey": "item.cloth_hood.name",
+      "DescriptionKey": "item.cloth_hood.desc",
+      "Icon": "cloth_hood",
+      "Category": "Armor",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Head",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Cloth"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.02
+            },
+            {
+              "Stat": "MainManaRegen",
+              "Op": "Add",
+              "Value": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "cloth_robe",
+      "NameKey": "item.cloth_robe.name",
+      "DescriptionKey": "item.cloth_robe.desc",
+      "Icon": "cloth_robe",
+      "Category": "Armor",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Body",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Cloth"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.04
+            },
+            {
+              "Stat": "MaxReserveMana",
+              "Op": "Add",
+              "Value": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "ring_of_focus",
+      "NameKey": "item.ring_of_focus.name",
+      "DescriptionKey": "item.ring_of_focus.desc",
+      "Icon": "ring_of_focus",
+      "Category": "Jewelry",
+      "Rarity": "Rare",
+      "ItemLevel": 3,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Ring",
+          "Hands": 1
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "CritChance",
+              "Op": "Add",
+              "Value": 0.05
+            },
+            {
+              "Stat": "CritSize",
+              "Op": "Add",
+              "Value": 0.1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "iron_helm",
+      "NameKey": "item.iron_helm.name",
+      "DescriptionKey": "item.iron_helm.desc",
+      "Icon": "iron_helm",
+      "Category": "Armor",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Head",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Plate"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.05
+            },
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "plate_armor",
+      "NameKey": "item.plate_armor.name",
+      "DescriptionKey": "item.plate_armor.desc",
+      "Icon": "plate_armor",
+      "Category": "Armor",
+      "Rarity": "Uncommon",
+      "ItemLevel": 2,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Body",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Plate"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.1
+            },
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 40
+            },
+            {
+              "Stat": "MoveSpeed",
+              "Op": "PercentAdd",
+              "Value": -0.05
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "leather_gloves",
+      "NameKey": "item.leather_gloves.name",
+      "DescriptionKey": "item.leather_gloves.desc",
+      "Icon": "leather_gloves",
+      "Category": "Armor",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "Hands",
+          "Hands": 1
+        },
+        {
+          "Type": "Armor",
+          "ArmorType": "Leather"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "CritChance",
+              "Op": "Add",
+              "Value": 0.03
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "iron_sword",
+      "NameKey": "item.iron_sword.name",
+      "DescriptionKey": "item.iron_sword.desc",
+      "Icon": "iron_sword",
+      "Category": "Weapon",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "MainHand",
+          "Hands": 1
+        },
+        {
+          "Type": "Weapon",
+          "WeaponType": "Sword"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "DamageBonus",
+              "Op": "Add",
+              "Value": 0.1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "wooden_shield",
+      "NameKey": "item.wooden_shield.name",
+      "DescriptionKey": "item.wooden_shield.desc",
+      "Icon": "wooden_shield",
+      "Category": "Weapon",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "OffHand",
+          "Hands": 1
+        },
+        {
+          "Type": "Weapon",
+          "WeaponType": "Shield"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.08
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "great_axe",
+      "NameKey": "item.great_axe.name",
+      "DescriptionKey": "item.great_axe.desc",
+      "Icon": "great_axe",
+      "Category": "Weapon",
+      "Rarity": "Rare",
+      "ItemLevel": 3,
+      "RequiredLevel": 1,
+      "ClassRestriction": [
+        "warrior"
+      ],
+      "Binding": "OnEquip",
+      "Components": [
+        {
+          "Type": "Equipment"
+        },
+        {
+          "Type": "EquipSlot",
+          "SlotType": "MainHand",
+          "Hands": 2
+        },
+        {
+          "Type": "Weapon",
+          "WeaponType": "Axe"
+        },
+        {
+          "Type": "Stats",
+          "Stats": [
+            {
+              "Stat": "DamageBonus",
+              "Op": "Add",
+              "Value": 0.3
+            },
+            {
+              "Stat": "CritSize",
+              "Op": "Add",
+              "Value": 0.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "health_potion",
+      "NameKey": "item.health_potion.name",
+      "DescriptionKey": "item.health_potion.desc",
+      "Icon": "health_potion",
+      "Category": "Consumable",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Consumable",
+          "Effect": "RestoreResource",
+          "Resource": "Health",
+          "Amount": 60,
+          "CooldownGroup": "health_potion",
+          "Cooldown": 10
+        },
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        }
+      ]
+    },
+    {
+      "Id": "main_mana_potion",
+      "NameKey": "item.main_mana_potion.name",
+      "DescriptionKey": "item.main_mana_potion.desc",
+      "Icon": "main_mana_potion",
+      "Category": "Consumable",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Consumable",
+          "Effect": "RestoreResource",
+          "Resource": "CombatMana",
+          "Amount": 50,
+          "CooldownGroup": "main_mana_potion",
+          "Cooldown": 10
+        },
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        }
+      ]
+    },
+    {
+      "Id": "reserve_mana_potion",
+      "NameKey": "item.reserve_mana_potion.name",
+      "DescriptionKey": "item.reserve_mana_potion.desc",
+      "Icon": "reserve_mana_potion",
+      "Category": "Consumable",
+      "Rarity": "Common",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Consumable",
+          "Effect": "RestoreResource",
+          "Resource": "ReserveMana",
+          "Amount": 60,
+          "CooldownGroup": "reserve_mana_potion",
+          "Cooldown": 15
+        },
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        }
+      ]
+    }
+  ]
+}

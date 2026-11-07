@@ -7,12 +7,12 @@
 #
 .utmp/
 /My project/[Ll]ibrary/
-# /My project/[Tt]emp/
-# /My project/[Oo]bj/
-# /My project/[Bb]uild/
-# /My project/[Bb]uilds/
-# /My project/[Ll]ogs/
-# /My project/[Uu]ser[Ss]ettings/
+/My project/[Tt]emp/
+/My project/[Oo]bj/
+/My project/[Bb]uild/
+/My project/[Bb]uilds/
+/My project/[Ll]ogs/
+/My project/[Uu]ser[Ss]ettings/
 *.log
 
 # Memory Profiler generated files
@@ -135,3 +135,6 @@ crashlytics-build.properties
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+# .NET test harness outside Unity (sim-tests)
+/sim-tests/bin/
+/sim-tests/obj/

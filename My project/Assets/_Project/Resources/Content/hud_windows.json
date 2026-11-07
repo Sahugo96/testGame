@@ -1,0 +1,44 @@
+{
+  "Windows": [
+    {
+      "Id": "character",
+      "NameKey": "window.character",
+      "Icon": "character",
+      "MenuZone": "BottomLeft",
+      "MenuOrder": 1,
+      "HotkeyBinding": "<Keyboard>/c",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
+      "Id": "backpack",
+      "NameKey": "window.backpack",
+      "Icon": "backpack",
+      "MenuZone": "BottomLeft",
+      "MenuOrder": 2,
+      "HotkeyBinding": "<Keyboard>/i",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
+      "Id": "skillbook",
+      "NameKey": "window.skillbook",
+      "Icon": "skillbook",
+      "MenuZone": "BottomLeft",
+      "MenuOrder": 3,
+      "HotkeyBinding": "<Keyboard>/k",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
+      "Id": "settings",
+      "NameKey": "window.settings",
+      "Icon": "settings",
+      "MenuZone": "BottomRight",
+      "MenuOrder": 1,
+      "HotkeyBinding": "<Keyboard>/o",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    }
+  ]
+}

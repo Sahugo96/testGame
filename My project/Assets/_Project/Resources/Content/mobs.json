@@ -1,0 +1,24 @@
+{
+  "Mobs": [
+    {
+      "Id": "training_dummy",
+      "NameKey": "mob.training_dummy",
+      "Faction": "Training",
+      "MaxHealth": 300,
+      "HealthRegen": 10,
+      "Defense": 0.1,
+      "RespawnSeconds": 5,
+      "VisualColor": "#C0504D"
+    },
+    {
+      "Id": "sturdy_dummy",
+      "NameKey": "mob.sturdy_dummy",
+      "Faction": "Training",
+      "MaxHealth": 600,
+      "HealthRegen": 15,
+      "Defense": 0.5,
+      "RespawnSeconds": 8,
+      "VisualColor": "#8064A2"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+    "name": "Game.Host",
+    "rootNamespace": "Game.Host",
+    "references": ["Game.Shared", "Game.Server", "Game.Client", "Unity.InputSystem", "UnityEngine.UI"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

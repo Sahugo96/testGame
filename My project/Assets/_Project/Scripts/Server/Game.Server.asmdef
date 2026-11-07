@@ -1,0 +1,14 @@
+{
+    "name": "Game.Server",
+    "rootNamespace": "Game.Server",
+    "references": ["Game.Shared"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
