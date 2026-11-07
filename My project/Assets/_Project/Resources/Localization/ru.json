@@ -935,6 +935,66 @@
   {
    "Key": "item.smith_letter.desc",
    "Value": "Квестовый предмет."
+  },
+  {
+   "Key": "menu.title",
+   "Value": "Подключение к игре"
+  },
+  {
+   "Key": "menu.name",
+   "Value": "Имя персонажа"
+  },
+  {
+   "Key": "menu.class",
+   "Value": "Класс"
+  },
+  {
+   "Key": "menu.address",
+   "Value": "Адрес сервера (IP)"
+  },
+  {
+   "Key": "menu.port",
+   "Value": "Порт"
+  },
+  {
+   "Key": "menu.single",
+   "Value": "Одиночная игра"
+  },
+  {
+   "Key": "menu.host",
+   "Value": "Создать сервер (хост)"
+  },
+  {
+   "Key": "menu.join",
+   "Value": "Подключиться"
+  },
+  {
+   "Key": "menu.connecting",
+   "Value": "Подключение…"
+  },
+  {
+   "Key": "menu.error_connect",
+   "Value": "Не удалось подключиться: {0}"
+  },
+  {
+   "Key": "menu.disconnected",
+   "Value": "Соединение с сервером потеряно: {0}"
+  },
+  {
+   "Key": "menu.hosting",
+   "Value": "Сервер запущен, порт {0}. Адреса этого компьютера: {1}"
+  },
+  {
+   "Key": "net.version_mismatch",
+   "Value": "версия игры не совпадает с версией сервера — обновите игру"
+  },
+  {
+   "Key": "net.unknown_class",
+   "Value": "сервер не знает выбранный класс"
+  },
+  {
+   "Key": "ui.leave",
+   "Value": "Выйти в главное меню"
   }
  ]
 }

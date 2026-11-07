@@ -26,6 +26,7 @@ namespace Game.Client.UI
         public static readonly Color Minimap = new Color(0f, 0f, 0f, 0.8f);
         public static readonly Color Experience = new Color(0.45f, 0.3f, 0.85f);
         public static readonly Color Positive = new Color(0.55f, 1f, 0.55f);
+        public static readonly Color Backdrop = new Color(0f, 0f, 0f, 0.75f);
 
         public static Color ForRarity(Game.Shared.Content.Rarity rarity)
         {

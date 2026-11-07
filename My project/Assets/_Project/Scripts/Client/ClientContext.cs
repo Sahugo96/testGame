@@ -25,5 +25,10 @@ namespace Game.Client
         public event Action<string> ClassSwitchRequested;
 
         public void RequestClassSwitch(string classId) => ClassSwitchRequested?.Invoke(classId);
+
+        /// <summary>Raised by the settings window: leave the game and return to the start menu.</summary>
+        public event Action LeaveRequested;
+
+        public void RequestLeave() => LeaveRequested?.Invoke();
     }
 }

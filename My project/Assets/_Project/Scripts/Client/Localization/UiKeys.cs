@@ -29,6 +29,7 @@ namespace Game.Client.Localization
         public const string EquipmentHeader = "ui.equipment_header";
         public const string SettingsInfo = "ui.settings_info";
         public const string SwitchClass = "ui.switch_class";
+        public const string LeaveGame = "ui.leave";
         public const string WeaponSwapLocked = "hud.weapon_swap_locked";
         public const string WeaponSwapRisk = "hud.weapon_swap_risk";
         public const string CritTier = "hud.crit_tier";

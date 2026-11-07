@@ -28,11 +28,18 @@ namespace Game.Host
 
         public float TickInterval => _server.TickInterval;
 
+        public bool IsClosed => false;
+
+        public string CloseReason => null;
+
         public event Action<WorldSnapshot> WorldReceived;
         public event Action<PlayerStateSnapshot> PlayerStateReceived;
         public event Action<CombatEventMessage> CombatEventReceived;
         public event Action<CommandRejectedMessage> RejectedReceived;
         public event Action<NotificationMessage> NotificationReceived;
+
+        /// <summary>Called before each server tick (the network host polls its connections here).</summary>
+        public Action BeforeTick;
 
         public void Send(IGameCommand command) => _server.Submit(LocalPlayerId, command);
 
@@ -43,6 +50,7 @@ namespace Game.Host
             while (_accumulator >= _server.TickInterval && ticks < MaxTicksPerFrame)
             {
                 _accumulator -= _server.TickInterval;
+                BeforeTick?.Invoke();
                 _server.Tick();
                 Deliver();
                 ticks++;

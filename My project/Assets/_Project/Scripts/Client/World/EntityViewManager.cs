@@ -43,6 +43,9 @@ namespace Game.Client.World
             _targetMarker = marker.transform;
         }
 
+        /// <summary>Seconds between snapshots: local host ticks every frame, remote servers less often.</summary>
+        public void SetInterval(float interval) => _interval = interval;
+
         public bool TryGetEntity(Collider collider, out EntityId id) => _byCollider.TryGetValue(collider, out id);
 
         public bool TryGetView(EntityId id, out EntityView view) => _views.TryGetValue(id, out view);
@@ -80,6 +83,7 @@ namespace Game.Client.World
                     view = Create(entity);
                     view.Snap(entity.Position, entity.Yaw);
                 }
+                view.SetInterval(_interval);
                 view.SetTarget(entity.Position, entity.Yaw, entity.IsDead);
             }
             foreach (EntityId id in _stale)

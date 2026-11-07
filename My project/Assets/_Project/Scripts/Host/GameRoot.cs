@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using Game.Client;
 using Game.Client.CameraRig;
 using Game.Client.Input;
 using Game.Client.Localization;
+using Game.Client.Net;
 using Game.Client.State;
 using Game.Client.UI;
 using Game.Client.World;
+using Game.Network;
 using Game.Server;
 using Game.Server.Items;
+using Game.Server.Net;
 using Game.Shared.Content;
 using Game.Shared.Core;
 using UnityEngine;
@@ -16,28 +23,56 @@ using UnityEngine;
 namespace Game.Host
 {
     /// <summary>
-    /// Composition root of the local vertical slice: builds content, the authoritative server, the client (camera,
-    /// input, entity views, HUD) and connects them through <see cref="LocalServerConnection"/>.
+    /// Composition root. Modes: single player (server in this process), host (server in this process + other players
+    /// over the network), client (remote server), dedicated server (-server, no graphics). The client always talks to
+    /// the server through <see cref="IServerConnection"/>; the authoritative logic is <see cref="GameServer"/>.
     /// </summary>
     public sealed class GameRoot : MonoBehaviour
     {
         private const string LanguageCode = "ru";
         private const string BuiltinFontName = "LegacyRuntime.ttf";
         private const float PlaneSizeUnits = 10f;
+        private const int DedicatedFrameRateFactor = 2;
+        private const string ConnectingKey = "menu.connecting";
+        private const string ConnectFailedKey = "menu.error_connect";
+        private const string DisconnectedKey = "menu.disconnected";
+        private const string HostingKey = "menu.hosting";
+        private const string PidFileName = "server.pid";
 
+        private enum Mode
+        {
+            None,
+            Single,
+            Host,
+            Client,
+            Dedicated,
+        }
+
+        private ContentDatabase _content;
+        private Mode _mode;
         private GameServer _server;
-        private LocalServerConnection _connection;
+        private ServerNetworkHost _networkHost;
+        private IServerConnection _connection;
         private ClientContext _ctx;
         private GameInput _input;
         private ThirdPersonCamera _cameraRig;
         private EntityViewManager _views;
+        private HudRoot _hud;
+        private StartMenuView _menu;
         private Transform _followed;
+        private float _dedicatedAccumulator;
+        private int _lastPlayerCount = -1;
+        private string _playerName;
+        private string _classId;
+        private string _address;
+        private int _port;
 
         private void Start()
         {
             Log.SetSink(new UnityLogSink());
+            Application.runInBackground = true;
             var errors = new List<string>();
-            ContentDatabase content = ServerContentFactory.Build(UnityContentLoader.LoadAll(), errors);
+            _content = ServerContentFactory.Build(UnityContentLoader.LoadAll(), errors);
             if (errors.Count > 0)
             {
                 foreach (string error in errors)
@@ -49,48 +84,58 @@ namespace Game.Host
                 return;
             }
 
-            _server = new GameServer(content, new SystemRandom(Environment.TickCount), new InMemoryAuditLog());
-            CreateGround(content.Config.WorldHalfSize);
-
-            Camera camera = Camera.main;
-            if (camera == null)
+            LaunchOptions options = LaunchOptions.Parse(Environment.GetCommandLineArgs());
+            _port = options.Port > 0 ? options.Port : _content.Config.DefaultPort;
+            if (options.DedicatedServer || Application.isBatchMode)
             {
-                camera = new GameObject("Main Camera").AddComponent<Camera>();
-                camera.tag = "MainCamera";
+                StartDedicated();
+                return;
             }
-            camera.cullingMask &= RenderLayers.AllExceptPreview;
-            _cameraRig = camera.gameObject.AddComponent<ThirdPersonCamera>();
 
-            _ctx = new ClientContext
+            BuildClient();
+            if (options.AutoStart)
             {
-                Content = content,
-                State = new ClientState(),
-                Text = new JsonTableLocalizationService(LanguageCode),
-                Font = Resources.GetBuiltinResource<Font>(BuiltinFontName),
-                Camera = camera,
-                Modifiers = new ModifierTracker(),
-            };
-            _input = new GameInput(content.HudWindows);
-            _input.Enable();
-
-            _views = new GameObject("Entities").AddComponent<EntityViewManager>();
-            _views.Init(_ctx, _server.TickInterval);
-            var hudObject = new GameObject("HUD", typeof(RectTransform));
-            HudRoot hud = hudObject.AddComponent<HudRoot>();
-            hud.Init(_ctx, _views, () => _input.PointerScreenPosition);
-            gameObject.AddComponent<PlayerInputController>().Init(_ctx, _input, _cameraRig, _views, hud);
-
-            _ctx.ClassSwitchRequested += Connect;
-            Connect(content.Config.DefaultClassId);
+                _menu.Prefill(options.PlayerName, options.ClassId ?? _content.Config.DefaultClassId, options.ConnectAddress, _port);
+                if (options.Host)
+                {
+                    StartHost(_menu.PlayerName, _menu.ClassId, _port);
+                }
+                else
+                {
+                    StartJoin(_menu.PlayerName, _menu.ClassId, options.ConnectAddress, _port);
+                }
+            }
+            else
+            {
+                _menu.Show(null);
+            }
         }
 
         private void Update()
         {
+            float dt = Time.deltaTime;
+            if (_mode == Mode.Dedicated)
+            {
+                UpdateDedicated(dt);
+                return;
+            }
             if (_connection == null)
             {
                 return;
             }
-            _connection.Update(Time.deltaTime);
+            _connection.Update(dt);
+            if (_connection == null)
+            {
+                return;
+            }
+            _views.SetInterval(_connection.TickInterval);
+            if (_connection.IsClosed)
+            {
+                string reason = _connection.CloseReason;
+                Leave();
+                _menu.Show(_ctx.Text.Format(DisconnectedKey, LocalizeReason(reason)));
+                return;
+            }
             if (_views.LocalPlayerTransform != _followed)
             {
                 _followed = _views.LocalPlayerTransform;
@@ -102,25 +147,258 @@ namespace Game.Host
         {
             if (_ctx != null)
             {
-                _ctx.ClassSwitchRequested -= Connect;
+                _ctx.ClassSwitchRequested -= SwitchClass;
+                _ctx.LeaveRequested -= LeaveToMenu;
             }
+            Leave();
             _input?.Dispose();
         }
 
-        /// <summary>Joins the local server with the class; on a repeated call replaces the character (settings → switch class).</summary>
-        private void Connect(string classId)
+        private void BuildClient()
         {
-            if (_connection != null)
+            CreateGround(_content.Config.WorldHalfSize);
+            Camera camera = Camera.main;
+            if (camera == null)
             {
-                _ctx.State.Unbind(_connection);
-                _server.RemovePlayer(_connection.LocalPlayerId);
-                _views.Clear();
-                _followed = null;
+                camera = new GameObject("Main Camera").AddComponent<Camera>();
+                camera.tag = "MainCamera";
             }
-            EntityId player = _server.AddPlayer(classId);
-            _connection = new LocalServerConnection(_server, player);
-            _ctx.Commands = new ClientCommands(_connection);
-            _ctx.State.Bind(_connection);
+            camera.cullingMask &= RenderLayers.AllExceptPreview;
+            _cameraRig = camera.gameObject.AddComponent<ThirdPersonCamera>();
+
+            _ctx = new ClientContext
+            {
+                Content = _content,
+                State = new ClientState(),
+                Text = new JsonTableLocalizationService(LanguageCode),
+                Font = Resources.GetBuiltinResource<Font>(BuiltinFontName),
+                Camera = camera,
+                Modifiers = new ModifierTracker(),
+            };
+            _input = new GameInput(_content.HudWindows);
+            _input.Enable();
+
+            _views = new GameObject("Entities").AddComponent<EntityViewManager>();
+            _views.Init(_ctx, 1f / _content.Config.TickRate);
+            var hudObject = new GameObject("HUD", typeof(RectTransform));
+            _hud = hudObject.AddComponent<HudRoot>();
+            _hud.Init(_ctx, _views, () => _input.PointerScreenPosition);
+            gameObject.AddComponent<PlayerInputController>().Init(_ctx, _input, _cameraRig, _views, _hud);
+
+            var menuObject = new GameObject("StartMenu", typeof(RectTransform));
+            _menu = menuObject.AddComponent<StartMenuView>();
+            _menu.Init(_ctx);
+            _menu.SingleRequested = StartSingle;
+            _menu.HostRequested = StartHost;
+            _menu.JoinRequested = StartJoin;
+
+            _ctx.ClassSwitchRequested += SwitchClass;
+            _ctx.LeaveRequested += LeaveToMenu;
+        }
+
+        private void StartSingle(string playerName, string classId)
+        {
+            Leave();
+            Remember(playerName, classId, null, _port);
+            _server = CreateServer();
+            _mode = Mode.Single;
+            JoinLocal();
+        }
+
+        private void StartHost(string playerName, string classId, int port)
+        {
+            Leave();
+            Remember(playerName, classId, null, port);
+            _server = CreateServer();
+            try
+            {
+                _networkHost = new ServerNetworkHost(_server, port);
+            }
+            catch (Exception exception)
+            {
+                _server = null;
+                _menu.Show(_ctx.Text.Format(ConnectFailedKey, exception.Message));
+                return;
+            }
+            _mode = Mode.Host;
+            JoinLocal();
+            _hud.ShowInfo(_ctx.Text.Format(HostingKey, _networkHost.Port, LocalAddresses()));
+        }
+
+        private void StartJoin(string playerName, string classId, string address, int port)
+        {
+            Leave();
+            Remember(playerName, classId, address, port);
+            _menu.SetStatus(_ctx.Text.Get(ConnectingKey));
+            NetworkClientSession session;
+            try
+            {
+                session = NetworkClientSession.Connect(address, port, playerName, classId);
+            }
+            catch (Exception exception)
+            {
+                _menu.Show(_ctx.Text.Format(ConnectFailedKey, (exception.InnerException ?? exception).Message));
+                return;
+            }
+            _mode = Mode.Client;
+            Bind(new RemoteServerConnection(session));
+            _hud.ShowInfo(string.Empty);
+        }
+
+        private void JoinLocal()
+        {
+            EntityId player = _server.AddPlayer(_classId, string.IsNullOrWhiteSpace(_playerName) ? null : _playerName.Trim());
+            var local = new LocalServerConnection(_server, player);
+            if (_networkHost != null)
+            {
+                local.BeforeTick = _networkHost.Poll;
+            }
+            Bind(local);
+            _hud.ShowInfo(string.Empty);
+        }
+
+        private void Bind(IServerConnection connection)
+        {
+            _connection = connection;
+            _ctx.Commands = new ClientCommands(connection);
+            _ctx.State.Bind(connection);
+            _menu.Hide();
+        }
+
+        /// <summary>Settings → switch class: replace the character (local) or reconnect with the new class (remote).</summary>
+        private void SwitchClass(string classId)
+        {
+            switch (_mode)
+            {
+                case Mode.Single:
+                case Mode.Host:
+                    UnbindConnection();
+                    _classId = classId;
+                    JoinLocal();
+                    break;
+                case Mode.Client:
+                    StartJoin(_playerName, classId, _address, _port);
+                    break;
+            }
+        }
+
+        private void LeaveToMenu()
+        {
+            Leave();
+            _menu.Show(null);
+        }
+
+        /// <summary>Drops the current game (connection, local server, network host) and clears the view.</summary>
+        private void Leave()
+        {
+            UnbindConnection();
+            _networkHost?.Dispose();
+            _networkHost = null;
+            _server = null;
+            _mode = Mode.None;
+        }
+
+        private void UnbindConnection()
+        {
+            if (_connection == null)
+            {
+                return;
+            }
+            _ctx.State.Unbind(_connection);
+            if (_connection is LocalServerConnection local && _server != null)
+            {
+                _server.RemovePlayer(local.LocalPlayerId);
+            }
+            (_connection as IDisposable)?.Dispose();
+            _connection = null;
+            _ctx.Commands = null;
+            _views.Clear();
+            _followed = null;
+        }
+
+        private void StartDedicated()
+        {
+            _server = CreateServer();
+            _networkHost = new ServerNetworkHost(_server, _port);
+            _mode = Mode.Dedicated;
+            Application.targetFrameRate = _content.Config.TickRate * DedicatedFrameRateFactor;
+            Log.Info(LogTags.Server, $"Dedicated server started on port {_networkHost.Port}. Addresses: {LocalAddresses()}");
+            WritePidFile();
+        }
+
+        /// <summary>server.pid next to the executable: StopServer.bat stops exactly this process.</summary>
+        private static void WritePidFile()
+        {
+            if (Application.isEditor)
+            {
+                return;
+            }
+            try
+            {
+                string folder = Path.GetDirectoryName(Application.dataPath);
+                File.WriteAllText(Path.Combine(folder, PidFileName), Process.GetCurrentProcess().Id.ToString());
+            }
+            catch (Exception exception)
+            {
+                Log.Warning(LogTags.Server, $"Cannot write {PidFileName}: {exception.Message}");
+            }
+        }
+
+        private void UpdateDedicated(float dt)
+        {
+            _dedicatedAccumulator += dt;
+            while (_dedicatedAccumulator >= _server.TickInterval)
+            {
+                _dedicatedAccumulator -= _server.TickInterval;
+                _networkHost.Poll();
+                _server.Tick();
+            }
+            if (_networkHost.ConnectedPlayers != _lastPlayerCount)
+            {
+                _lastPlayerCount = _networkHost.ConnectedPlayers;
+                Log.Info(LogTags.Server, $"Players online: {_lastPlayerCount}");
+            }
+        }
+
+        /// <summary>Server error keys ("net.*") are localized; transport reasons are shown as is.</summary>
+        private string LocalizeReason(string reason)
+        {
+            if (string.IsNullOrEmpty(reason))
+            {
+                return string.Empty;
+            }
+            return reason.StartsWith(NetworkConstants.ErrorKeyPrefix, StringComparison.Ordinal) ? _ctx.Text.Get(reason) : reason;
+        }
+
+        private GameServer CreateServer() => new GameServer(_content, new SystemRandom(Environment.TickCount), new InMemoryAuditLog());
+
+        private void Remember(string playerName, string classId, string address, int port)
+        {
+            _playerName = playerName;
+            _classId = classId ?? _content.Config.DefaultClassId;
+            _address = address;
+            _port = port;
+        }
+
+        /// <summary>IPv4 addresses of this computer, to tell a friend where to connect.</summary>
+        private static string LocalAddresses()
+        {
+            var addresses = new List<string>();
+            try
+            {
+                foreach (IPAddress address in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                {
+                    if (address.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        addresses.Add(address.ToString());
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // No DNS: leave the list empty.
+            }
+            return string.Join(", ", addresses);
         }
 
         private static void CreateGround(float halfSize)

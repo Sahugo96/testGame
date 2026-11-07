@@ -35,6 +35,8 @@ namespace Game.Client.World
             _renderer.material.color = color;
         }
 
+        public void SetInterval(float interval) => _interval = interval;
+
         public void Snap(Vec3 position, float yaw)
         {
             _to = ToWorld(position);

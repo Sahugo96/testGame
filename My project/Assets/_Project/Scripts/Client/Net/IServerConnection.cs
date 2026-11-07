@@ -12,7 +12,17 @@ namespace Game.Client.Net
     {
         EntityId LocalPlayerId { get; }
 
+        /// <summary>Seconds between world snapshots (used for interpolation).</summary>
         float TickInterval { get; }
+
+        /// <summary>The connection is gone (server stopped, network lost or refused).</summary>
+        bool IsClosed { get; }
+
+        /// <summary>Why the connection closed: a localization key from the server or a transport message.</summary>
+        string CloseReason { get; }
+
+        /// <summary>Delivers received messages as events (and, for a local host, runs the server ticks). Main thread.</summary>
+        void Update(float deltaTime);
 
         void Send(IGameCommand command);
 

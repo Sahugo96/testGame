@@ -31,7 +31,11 @@ namespace Game.Client.UI
         private NameplateWidget _nameplates;
         private ExperienceBarWidget _experience;
         private EntityViewManager _views;
+        private Text _info;
         private string _classId;
+
+        private const float InfoWidth = 520f;
+        private const int InfoLines = 2;
 
         public SkillBarWidget SkillBar { get; private set; }
         public WindowManager Windows { get; private set; }
@@ -77,6 +81,10 @@ namespace Game.Client.UI
             new MenuBarWidget(bottomRight, ctx, MenuZones.BottomRight, true, Windows.Toggle);
             _experience = new ExperienceBarWidget(bottomRight, ctx, HudLayout.MenuButtonHeight + HudLayout.Gap);
             _message = new MessageWidget(hudLayer, ctx);
+            _info = UiFactory.Label("Info", bottomLeft, ctx.Font, HudLayout.FontSmall, TextAnchor.LowerLeft, HudPalette.TextDim);
+            UiFactory.Place(_info.rectTransform, Vector2.zero, Vector2.zero, new Vector2(0f, HudLayout.MenuButtonHeight + HudLayout.Gap),
+                new Vector2(InfoWidth, HudLayout.FontHuge * InfoLines));
+            _info.text = string.Empty;
             _combatText = new CombatTextWidget(worldLayer, ctx, views);
             _nameplates = new NameplateWidget(worldLayer, ctx, views);
 
@@ -85,6 +93,15 @@ namespace Game.Client.UI
             ctx.State.CombatEvent += _combatText.Show;
             ctx.State.Rejected += _message.Show;
             ctx.State.Notification += _message.Show;
+        }
+
+        /// <summary>Persistent info line bottom-left (e.g. "hosting on port ..."); empty string hides it.</summary>
+        public void ShowInfo(string text)
+        {
+            if (_info != null)
+            {
+                _info.text = text ?? string.Empty;
+            }
         }
 
         /// <summary>Opens the window of a clicked station (anvil) if the player stands close enough (02, 7.13).</summary>

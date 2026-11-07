@@ -16,7 +16,10 @@ namespace Game.Client.State
 
         public WorldSnapshot World { get; private set; }
         public PlayerStateSnapshot Player { get; private set; }
-        public EntityId LocalPlayerId { get; private set; }
+        private IServerConnection _connection;
+
+        /// <summary>Known after the server's Welcome (remote) or immediately (local host).</summary>
+        public EntityId LocalPlayerId => _connection != null ? _connection.LocalPlayerId : EntityId.None;
 
         public event Action WorldChanged;
         public event Action PlayerChanged;
@@ -26,7 +29,7 @@ namespace Game.Client.State
 
         public void Bind(IServerConnection connection)
         {
-            LocalPlayerId = connection.LocalPlayerId;
+            _connection = connection;
             connection.WorldReceived += OnWorld;
             connection.PlayerStateReceived += OnPlayer;
             connection.CombatEventReceived += OnCombatEvent;
@@ -44,6 +47,7 @@ namespace Game.Client.State
             _entities.Clear();
             World = null;
             Player = null;
+            _connection = null;
         }
 
         public bool TryGetEntity(EntityId id, out EntitySnapshot entity) => _entities.TryGetValue(id, out entity);

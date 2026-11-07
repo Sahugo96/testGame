@@ -9,8 +9,8 @@ using UnityEngine.UI;
 namespace Game.Client.UI.Windows
 {
     /// <summary>
-    /// Settings placeholder (full menu is module 17) with a developer tool: switch the character class to try
-    /// class-dependent skills and equipment rules.
+    /// Settings placeholder (full menu is module 17) with a developer tool (switch the character class to try
+    /// class-dependent skills and equipment rules) and "leave to the start menu".
     /// </summary>
     public sealed class SettingsWindow : HudWindow
     {
@@ -32,6 +32,10 @@ namespace Game.Client.UI.Windows
                 layout.minHeight = HudLayout.MenuButtonHeight;
                 layout.preferredHeight = HudLayout.MenuButtonHeight;
             }
+            Button leave = UiFactory.Button("Leave", list, ctx.Font, ctx.Text.Get(UiKeys.LeaveGame), () => Ctx.RequestLeave());
+            LayoutElement leaveLayout = leave.gameObject.AddComponent<LayoutElement>();
+            leaveLayout.minHeight = HudLayout.MenuButtonHeight;
+            leaveLayout.preferredHeight = HudLayout.MenuButtonHeight;
         }
 
         public override void Refresh(PlayerStateSnapshot state)
