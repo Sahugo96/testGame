@@ -16,7 +16,12 @@ namespace Game.Client.UI.Widgets
 
         public static string Item(ClientContext ctx, ItemDefinition item, int count, string hintKey) => Item(ctx, item, count, hintKey, 0);
 
-        public static string Item(ClientContext ctx, ItemDefinition item, int count, string hintKey, int upgradeLevel)
+        public static string Item(ClientContext ctx, ItemDefinition item, int count, string hintKey, int upgradeLevel) =>
+            Item(ctx, item, count, hintKey, upgradeLevel, null, null);
+
+        /// <summary>An item instance: also its rolled affixes and sockets with inserted ingredients (04, 7.9).</summary>
+        public static string Item(ClientContext ctx, ItemDefinition item, int count, string hintKey, int upgradeLevel,
+            SocketSnapshot[] sockets, AffixSnapshot[] affixes)
         {
             float upgrade = UpgradeMultiplier(ctx, item, upgradeLevel);
             ILocalizationService text = ctx.Text;
@@ -56,8 +61,39 @@ namespace Game.Client.UI.Widgets
                     sb.Append("<color=#7CFC7C>+").Append(value).Append(' ').Append(StatFormat.Name(text, modifier.Stat)).Append("</color>\n");
                 }
             }
+            foreach (AffixSnapshot affix in affixes ?? new AffixSnapshot[0])
+            {
+                float scaled = affix.Op == ModifierOp.Multiply ? affix.Value : affix.Value * upgrade;
+                string value = affix.Op == ModifierOp.Add
+                    ? StatFormat.Value(text, affix.Stat, scaled)
+                    : text.Format(UiKeys.Percent, (scaled * PercentFactor).ToString("0.#", CultureInfo.InvariantCulture));
+                sb.Append("<color=#7CB8FC>+").Append(value).Append(' ').Append(StatFormat.Name(text, affix.Stat)).Append("</color>\n");
+            }
+            foreach (SocketSnapshot socket in sockets ?? new SocketSnapshot[0])
+            {
+                string inside = socket.IngredientId != null && ctx.Content.Items.TryGetValue(socket.IngredientId, out ItemDefinition ingredientItem)
+                    ? text.Get(ingredientItem.NameKey) : text.Get(UiKeys.SocketEmpty);
+                sb.Append(text.Format(UiKeys.SocketLine, text.Get(UiKeys.SocketTypePrefix + socket.Type), inside)).Append('\n');
+            }
+            SocketIngredientComponent ingredient = item.Get<SocketIngredientComponent>();
+            if (ingredient != null)
+            {
+                sb.Append(text.Format(UiKeys.IngredientFits, text.Get(UiKeys.SocketTypePrefix + ingredient.SocketType))).Append('\n');
+                foreach (StatModifier modifier in ingredient.Modifiers)
+                {
+                    string value = modifier.Op == ModifierOp.Add
+                        ? StatFormat.Value(text, modifier.Stat, modifier.Value)
+                        : text.Format(UiKeys.Percent, (modifier.Value * PercentFactor).ToString("0.#", CultureInfo.InvariantCulture));
+                    sb.Append("<color=#7CFC7C>+").Append(value).Append(' ').Append(StatFormat.Name(text, modifier.Stat)).Append("</color>\n");
+                }
+            }
             ConsumableComponent consumable = item.Get<ConsumableComponent>();
-            if (consumable != null)
+            if (consumable != null && consumable.EffectKey == EffectKeys.ApplyStatus
+                && ctx.Content.StatusEffects.TryGetValue(consumable.StatusId ?? string.Empty, out StatusEffectDefinition status))
+            {
+                sb.Append(text.Get(status.NameKey)).Append(": ").Append(text.Get(status.DescriptionKey)).Append('\n');
+            }
+            else if (consumable != null)
             {
                 sb.Append(text.Format("ui.restores", consumable.Amount.ToString("0", CultureInfo.InvariantCulture), text.Get(UiKeys.ResourcePrefix + consumable.Resource))).Append('\n');
             }

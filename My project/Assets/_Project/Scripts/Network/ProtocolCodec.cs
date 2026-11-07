@@ -159,6 +159,13 @@ namespace Game.Network
                 case CancelCraftCommand _:
                     w.Write((byte)MessageType.CancelCraft);
                     break;
+                case InsertIngredientCommand m:
+                    w.Write((byte)MessageType.InsertIngredient);
+                    Str(w, m.ItemInstanceId);
+                    w.Write(m.SocketIndex);
+                    w.Write(m.IngredientBagIndex);
+                    Id(w, m.StationId);
+                    break;
                 case PickUpLootCommand m:
                     w.Write((byte)MessageType.PickUpLoot);
                     Id(w, m.LootId);
@@ -252,6 +259,8 @@ namespace Game.Network
                     return new CraftItemCommand { RecipeId = Str(r), StationId = Id(r) };
                 case MessageType.CancelCraft:
                     return new CancelCraftCommand();
+                case MessageType.InsertIngredient:
+                    return new InsertIngredientCommand { ItemInstanceId = Str(r), SocketIndex = r.ReadInt32(), IngredientBagIndex = r.ReadInt32(), StationId = Id(r) };
                 case MessageType.PickUpLoot:
                     return new PickUpLootCommand { LootId = Id(r) };
                 case MessageType.SetAutoLoot:
@@ -423,6 +432,7 @@ namespace Game.Network
                 Str(w, b.DefinitionId);
                 w.Write(b.Count);
                 w.Write(b.UpgradeLevel);
+                WriteItemDetails(w, b.Sockets, b.Affixes);
             }
             w.Write(m.Equipment.Length);
             foreach (EquipmentSlotSnapshot e in m.Equipment)
@@ -431,6 +441,7 @@ namespace Game.Network
                 Str(w, e.InstanceId);
                 Str(w, e.DefinitionId);
                 w.Write(e.UpgradeLevel);
+                WriteItemDetails(w, e.Sockets, e.Affixes);
             }
             w.Write(m.Stats.Length);
             foreach (StatSnapshot s in m.Stats)
@@ -445,6 +456,13 @@ namespace Game.Network
                 w.Write(g.Remaining);
             }
             w.Write(m.AutoLoot);
+            CurrencySnapshot[] currencies = m.Currencies ?? new CurrencySnapshot[0];
+            w.Write(currencies.Length);
+            foreach (CurrencySnapshot c in currencies)
+            {
+                Str(w, c.CurrencyId);
+                w.Write(c.Amount);
+            }
             Str(w, m.CraftRecipeId);
             w.Write(m.CraftProgress);
             w.Write((byte)m.Duel.Phase);
@@ -505,6 +523,40 @@ namespace Game.Network
                 g.Log[i] = new GroupLogEntry { RecipientName = Str(r), ItemDefinitionId = Str(r), Count = r.ReadInt32(), Mode = (LootMode)r.ReadByte() };
             }
             return g;
+        }
+
+        private static void WriteItemDetails(BinaryWriter w, SocketSnapshot[] sockets, AffixSnapshot[] affixes)
+        {
+            sockets = sockets ?? new SocketSnapshot[0];
+            affixes = affixes ?? new AffixSnapshot[0];
+            w.Write((byte)sockets.Length);
+            foreach (SocketSnapshot s in sockets)
+            {
+                Str(w, s.Type);
+                w.Write(s.IsOvercap);
+                Str(w, s.IngredientId);
+            }
+            w.Write((byte)affixes.Length);
+            foreach (AffixSnapshot a in affixes)
+            {
+                w.Write((byte)a.Stat);
+                w.Write((byte)a.Op);
+                w.Write(a.Value);
+            }
+        }
+
+        private static void ReadItemDetails(BinaryReader r, out SocketSnapshot[] sockets, out AffixSnapshot[] affixes)
+        {
+            sockets = new SocketSnapshot[r.ReadByte()];
+            for (int i = 0; i < sockets.Length; i++)
+            {
+                sockets[i] = new SocketSnapshot { Type = Str(r), IsOvercap = r.ReadBoolean(), IngredientId = Str(r) };
+            }
+            affixes = new AffixSnapshot[r.ReadByte()];
+            for (int i = 0; i < affixes.Length; i++)
+            {
+                affixes[i] = new AffixSnapshot { Stat = (StatId)r.ReadByte(), Op = (ModifierOp)r.ReadByte(), Value = r.ReadSingle() };
+            }
         }
 
         private static void Ids(BinaryWriter w, EntityId[] ids)
@@ -579,6 +631,7 @@ namespace Game.Network
             for (int i = 0; i < occupiedSlots; i++)
             {
                 var slot = new ItemSlotSnapshot { Index = r.ReadInt32(), InstanceId = Str(r), DefinitionId = Str(r), Count = r.ReadInt32(), UpgradeLevel = r.ReadInt32() };
+                ReadItemDetails(r, out slot.Sockets, out slot.Affixes);
                 if (slot.Index >= 0 && slot.Index < m.Bag.Length)
                 {
                     m.Bag[slot.Index] = slot;
@@ -588,6 +641,7 @@ namespace Game.Network
             for (int i = 0; i < m.Equipment.Length; i++)
             {
                 m.Equipment[i] = new EquipmentSlotSnapshot { SlotId = Str(r), InstanceId = Str(r), DefinitionId = Str(r), UpgradeLevel = r.ReadInt32() };
+                ReadItemDetails(r, out m.Equipment[i].Sockets, out m.Equipment[i].Affixes);
             }
             m.Stats = new StatSnapshot[r.ReadInt32()];
             for (int i = 0; i < m.Stats.Length; i++)
@@ -600,6 +654,11 @@ namespace Game.Network
                 m.ConsumableCooldowns[i] = new CooldownGroupSnapshot { Group = Str(r), Remaining = r.ReadSingle() };
             }
             m.AutoLoot = r.ReadBoolean();
+            m.Currencies = new CurrencySnapshot[r.ReadInt32()];
+            for (int i = 0; i < m.Currencies.Length; i++)
+            {
+                m.Currencies[i] = new CurrencySnapshot { CurrencyId = Str(r), Amount = r.ReadInt64() };
+            }
             m.CraftRecipeId = Str(r);
             m.CraftProgress = r.ReadSingle();
             m.Duel = new DuelSnapshot

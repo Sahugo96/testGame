@@ -52,7 +52,13 @@ namespace Game.Client.UI.Windows
             _details = UiFactory.Label("Text", right, ctx.Font, HudLayout.FontNormal, TextAnchor.UpperLeft, HudPalette.Text);
             _details.supportRichText = true;
             UiFactory.Stretch(_details.rectTransform);
-            _details.rectTransform.offsetMin = new Vector2(0f, HudLayout.MenuButtonHeight + HudLayout.Gap);
+            _details.rectTransform.offsetMin = new Vector2(0f, (HudLayout.MenuButtonHeight + HudLayout.Gap) * 2f);
+            _socketButton = UiFactory.Button("Socket", right, ctx.Font, string.Empty, InsertIngredient);
+            UiFactory.Place((RectTransform)_socketButton.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, HudLayout.MenuButtonHeight + HudLayout.Gap),
+                new Vector2(HudLayout.MenuButtonWidth * 3f, HudLayout.MenuButtonHeight));
+            _socketLabel = _socketButton.GetComponentInChildren<Text>();
+            _socketLabel.resizeTextForBestFit = true;
+            _socketLabel.resizeTextMaxSize = HudLayout.FontNormal;
             _upgradeButton = UiFactory.Button("Upgrade", right, ctx.Font, ctx.Text.Get(UiKeys.UpgradeButton), Upgrade);
             UiFactory.Place((RectTransform)_upgradeButton.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero,
                 new Vector2(HudLayout.MenuButtonWidth * 2f, HudLayout.MenuButtonHeight));
@@ -123,6 +129,111 @@ namespace Game.Client.UI.Windows
             ShowDetails(entries);
         }
 
+        private readonly Button _socketButton;
+        private readonly Text _socketLabel;
+        private int _socketIndex = -1;
+        private int _ingredientIndex = -1;
+
+        /// <summary>
+        /// Sockets of the selected item (04, 7.9): the button inserts the first fitting ingredient from the bag into the first
+        /// empty fitting socket, or replaces one (the old ingredient is destroyed — the label says so).
+        /// </summary>
+        private string ShowSockets(string instanceId)
+        {
+            _socketIndex = -1;
+            _ingredientIndex = -1;
+            SocketSnapshot[] sockets = SocketsOf(instanceId);
+            _socketButton.gameObject.SetActive(sockets.Length > 0);
+            if (sockets.Length == 0)
+            {
+                return string.Empty;
+            }
+            ILocalizationService text = Ctx.Text;
+            var sb = new System.Text.StringBuilder("\n");
+            bool replacing = false;
+            for (int pass = 0; pass < 2 && _socketIndex < 0; pass++)
+            {
+                for (int i = 0; i < sockets.Length && _socketIndex < 0; i++)
+                {
+                    bool empty = sockets[i].IngredientId == null;
+                    if ((pass == 0) != empty)
+                    {
+                        continue;
+                    }
+                    int ingredient = FindIngredient(sockets[i].Type);
+                    if (ingredient >= 0)
+                    {
+                        _socketIndex = i;
+                        _ingredientIndex = ingredient;
+                        replacing = !empty;
+                    }
+                }
+            }
+            foreach (SocketSnapshot socket in sockets)
+            {
+                string inside = socket.IngredientId != null ? text.Get(Ctx.Content.Items[socket.IngredientId].NameKey) : text.Get(UiKeys.SocketEmpty);
+                sb.Append(text.Format(UiKeys.SocketLine, text.Get(UiKeys.SocketTypePrefix + socket.Type), inside)).Append('\n');
+            }
+            if (_socketIndex < 0)
+            {
+                _socketLabel.text = text.Get(UiKeys.NoIngredient);
+                _socketButton.interactable = false;
+            }
+            else
+            {
+                string name = text.Get(Ctx.Content.Items[Ctx.State.Player.Bag[_ingredientIndex].DefinitionId].NameKey);
+                _socketLabel.text = text.Format(replacing ? UiKeys.ReplaceIngredient : UiKeys.InsertIngredient, name, _socketIndex + 1);
+                _socketButton.interactable = true;
+            }
+            return sb.ToString();
+        }
+
+        private SocketSnapshot[] SocketsOf(string instanceId)
+        {
+            PlayerStateSnapshot state = Ctx.State.Player;
+            foreach (EquipmentSlotSnapshot slot in state.Equipment)
+            {
+                if (slot.InstanceId == instanceId)
+                {
+                    return slot.Sockets ?? new SocketSnapshot[0];
+                }
+            }
+            foreach (ItemSlotSnapshot slot in state.Bag)
+            {
+                if (slot.InstanceId == instanceId)
+                {
+                    return slot.Sockets ?? new SocketSnapshot[0];
+                }
+            }
+            return new SocketSnapshot[0];
+        }
+
+        private int FindIngredient(string socketType)
+        {
+            ItemSlotSnapshot[] bag = Ctx.State.Player.Bag;
+            for (int i = 0; i < bag.Length; i++)
+            {
+                if (bag[i].DefinitionId == null)
+                {
+                    continue;
+                }
+                SocketIngredientComponent ingredient = Ctx.Content.Items[bag[i].DefinitionId].Get<SocketIngredientComponent>();
+                if (ingredient != null && (ingredient.SocketType == socketType || socketType == Ctx.Content.Config.UniversalSocketType))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private void InsertIngredient()
+        {
+            if (_selected != null && _socketIndex >= 0 && _ingredientIndex >= 0)
+            {
+                Ctx.Commands?.InsertIngredient(_selected, _socketIndex, _ingredientIndex, Ctx.ActiveStation);
+            }
+        }
+
         private void ShowDetails(List<(string instanceId, string definitionId, int level)> entries)
         {
             var entry = entries.Find(e => e.instanceId == _selected);
@@ -130,15 +241,17 @@ namespace Game.Client.UI.Windows
             {
                 _details.text = Ctx.Text.Get(UiKeys.WhetstoneEmpty);
                 _upgradeButton.interactable = false;
+                _socketButton.gameObject.SetActive(false);
                 return;
             }
+            string socketsText = ShowSockets(entry.instanceId);
             ItemDefinition item = Ctx.Content.Items[entry.definitionId];
             UpgradeRuleDto rule = Ctx.Content.UpgradeRules[item.Get<UpgradeableComponent>().RulesId];
             ILocalizationService text = Ctx.Text;
             string name = TooltipText.ItemName(Ctx, item, entry.level);
             if (entry.level >= rule.MaxLevel)
             {
-                _details.text = "<b>" + name + "</b>\n\n" + text.Get(UiKeys.WhetstoneMaxLevel);
+                _details.text = "<b>" + name + "</b>\n\n" + text.Get(UiKeys.WhetstoneMaxLevel) + "\n" + socketsText;
                 _upgradeButton.interactable = false;
                 return;
             }
@@ -150,8 +263,22 @@ namespace Game.Client.UI.Windows
                 + text.Format(UiKeys.WhetstoneChance, (step.SuccessChance * PercentFactor).ToString("0", CultureInfo.InvariantCulture)) + "\n"
                 + text.Format(UiKeys.WhetstoneMaterial, material, have, rule.MaterialCount) + "\n"
                 + (step.LevelLossOnFail > 0 ? text.Format(UiKeys.WhetstoneFailLoss, step.LevelLossOnFail) + "\n" : string.Empty)
-                + text.Format(UiKeys.WhetstoneStatBonus, (rule.StatBonusPerLevel * PercentFactor).ToString("0", CultureInfo.InvariantCulture));
-            _upgradeButton.interactable = have >= rule.MaterialCount;
+                + text.Format(UiKeys.GoldCostLine, step.GoldCost, Gold()) + "\n"
+                + text.Format(UiKeys.WhetstoneStatBonus, (rule.StatBonusPerLevel * PercentFactor).ToString("0", CultureInfo.InvariantCulture))
+                + "\n" + socketsText;
+            _upgradeButton.interactable = have >= rule.MaterialCount && Gold() >= step.GoldCost;
+        }
+
+        private long Gold()
+        {
+            foreach (CurrencySnapshot currency in Ctx.State.Player.Currencies ?? new CurrencySnapshot[0])
+            {
+                if (currency.CurrencyId == Ctx.Content.Config.GoldCurrencyId)
+                {
+                    return currency.Amount;
+                }
+            }
+            return 0L;
         }
 
         private void Upgrade()

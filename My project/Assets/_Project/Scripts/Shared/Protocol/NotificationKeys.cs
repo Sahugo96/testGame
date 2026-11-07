@@ -42,5 +42,7 @@ namespace Game.Shared.Protocol
         public const string LootLeaderBagFull = "notify.loot_leader_bag_full";
         /// <summary>Solo: the section was full, the drop stays on the ground for the killer.</summary>
         public const string LootOnGround = "notify.loot_on_ground";
+        /// <summary>{0} = gold received.</summary>
+        public const string GoldGained = "notify.gold_gained";
     }
 }

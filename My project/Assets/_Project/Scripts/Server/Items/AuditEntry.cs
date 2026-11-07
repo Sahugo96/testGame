@@ -9,5 +9,8 @@ namespace Game.Server.Items
         public string InstanceId;
         public string DefinitionId;
         public int Count;
+        /// <summary>Currency postings (05, 7.14.2): amount and why ("kill", "upgrade", "trade").</summary>
+        public long Amount;
+        public string Reason;
     }
 }

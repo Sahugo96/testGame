@@ -256,15 +256,15 @@ namespace Game.Client.UI.Windows
             {
                 return;
             }
-            int level = 0;
+            EquipmentSlotSnapshot shown = default;
             foreach (EquipmentSlotSnapshot slot in state.Equipment)
             {
                 if (slot.SlotId == slotId)
                 {
-                    level = slot.UpgradeLevel;
+                    shown = slot;
                 }
             }
-            Tooltip.Show(TooltipText.Item(Ctx, Ctx.Content.Items[itemId], 1, UiKeys.ClickToUnequip, level));
+            Tooltip.Show(TooltipText.Item(Ctx, Ctx.Content.Items[itemId], 1, UiKeys.ClickToUnequip, shown.UpgradeLevel, shown.Sockets, shown.Affixes));
         }
 
         private void Fill(PlayerStateSnapshot state, StatId[] stats, List<Text> values)

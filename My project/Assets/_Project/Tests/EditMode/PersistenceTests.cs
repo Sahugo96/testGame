@@ -145,7 +145,7 @@ namespace Game.Tests
             var old = new CharacterRecord { SchemaVersion = 0, AccountLogin = "dave", ClassId = "mage", DisplayName = "Дейв", CharacterId = "c1", Level = 3 };
             storage.SaveCharacter(old);
             string path = Directory.GetFiles(Path.Combine(_root, "characters"), "*.json", SearchOption.AllDirectories).Single();
-            File.WriteAllText(path, File.ReadAllText(path).Replace("\"SchemaVersion\": 1", "\"SchemaVersion\": 0"));
+            File.WriteAllText(path, File.ReadAllText(path).Replace("\"SchemaVersion\": 2", "\"SchemaVersion\": 0"));
 
             CharacterRecord loaded = storage.LoadCharacter("dave", "mage");
             Assert.That(loaded.SchemaVersion, Is.EqualTo(CharacterMigrations.Current));

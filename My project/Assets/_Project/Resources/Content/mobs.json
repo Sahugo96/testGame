@@ -12,7 +12,9 @@
       "VisualShape": "Capsule",
       "ExperienceReward": 0,
       "Drops": [],
-      "AiProfile": "passive"
+      "AiProfile": "passive",
+      "GoldMin": 0,
+      "GoldMax": 0
     },
     {
       "Id": "sturdy_dummy",
@@ -26,7 +28,9 @@
       "VisualShape": "Capsule",
       "ExperienceReward": 0,
       "Drops": [],
-      "AiProfile": "passive"
+      "AiProfile": "passive",
+      "GoldMin": 0,
+      "GoldMax": 0
     },
     {
       "Id": "cube",
@@ -46,7 +50,9 @@
           "Count": 1
         }
       ],
-      "AiProfile": "passive"
+      "AiProfile": "passive",
+      "GoldMin": 1,
+      "GoldMax": 3
     },
     {
       "Id": "wolf",
@@ -70,8 +76,20 @@
           "ItemId": "philosopher_stone_shard",
           "Chance": 0.2,
           "Count": 1
+        },
+        {
+          "ItemId": "wolf_core",
+          "Chance": 0.15,
+          "Count": 1
+        },
+        {
+          "ItemId": "wolf_soul",
+          "Chance": 0.1,
+          "Count": 1
         }
-      ]
+      ],
+      "GoldMin": 5,
+      "GoldMax": 12
     },
     {
       "Id": "stone_golem",
@@ -95,8 +113,15 @@
           "ItemId": "philosopher_stone_shard",
           "Chance": 0.5,
           "Count": 1
+        },
+        {
+          "ItemId": "golem_heart",
+          "Chance": 0.4,
+          "Count": 1
         }
-      ]
+      ],
+      "GoldMin": 20,
+      "GoldMax": 40
     }
   ]
 }

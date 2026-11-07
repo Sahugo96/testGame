@@ -46,16 +46,32 @@ namespace Game.Server.Systems
             foreach (ItemInstance item in player.Equipment.Values)
             {
                 ItemDefinition definition = _ctx.Content.Items[item.DefinitionId];
-                StatsComponent stats = definition.Get<StatsComponent>();
-                if (stats == null)
-                {
-                    continue;
-                }
                 float upgrade = UpgradeMultiplier(definition, item.UpgradeLevel);
-                foreach (StatModifier template in stats.Modifiers)
+                StatsComponent stats = definition.Get<StatsComponent>();
+                if (stats != null)
                 {
-                    float value = template.Op == ModifierOp.Multiply ? template.Value : template.Value * upgrade;
-                    sheet.AddModifier(new StatModifier(template.Stat, template.Op, value, item.SourceId));
+                    foreach (StatModifier template in stats.Modifiers)
+                    {
+                        AddScaled(sheet, template, upgrade, item.SourceId);
+                    }
+                }
+                // Rolled affixes grow with the upgrade level like base stats (04, 7.9 / 7.14.1).
+                foreach (StatModifier affix in item.Affixes)
+                {
+                    AddScaled(sheet, affix, upgrade, item.SourceId);
+                }
+                // Inserted ingredients become part of the item (04, 7.9): their stats count while it is worn.
+                foreach (ItemSocket socket in item.Sockets)
+                {
+                    if (socket.IngredientId == null || !_ctx.Content.Items.TryGetValue(socket.IngredientId, out ItemDefinition ingredient))
+                    {
+                        continue;
+                    }
+                    SocketIngredientComponent component = ingredient.Get<SocketIngredientComponent>();
+                    foreach (StatModifier template in component?.Modifiers ?? new List<StatModifier>())
+                    {
+                        sheet.AddModifier(new StatModifier(template.Stat, template.Op, template.Value, item.SourceId));
+                    }
                 }
             }
             AddExtra(sheet, player.EntityId);
@@ -92,6 +108,12 @@ namespace Game.Server.Systems
             {
                 sheet.AddModifier(modifier);
             }
+        }
+
+        private static void AddScaled(StatSheet sheet, StatModifier template, float upgrade, string sourceId)
+        {
+            float value = template.Op == ModifierOp.Multiply ? template.Value : template.Value * upgrade;
+            sheet.AddModifier(new StatModifier(template.Stat, template.Op, value, sourceId));
         }
 
         /// <summary>Upgrade level strengthens the item's additive and percent bonuses (04, 7.14.1).</summary>

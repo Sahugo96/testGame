@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Shared.Content.Dto;
 using Game.Shared.Content.Items;
@@ -65,6 +66,7 @@ namespace Game.Shared.Content
             ValidateRecipes(db, errors);
             ValidateStatuses(db, errors);
             ValidateAi(db, errors);
+            ValidateItemsModule11(db, errors);
             if (!db.Classes.ContainsKey(cfg.DefaultClassId ?? string.Empty))
             {
                 errors.Add($"config: DefaultClassId '{cfg.DefaultClassId}' is not a class");
@@ -199,6 +201,76 @@ namespace Game.Shared.Content
             else
             {
                 errors.Add("world: file is missing");
+            }
+        }
+
+        /// <summary>Module 11: currencies, affix pools, sockets and ingredients, socket limits per slot group.</summary>
+        private static void ValidateItemsModule11(ContentDatabase db, List<string> errors)
+        {
+            GameConfig cfg = db.Config;
+            if (!db.Currencies.ContainsKey(cfg.GoldCurrencyId ?? string.Empty) || cfg.StartingGold < 0 || cfg.WalletIdempotencyMemory <= 0)
+            {
+                errors.Add($"config: GoldCurrencyId '{cfg.GoldCurrencyId}' must be a currency and StartingGold ≥ 0");
+            }
+            foreach (CurrencyDto currency in db.Currencies.Values)
+            {
+                if (string.IsNullOrEmpty(currency.NameKey) || currency.Cap <= 0)
+                {
+                    errors.Add($"currencies '{currency.Id}': NameKey and Cap > 0 are required");
+                }
+            }
+            if (cfg.AffixCountByRarity == null || cfg.AffixCountByRarity.Length != Enum.GetValues(typeof(Rarity)).Length)
+            {
+                errors.Add("config: AffixCountByRarity needs one number per rarity");
+            }
+            var socketTypes = new HashSet<string>(cfg.SocketTypes ?? new string[0]);
+            if (!socketTypes.Contains(cfg.UniversalSocketType ?? string.Empty))
+            {
+                errors.Add("config: UniversalSocketType must be one of SocketTypes");
+            }
+            foreach (AffixPoolDto pool in db.AffixPools.Values)
+            {
+                foreach (AffixStatDto stat in pool.Stats ?? new AffixStatDto[0])
+                {
+                    if (!Enum.TryParse(stat.Stat, out StatId _) || !Enum.TryParse(stat.Op, out ModifierOp _) || stat.Max < stat.Min)
+                    {
+                        errors.Add($"affixes '{pool.Id}': bad stat '{stat.Stat}' / op '{stat.Op}' or Max < Min");
+                    }
+                }
+            }
+            var capByGroup = new Dictionary<string, int>();
+            foreach (EquipmentSlotDto slot in db.EquipmentSlots)
+            {
+                if (capByGroup.TryGetValue(slot.Group ?? string.Empty, out int cap) && cap != slot.SocketCap)
+                {
+                    errors.Add($"equipment_slots: SocketCap differs inside group '{slot.Group}' (question 47)");
+                }
+                capByGroup[slot.Group ?? string.Empty] = slot.SocketCap;
+            }
+            foreach (ItemDefinition item in db.Items.Values)
+            {
+                SocketsComponent sockets = item.Get<SocketsComponent>();
+                if (sockets != null && sockets.Types.Exists(t => !socketTypes.Contains(t)))
+                {
+                    errors.Add($"items '{item.Id}': unknown socket type");
+                }
+                SocketIngredientComponent ingredient = item.Get<SocketIngredientComponent>();
+                if (ingredient != null && (!socketTypes.Contains(ingredient.SocketType) || item.Rarity == Rarity.Divine))
+                {
+                    errors.Add($"items '{item.Id}': ingredient socket type unknown, or a divine item as an ingredient (question 48)");
+                }
+                AffixesComponent affixes = item.Get<AffixesComponent>();
+                if (affixes != null && !db.AffixPools.ContainsKey(affixes.PoolId ?? string.Empty))
+                {
+                    errors.Add($"items '{item.Id}': unknown affix pool '{affixes.PoolId}'");
+                }
+            }
+            foreach (MobDto mob in db.Mobs.Values)
+            {
+                if (mob.GoldMin < 0 || mob.GoldMax < mob.GoldMin)
+                {
+                    errors.Add($"mob '{mob.Id}': GoldMin ≥ 0 and GoldMax ≥ GoldMin");
+                }
             }
         }
 

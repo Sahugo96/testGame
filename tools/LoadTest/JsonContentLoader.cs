@@ -28,6 +28,8 @@ namespace Game.LoadTest
             Recipes = Read<RecipesFileDto>(ContentFileNames.Recipes),
             StatusEffects = Read<StatusEffectsFileDto>(ContentFileNames.StatusEffects),
             AiProfiles = Read<AiProfilesFileDto>(ContentFileNames.AiProfiles),
+            Currencies = Read<CurrenciesFileDto>(ContentFileNames.Currencies),
+            AffixPools = Read<AffixPoolsFileDto>(ContentFileNames.AffixPools),
         };
 
         private static T Read<T>(string name)

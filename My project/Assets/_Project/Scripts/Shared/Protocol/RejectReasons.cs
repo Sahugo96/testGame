@@ -34,6 +34,10 @@ namespace Game.Shared.Protocol
         public const string LootGone = "error.loot_gone";
         public const string LootNotYours = "error.loot_not_yours";
         public const string LootTooFar = "error.loot_too_far";
+        public const string SocketInvalid = "error.socket_invalid";
+        public const string SocketWrongType = "error.socket_wrong_type";
+        public const string NotIngredient = "error.not_ingredient";
+        public const string NotEnoughGold = "error.not_enough_gold";
         public const string DuelBusy = "error.duel_busy";
         public const string DuelTargetBusy = "error.duel_target_busy";
         public const string DuelInCombat = "error.duel_in_combat";

@@ -6,7 +6,7 @@ namespace Game.Server.Persistence
     /// </summary>
     public static class CharacterMigrations
     {
-        public const int Current = 1;
+        public const int Current = 2;
 
         public static CharacterRecord Upgrade(CharacterRecord record)
         {
@@ -15,6 +15,12 @@ namespace Game.Server.Persistence
                 // v0 (before statuses and position were saved): nothing to carry over.
                 record.Statuses = record.Statuses ?? new StatusRecord[0];
                 record.SchemaVersion = 1;
+            }
+            if (record.SchemaVersion < 2)
+            {
+                // v1 (before wallets, sockets and affixes): an empty wallet; items keep no sockets or affixes.
+                record.Currencies = record.Currencies ?? new CurrencyRecord[0];
+                record.SchemaVersion = 2;
             }
             return record;
         }

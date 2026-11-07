@@ -20,5 +20,7 @@ namespace Game.Shared.Content
         public RecipesFileDto Recipes;
         public StatusEffectsFileDto StatusEffects;
         public AiProfilesFileDto AiProfiles;
+        public CurrenciesFileDto Currencies;
+        public AffixPoolsFileDto AffixPools;
     }
 }

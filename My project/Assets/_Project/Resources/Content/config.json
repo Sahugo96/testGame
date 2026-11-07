@@ -80,5 +80,23 @@
   "SessionTokenHours": 24,
   "BackupsToKeep": 5,
   "LootSeconds": 300,
-  "LootScatterRadius": 1.0
+  "LootScatterRadius": 1.0,
+  "AffixCountByRarity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    0
+  ],
+  "SocketTypes": [
+    "Core",
+    "Soul",
+    "Mineral",
+    "Universal"
+  ],
+  "UniversalSocketType": "Universal",
+  "GoldCurrencyId": "gold",
+  "StartingGold": 100,
+  "WalletIdempotencyMemory": 10000
 }

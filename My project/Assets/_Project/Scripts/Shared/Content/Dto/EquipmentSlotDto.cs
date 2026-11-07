@@ -13,5 +13,7 @@ namespace Game.Shared.Content.Dto
         public int MinRingSlots;
         public bool IsMainHand;
         public bool IsOffHand;
+        /// <summary>Socket limit of items in this slot (04, 7.9.1); the same for the whole Group (validator).</summary>
+        public int SocketCap;
     }
 }

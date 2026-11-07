@@ -1,0 +1,13 @@
+{
+  "Currencies": [
+    {
+      "Id": "gold",
+      "NameKey": "currency.gold",
+      "Icon": "gold",
+      "Kind": "Soft",
+      "Scope": "Character",
+      "Tradable": true,
+      "Cap": 2000000000
+    }
+  ]
+}

@@ -14,5 +14,9 @@ namespace Game.Server.Items
         public const string MaterialSpent = "material_spent";
         /// <summary>A unique item already exists in the world: a second one is not created (04, 7.11).</summary>
         public const string UniqueRefused = "unique_refused";
+        public const string CurrencyDebit = "currency_debit";
+        public const string CurrencyCredit = "currency_credit";
+        public const string SocketInsert = "socket_insert";
+        public const string SocketDestroy = "socket_destroy";
     }
 }

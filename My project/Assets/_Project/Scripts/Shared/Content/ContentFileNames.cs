@@ -19,5 +19,7 @@ namespace Game.Shared.Content
         public const string Recipes = "recipes";
         public const string StatusEffects = "status_effects";
         public const string AiProfiles = "ai_profiles";
+        public const string Currencies = "currencies";
+        public const string AffixPools = "affixes";
     }
 }

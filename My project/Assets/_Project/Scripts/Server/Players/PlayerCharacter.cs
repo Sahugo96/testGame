@@ -29,6 +29,8 @@ namespace Game.Server.Players
         public EntityId TargetId;
         /// <summary>Account setting (developer decision, question 77): drops go straight into the bag; off — they lie on the ground to be picked up.</summary>
         public bool AutoLoot = true;
+        /// <summary>Wallet { Balances: { CurrencyId -> long } } (05, 7.14.2); changed only through WalletSystem.Transact.</summary>
+        public readonly Dictionary<string, long> Wallet = new Dictionary<string, long>();
         public MoveCommand LastMove;
         public readonly PlayerOutbox Outbox = new PlayerOutbox();
         public readonly Queue<IGameCommand> PendingCommands = new Queue<IGameCommand>();

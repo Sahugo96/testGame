@@ -11,5 +11,8 @@ namespace Game.Shared.Content.Items
         public const string Consumable = "Consumable";
         public const string Stackable = "Stackable";
         public const string Upgradeable = "Upgradeable";
+        public const string Sockets = "Sockets";
+        public const string SocketIngredient = "SocketIngredient";
+        public const string Affixes = "Affixes";
     }
 }

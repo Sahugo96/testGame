@@ -26,6 +26,8 @@ namespace Game.Host
                 Recipes = Load<RecipesFileDto>(ContentFileNames.Recipes),
                 StatusEffects = Load<StatusEffectsFileDto>(ContentFileNames.StatusEffects),
                 AiProfiles = Load<AiProfilesFileDto>(ContentFileNames.AiProfiles),
+                Currencies = Load<CurrenciesFileDto>(ContentFileNames.Currencies),
+                AffixPools = Load<AffixPoolsFileDto>(ContentFileNames.AffixPools),
             };
         }
 

@@ -89,6 +89,41 @@ namespace Game.Shared.Content.Items
                 }
                 return new UpgradeableComponent { RulesId = dto.Rules };
             });
+            registry.Register(ItemComponentTypes.Sockets, needsSlot, (dto, ctx, err) =>
+            {
+                var component = new SocketsComponent { Count = dto.SocketCount, Chance = dto.SocketChance };
+                component.Types.AddRange(dto.SocketTypes ?? new string[0]);
+                if (component.Types.Count == 0 || component.Count < 1 || component.Chance < 0f || component.Chance > 1f)
+                {
+                    err.Add($"{ctx}: Sockets needs SocketTypes, SocketCount ≥ 1 and SocketChance in [0, 1]");
+                }
+                return component;
+            });
+            registry.Register(ItemComponentTypes.SocketIngredient, null, (dto, ctx, err) =>
+            {
+                var component = new SocketIngredientComponent { SocketType = dto.SocketType };
+                foreach (StatModifierDto stat in dto.Stats ?? new StatModifierDto[0])
+                {
+                    component.Modifiers.Add(new StatModifier(
+                        EnumParser.Parse<StatId>(stat.Stat, ctx, err),
+                        EnumParser.Parse<ModifierOp>(stat.Op, ctx, err),
+                        stat.Value,
+                        null));
+                }
+                if (string.IsNullOrEmpty(component.SocketType))
+                {
+                    err.Add($"{ctx}: SocketIngredient.SocketType is empty");
+                }
+                return component;
+            });
+            registry.Register(ItemComponentTypes.Affixes, new[] { ItemComponentTypes.Equipment }, (dto, ctx, err) =>
+            {
+                if (string.IsNullOrEmpty(dto.Pool))
+                {
+                    err.Add($"{ctx}: Affixes.Pool is empty");
+                }
+                return new AffixesComponent { PoolId = dto.Pool };
+            });
             return registry;
         }
     }

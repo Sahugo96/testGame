@@ -195,6 +195,18 @@
           "ItemId": "amber_amulet",
           "Count": 1,
           "Equip": false
+        },
+        {
+          "ItemId": "wolf_core",
+          "Count": 1
+        },
+        {
+          "ItemId": "wolf_soul",
+          "Count": 1
+        },
+        {
+          "ItemId": "golem_heart",
+          "Count": 1
         }
       ]
     },
@@ -405,6 +417,18 @@
           "ItemId": "amber_amulet",
           "Count": 1,
           "Equip": false
+        },
+        {
+          "ItemId": "wolf_core",
+          "Count": 1
+        },
+        {
+          "ItemId": "wolf_soul",
+          "Count": 1
+        },
+        {
+          "ItemId": "golem_heart",
+          "Count": 1
         }
       ]
     }

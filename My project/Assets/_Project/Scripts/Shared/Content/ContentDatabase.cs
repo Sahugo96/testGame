@@ -27,6 +27,27 @@ namespace Game.Shared.Content
         public readonly Dictionary<string, StatusEffectDefinition> StatusEffects = new Dictionary<string, StatusEffectDefinition>();
         /// <summary>Mob AI profiles by id (module 10).</summary>
         public readonly Dictionary<string, AiProfile> AiProfiles = new Dictionary<string, AiProfile>();
+        /// <summary>Currencies (05, 7.14.2) and affix pools (04, 7.9).</summary>
+        public readonly Dictionary<string, CurrencyDto> Currencies = new Dictionary<string, CurrencyDto>();
+        public readonly Dictionary<string, AffixPoolDto> AffixPools = new Dictionary<string, AffixPoolDto>();
+
+        /// <summary>Socket limit for an item: the SocketCap of its slot type (04, 7.9.1); 0 for items that are not worn.</summary>
+        public int SocketCapFor(Items.ItemDefinition item)
+        {
+            Items.EquipSlotComponent slot = item.Get<Items.EquipSlotComponent>();
+            if (slot == null)
+            {
+                return 0;
+            }
+            foreach (EquipmentSlotDto definition in EquipmentSlots)
+            {
+                if (definition.SlotType == slot.SlotType)
+                {
+                    return definition.SocketCap;
+                }
+            }
+            return 0;
+        }
 
         /// <summary>Experience to the next level by level (index = level - 1); the last level is the cap.</summary>
         public readonly List<int> ExperienceToNext = new List<int>();

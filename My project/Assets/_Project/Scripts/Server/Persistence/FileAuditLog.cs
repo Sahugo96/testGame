@@ -23,7 +23,7 @@ namespace Game.Server.Persistence
         {
             DateTime now = DateTime.UtcNow;
             string line = string.Join("\t", now.ToString("o", CultureInfo.InvariantCulture), entry.Action, entry.ActorId, entry.InstanceId,
-                entry.DefinitionId, entry.Count.ToString(CultureInfo.InvariantCulture));
+                entry.DefinitionId, entry.Count.ToString(CultureInfo.InvariantCulture), entry.Amount.ToString(CultureInfo.InvariantCulture), entry.Reason);
             lock (_lock)
             {
                 File.AppendAllText(Path.Combine(_folder, now.ToString(DayFormat, CultureInfo.InvariantCulture) + ".log"), line + "\n", Encoding.UTF8);

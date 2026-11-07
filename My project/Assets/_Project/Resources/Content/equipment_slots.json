@@ -7,7 +7,8 @@
       "NameKey": "slot.head",
       "MinRingSlots": 0,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 1
     },
     {
       "Id": "Body",
@@ -16,7 +17,8 @@
       "NameKey": "slot.body",
       "MinRingSlots": 0,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 1
     },
     {
       "Id": "Hands",
@@ -25,7 +27,8 @@
       "NameKey": "slot.hands",
       "MinRingSlots": 0,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 1
     },
     {
       "Id": "Legs",
@@ -34,7 +37,8 @@
       "NameKey": "slot.legs",
       "MinRingSlots": 0,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 1
     },
     {
       "Id": "Feet",
@@ -43,7 +47,8 @@
       "NameKey": "slot.feet",
       "MinRingSlots": 0,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 1
     },
     {
       "Id": "Ring1",
@@ -52,7 +57,8 @@
       "NameKey": "slot.ring1",
       "MinRingSlots": 1,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 0
     },
     {
       "Id": "Ring2",
@@ -61,7 +67,8 @@
       "NameKey": "slot.ring2",
       "MinRingSlots": 2,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 0
     },
     {
       "Id": "Ring3",
@@ -70,7 +77,8 @@
       "NameKey": "slot.ring3",
       "MinRingSlots": 3,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 0
     },
     {
       "Id": "Ring4",
@@ -79,7 +87,8 @@
       "NameKey": "slot.ring4",
       "MinRingSlots": 4,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 0
     },
     {
       "Id": "Necklace",
@@ -88,7 +97,8 @@
       "NameKey": "slot.necklace",
       "MinRingSlots": 0,
       "IsMainHand": false,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 0
     },
     {
       "Id": "MainHand",
@@ -97,7 +107,8 @@
       "NameKey": "slot.mainhand",
       "MinRingSlots": 0,
       "IsMainHand": true,
-      "IsOffHand": false
+      "IsOffHand": false,
+      "SocketCap": 2
     },
     {
       "Id": "OffHand",
@@ -106,7 +117,8 @@
       "NameKey": "slot.offhand",
       "MinRingSlots": 0,
       "IsMainHand": false,
-      "IsOffHand": true
+      "IsOffHand": true,
+      "SocketCap": 2
     }
   ]
 }

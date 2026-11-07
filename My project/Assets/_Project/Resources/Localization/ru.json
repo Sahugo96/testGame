@@ -1567,6 +1567,102 @@
   {
    "Key": "ui.autoloot_off",
    "Value": "Автоподбор добычи: ВЫКЛ — добыча лежит на земле (нажмите, чтобы включить)"
+  },
+  {
+   "Key": "ui.socket_empty",
+   "Value": "пусто"
+  },
+  {
+   "Key": "ui.socket_line",
+   "Value": "◇ Слот ({0}): {1}"
+  },
+  {
+   "Key": "socket.Core",
+   "Value": "ядро"
+  },
+  {
+   "Key": "socket.Soul",
+   "Value": "душа"
+  },
+  {
+   "Key": "socket.Mineral",
+   "Value": "минерал"
+  },
+  {
+   "Key": "socket.Universal",
+   "Value": "универсальный"
+  },
+  {
+   "Key": "ui.ingredient_fits",
+   "Value": "Вставляется в слот: {0}"
+  },
+  {
+   "Key": "ui.insert_ingredient",
+   "Value": "Вставить «{0}» в слот {1}"
+  },
+  {
+   "Key": "ui.replace_ingredient",
+   "Value": "Заменить в слоте {1} на «{0}» (старый пропадёт)"
+  },
+  {
+   "Key": "ui.no_ingredient",
+   "Value": "Нет подходящих ингредиентов"
+  },
+  {
+   "Key": "ui.currency_line",
+   "Value": "{0}: {1}"
+  },
+  {
+   "Key": "ui.gold_cost",
+   "Value": "Цена: {0} золота (есть {1})"
+  },
+  {
+   "Key": "currency.gold",
+   "Value": "Золото"
+  },
+  {
+   "Key": "notify.gold_gained",
+   "Value": "+{0} золота"
+  },
+  {
+   "Key": "error.socket_invalid",
+   "Value": "Нет такого слота"
+  },
+  {
+   "Key": "error.socket_wrong_type",
+   "Value": "Ингредиент не подходит к этому слоту"
+  },
+  {
+   "Key": "error.not_ingredient",
+   "Value": "Это не ингредиент для слота"
+  },
+  {
+   "Key": "error.not_enough_gold",
+   "Value": "Не хватает золота"
+  },
+  {
+   "Key": "item.wolf_core.name",
+   "Value": "Ядро волка"
+  },
+  {
+   "Key": "item.wolf_core.desc",
+   "Value": "Вставляется в слот «ядро»: урон +3%."
+  },
+  {
+   "Key": "item.wolf_soul.name",
+   "Value": "Душа волка"
+  },
+  {
+   "Key": "item.wolf_soul.desc",
+   "Value": "Вставляется в слот «душа»: здоровье +30."
+  },
+  {
+   "Key": "item.golem_heart.name",
+   "Value": "Сердце голема"
+  },
+  {
+   "Key": "item.golem_heart.desc",
+   "Value": "Минерал для слота «минерал»: оборона +3%."
   }
  ]
 }

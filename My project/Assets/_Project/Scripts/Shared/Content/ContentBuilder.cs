@@ -63,6 +63,14 @@ namespace Game.Shared.Content
             {
                 AddUnique(db.UpgradeRules, dto.Id, dto, "upgrade_rules", errors);
             }
+            foreach (CurrencyDto dto in files.Currencies?.Currencies ?? new CurrencyDto[0])
+            {
+                AddUnique(db.Currencies, dto.Id, dto, "currencies", errors);
+            }
+            foreach (AffixPoolDto dto in files.AffixPools?.Pools ?? new AffixPoolDto[0])
+            {
+                AddUnique(db.AffixPools, dto.Id, dto, "affixes", errors);
+            }
             foreach (AiProfileDto dto in files.AiProfiles?.Profiles ?? new AiProfileDto[0])
             {
                 var profile = new AiProfile

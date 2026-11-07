@@ -1,0 +1,91 @@
+{
+  "Pools": [
+    {
+      "Id": "weapon",
+      "Stats": [
+        {
+          "Stat": "DamageBonus",
+          "Op": "Add",
+          "Min": 0.02,
+          "Max": 0.06
+        },
+        {
+          "Stat": "CritChance",
+          "Op": "Add",
+          "Min": 0.01,
+          "Max": 0.04
+        },
+        {
+          "Stat": "CritSize",
+          "Op": "Add",
+          "Min": 0.05,
+          "Max": 0.15
+        },
+        {
+          "Stat": "Strength",
+          "Op": "Add",
+          "Min": 1,
+          "Max": 3
+        }
+      ]
+    },
+    {
+      "Id": "armor",
+      "Stats": [
+        {
+          "Stat": "MaxHealth",
+          "Op": "Add",
+          "Min": 10,
+          "Max": 30
+        },
+        {
+          "Stat": "Defense",
+          "Op": "Add",
+          "Min": 0.01,
+          "Max": 0.03
+        },
+        {
+          "Stat": "HealthRegen",
+          "Op": "Add",
+          "Min": 0.2,
+          "Max": 0.6
+        },
+        {
+          "Stat": "Stamina",
+          "Op": "Add",
+          "Min": 1,
+          "Max": 3
+        }
+      ]
+    },
+    {
+      "Id": "jewelry",
+      "Stats": [
+        {
+          "Stat": "MaxMainMana",
+          "Op": "Add",
+          "Min": 10,
+          "Max": 25
+        },
+        {
+          "Stat": "MaxReserveMana",
+          "Op": "Add",
+          "Min": 10,
+          "Max": 25
+        },
+        {
+          "Stat": "CritChance",
+          "Op": "Add",
+          "Min": 0.01,
+          "Max": 0.03
+        },
+        {
+          "Stat": "Intelligence",
+          "Op": "Add",
+          "Min": 1,
+          "Max": 3
+        }
+      ]
+    }
+  ]
+}

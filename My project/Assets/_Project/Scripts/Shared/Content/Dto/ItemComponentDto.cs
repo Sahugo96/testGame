@@ -20,5 +20,13 @@ namespace Game.Shared.Content.Dto
         public float Cooldown;
         public int MaxStack;
         public string Rules;
+        /// <summary>Sockets: allowed socket types, how many, with what chance.</summary>
+        public string[] SocketTypes;
+        public int SocketCount;
+        public float SocketChance;
+        /// <summary>SocketIngredient: which socket type it fits (its stats are in Stats).</summary>
+        public string SocketType;
+        /// <summary>Affixes: affix pool id.</summary>
+        public string Pool;
     }
 }

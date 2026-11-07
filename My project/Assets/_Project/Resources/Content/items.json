@@ -42,6 +42,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "weapon"
         }
       ]
     },
@@ -87,6 +91,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -132,6 +140,18 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
+        },
+        {
+          "Type": "Sockets",
+          "SocketTypes": [
+            "Soul"
+          ],
+          "SocketCount": 1,
+          "SocketChance": 0.3
         }
       ]
     },
@@ -173,6 +193,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "jewelry"
         }
       ]
     },
@@ -218,6 +242,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -268,6 +296,18 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
+        },
+        {
+          "Type": "Sockets",
+          "SocketTypes": [
+            "Mineral"
+          ],
+          "SocketCount": 1,
+          "SocketChance": 0.3
         }
       ]
     },
@@ -308,6 +348,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -348,6 +392,18 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "weapon"
+        },
+        {
+          "Type": "Sockets",
+          "SocketTypes": [
+            "Core"
+          ],
+          "SocketCount": 1,
+          "SocketChance": 0.25
         }
       ]
     },
@@ -388,6 +444,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "weapon"
         }
       ]
     },
@@ -435,6 +495,19 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "weapon"
+        },
+        {
+          "Type": "Sockets",
+          "SocketTypes": [
+            "Core",
+            "Universal"
+          ],
+          "SocketCount": 2,
+          "SocketChance": 0.5
         }
       ]
     },
@@ -610,6 +683,19 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "weapon"
+        },
+        {
+          "Type": "Sockets",
+          "SocketTypes": [
+            "Core",
+            "Mineral"
+          ],
+          "SocketCount": 2,
+          "SocketChance": 1.0
         }
       ]
     },
@@ -657,6 +743,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "weapon"
         }
       ]
     },
@@ -704,6 +794,18 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
+        },
+        {
+          "Type": "Sockets",
+          "SocketTypes": [
+            "Soul"
+          ],
+          "SocketCount": 1,
+          "SocketChance": 1.0
         }
       ]
     },
@@ -751,6 +853,18 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
+        },
+        {
+          "Type": "Sockets",
+          "SocketTypes": [
+            "Mineral"
+          ],
+          "SocketCount": 1,
+          "SocketChance": 1.0
         }
       ]
     },
@@ -798,6 +912,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -845,6 +963,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -892,6 +1014,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -934,6 +1060,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -976,6 +1106,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -1018,6 +1152,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "armor"
         }
       ]
     },
@@ -1059,6 +1197,10 @@
         {
           "Type": "Upgradeable",
           "Rules": "default"
+        },
+        {
+          "Type": "Affixes",
+          "Pool": "jewelry"
         }
       ]
     },
@@ -1128,6 +1270,93 @@
       "ClassRestriction": [],
       "Binding": "OnPickup",
       "Components": []
+    },
+    {
+      "Id": "wolf_core",
+      "NameKey": "item.wolf_core.name",
+      "DescriptionKey": "item.wolf_core.desc",
+      "Icon": "wolf_core",
+      "Category": "SocketIngredient",
+      "Rarity": "Uncommon",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        },
+        {
+          "Type": "SocketIngredient",
+          "SocketType": "Core",
+          "Stats": [
+            {
+              "Stat": "DamageBonus",
+              "Op": "Add",
+              "Value": 0.03
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "wolf_soul",
+      "NameKey": "item.wolf_soul.name",
+      "DescriptionKey": "item.wolf_soul.desc",
+      "Icon": "wolf_soul",
+      "Category": "SocketIngredient",
+      "Rarity": "Uncommon",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        },
+        {
+          "Type": "SocketIngredient",
+          "SocketType": "Soul",
+          "Stats": [
+            {
+              "Stat": "MaxHealth",
+              "Op": "Add",
+              "Value": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "golem_heart",
+      "NameKey": "item.golem_heart.name",
+      "DescriptionKey": "item.golem_heart.desc",
+      "Icon": "golem_heart",
+      "Category": "SocketIngredient",
+      "Rarity": "Rare",
+      "ItemLevel": 1,
+      "RequiredLevel": 1,
+      "ClassRestriction": [],
+      "Binding": "None",
+      "Components": [
+        {
+          "Type": "Stackable",
+          "MaxStack": 20
+        },
+        {
+          "Type": "SocketIngredient",
+          "SocketType": "Mineral",
+          "Stats": [
+            {
+              "Stat": "Defense",
+              "Op": "Add",
+              "Value": 0.03
+            }
+          ]
+        }
+      ]
     }
   ]
 }

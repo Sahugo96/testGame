@@ -6,6 +6,8 @@ namespace Game.Shared.Content.Dto
     [Serializable]
     public class UpgradeStepDto
     {
+        /// <summary>Gold per attempt (04, 7.14.1: "cost in currency").</summary>
+        public long GoldCost;
         public float SuccessChance;
         public int LevelLossOnFail;
         public float BreakChance;

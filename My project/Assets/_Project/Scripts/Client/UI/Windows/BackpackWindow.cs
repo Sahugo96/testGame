@@ -25,6 +25,7 @@ namespace Game.Client.UI.Windows
         private readonly List<SlotView> _slots = new List<SlotView>();
         private readonly List<Text> _tabLabels = new List<Text>();
         private int _section;
+        private readonly Text _currencies;
 
         public BackpackWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip,
             Action<HudWindow> focus, Action<HudWindow> close) : base(definition, parent, canvas, ctx, tooltip, focus, close, Size)
@@ -50,7 +51,9 @@ namespace Game.Client.UI.Windows
             RectTransform gridRect = UiFactory.Rect("Grid", Content);
             gridRect.anchorMin = Vector2.zero;
             gridRect.anchorMax = Vector2.one;
-            gridRect.offsetMin = Vector2.zero;
+            gridRect.offsetMin = new Vector2(0f, HudLayout.RowHeight + HudLayout.Gap);
+            _currencies = UiFactory.Label("Currencies", Content, ctx.Font, HudLayout.FontNormal, TextAnchor.MiddleLeft, HudPalette.Cast);
+            UiFactory.Place(_currencies.rectTransform, Vector2.zero, Vector2.zero, Vector2.zero, new Vector2(Size.x - HudLayout.Margin * 2f, HudLayout.RowHeight));
             gridRect.offsetMax = new Vector2(0f, -TabHeight - HudLayout.Gap);
             GridLayoutGroup grid = gridRect.gameObject.AddComponent<GridLayoutGroup>();
             grid.cellSize = new Vector2(HudLayout.BagSlotSize, HudLayout.BagSlotSize);
@@ -73,6 +76,14 @@ namespace Game.Client.UI.Windows
 
         public override void Refresh(PlayerStateSnapshot state)
         {
+            // 05, 7.14.2: the backpack shows every currency.
+            var line = new System.Text.StringBuilder();
+            foreach (CurrencySnapshot currency in state.Currencies ?? new CurrencySnapshot[0])
+            {
+                string name = Ctx.Content.Currencies.TryGetValue(currency.CurrencyId, out var definition) ? Ctx.Text.Get(definition.NameKey) : currency.CurrencyId;
+                line.Append(Ctx.Text.Format(UiKeys.CurrencyLine, name, currency.Amount)).Append("   ");
+            }
+            _currencies.text = line.ToString();
             BagSection section = Ctx.Content.BagSections[_section];
             for (int t = 0; t < _tabLabels.Count; t++)
             {
@@ -148,7 +159,7 @@ namespace Game.Client.UI.Windows
             }
             ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
             string hint = item.Has<EquipmentComponent>() ? UiKeys.ClickToEquip : item.Has<ConsumableComponent>() ? UiKeys.ClickToUse : null;
-            Tooltip.Show(TooltipText.Item(Ctx, item, slot.Count, hint, slot.UpgradeLevel));
+            Tooltip.Show(TooltipText.Item(Ctx, item, slot.Count, hint, slot.UpgradeLevel, slot.Sockets, slot.Affixes));
         }
 
         private void OnClick(int local, PointerEventData.InputButton button)

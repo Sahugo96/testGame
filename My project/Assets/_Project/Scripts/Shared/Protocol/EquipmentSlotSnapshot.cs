@@ -7,5 +7,7 @@ namespace Game.Shared.Protocol
         public string InstanceId;
         public string DefinitionId;
         public int UpgradeLevel;
+        public SocketSnapshot[] Sockets;
+        public AffixSnapshot[] Affixes;
     }
 }

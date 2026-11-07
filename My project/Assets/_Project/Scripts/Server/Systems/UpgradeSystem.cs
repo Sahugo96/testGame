@@ -20,9 +20,11 @@ namespace Game.Server.Systems
         private readonly ServerContext _ctx;
         private readonly InventorySystem _inventory;
         private readonly StatSystem _stats;
+        private readonly WalletSystem _wallet;
 
-        public UpgradeSystem(ServerContext ctx, InventorySystem inventory, StatSystem stats)
+        public UpgradeSystem(ServerContext ctx, InventorySystem inventory, StatSystem stats, WalletSystem wallet)
         {
+            _wallet = wallet;
             _ctx = ctx;
             _inventory = inventory;
             _stats = stats;
@@ -55,13 +57,25 @@ namespace Game.Server.Systems
                 CombatEvents.Reject(player, RejectReasons.MaxUpgradeLevel);
                 return;
             }
-            if (!_inventory.ConsumeItems(player, rule.MaterialItemId, rule.MaterialCount))
+            UpgradeStepDto step = rule.Steps[item.UpgradeLevel];
+            string gold = _ctx.Content.Config.GoldCurrencyId;
+            if (_wallet.Balance(player, gold) < step.GoldCost)
+            {
+                CombatEvents.Reject(player, RejectReasons.NotEnoughGold);
+                return;
+            }
+            if (_inventory.CountItems(player, rule.MaterialItemId) < rule.MaterialCount)
             {
                 CombatEvents.Reject(player, RejectReasons.NoMaterials);
                 return;
             }
-
-            UpgradeStepDto step = rule.Steps[item.UpgradeLevel];
+            // Gold and materials are both checked first, then both spent: the attempt is paid in full or not at all.
+            if (step.GoldCost > 0)
+            {
+                _wallet.Transact(new[] { new WalletEntry { Player = player, CurrencyId = gold, Amount = step.GoldCost } }, null,
+                    $"upgrade:{item.SourceId}:{item.UpgradeLevel}:{_ctx.Time}", "upgrade");
+            }
+            _inventory.ConsumeItems(player, rule.MaterialItemId, rule.MaterialCount);
             bool success = _ctx.Random.NextFloat() < step.SuccessChance;
             if (success)
             {

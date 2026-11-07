@@ -36,7 +36,8 @@ namespace Game.Tests
 
             h.Send(mage, new EquipItemCommand { BagIndex = h.BagIndexOf(mage, "ring_of_focus") });
             Assert.That(player.Equipment["Ring1"].DefinitionId, Is.EqualTo("ring_of_focus"));
-            Assert.That(player.Stats.Get(StatId.CritChance), Is.EqualTo(crit + 0.05f).Within(0.0001f));
+            float affixCrit = player.Equipment["Ring1"].Affixes.Where(m => m.Stat == StatId.CritChance).Sum(m => m.Value);
+            Assert.That(player.Stats.Get(StatId.CritChance), Is.EqualTo(crit + 0.05f + affixCrit).Within(0.0001f), "base stats plus rolled affixes");
 
             h.Send(mage, new UnequipItemCommand { SlotId = "Ring1" });
             Assert.That(player.Stats.Get(StatId.CritChance), Is.EqualTo(crit).Within(0.0001f));

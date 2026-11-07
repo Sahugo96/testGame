@@ -69,6 +69,14 @@ namespace Game.Shared.Content.Dto
         /// <summary>Ground loot (06, 7.8): how long a drop lies (5 min) and how far from the death spot it lands.</summary>
         public float LootSeconds;
         public float LootScatterRadius;
+        /// <summary>Items (module 11): affixes per rarity (index = Rarity), socket types, the main currency and starting gold.</summary>
+        public int[] AffixCountByRarity;
+        public string[] SocketTypes;
+        public string UniversalSocketType;
+        public string GoldCurrencyId;
+        public long StartingGold;
+        /// <summary>How many recent idempotency keys the wallet remembers (repeat protection).</summary>
+        public int WalletIdempotencyMemory;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

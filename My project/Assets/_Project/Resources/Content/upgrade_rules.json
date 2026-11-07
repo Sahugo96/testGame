@@ -10,52 +10,62 @@
         {
           "SuccessChance": 1.0,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 10
         },
         {
           "SuccessChance": 0.95,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 20
         },
         {
           "SuccessChance": 0.9,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 30
         },
         {
           "SuccessChance": 0.85,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 40
         },
         {
           "SuccessChance": 0.8,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 50
         },
         {
           "SuccessChance": 0.75,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 60
         },
         {
           "SuccessChance": 0.7,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 70
         },
         {
           "SuccessChance": 0.65,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 80
         },
         {
           "SuccessChance": 0.6,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 90
         },
         {
           "SuccessChance": 0.55,
           "LevelLossOnFail": 1,
-          "BreakChance": 0
+          "BreakChance": 0,
+          "GoldCost": 100
         }
       ]
     }

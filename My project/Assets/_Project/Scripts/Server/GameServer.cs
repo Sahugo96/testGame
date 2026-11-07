@@ -31,6 +31,8 @@ namespace Game.Server
         private readonly SnapshotBuilder _snapshots;
         private readonly ProgressionSystem _progression;
         private readonly UpgradeSystem _upgrades;
+        private readonly WalletSystem _wallet;
+        private readonly SocketSystem _sockets;
         private readonly DuelSystem _duels;
         private readonly GroupSystem _groups;
         private readonly LootSystem _loot;
@@ -53,6 +55,7 @@ namespace Game.Server
                 Audit = audit,
                 Items = new ItemFactory(content, audit),
             };
+            _ctx.Items.Random = random;
             _resources = new ResourceSystem(_ctx);
             _duels = new DuelSystem(_ctx, _resources);
             _statuses = new StatusSystem(_ctx);
@@ -74,7 +77,9 @@ namespace Game.Server
             _respawn = new RespawnSystem(_ctx);
             _snapshots = new SnapshotBuilder(_ctx, _skills);
             _progression = new ProgressionSystem(_ctx, _stats);
-            _upgrades = new UpgradeSystem(_ctx, _inventory, _stats);
+            _wallet = new WalletSystem(_ctx);
+            _sockets = new SocketSystem(_ctx, _inventory, _stats);
+            _upgrades = new UpgradeSystem(_ctx, _inventory, _stats, _wallet);
             _groups = new GroupSystem(_ctx);
             _loot = new LootSystem(_ctx, _groups, _inventory);
             _crafting = new CraftingSystem(_ctx, _inventory, _resources);
@@ -125,6 +130,7 @@ namespace Game.Server
             }
             _stats.Recalculate(player);
             _inventory.GiveStartingItems(player);
+            _wallet.Credit(player, _ctx.Content.Config.GoldCurrencyId, _ctx.Content.Config.StartingGold, null, "start");
             FillResources(player.EntityId);
             Log.Info(LogTags.Server, $"Player {player.EntityId} joined as '{classId}'");
             return player.EntityId;
@@ -179,6 +185,13 @@ namespace Game.Server
             ResourceSystem.UpdateLock(ref mana);
             float half = _ctx.Content.Config.WorldHalfSize;
             world.Transforms.Get(player.EntityId).Position = new Vec3(Math.Max(-half, Math.Min(half, record.PositionX)), 0f, Math.Max(-half, Math.Min(half, record.PositionZ)));
+            foreach (Persistence.CurrencyRecord currency in record.Currencies ?? new Persistence.CurrencyRecord[0])
+            {
+                if (_ctx.Content.Currencies.ContainsKey(currency.Id ?? string.Empty) && currency.Amount > 0)
+                {
+                    player.Wallet[currency.Id] = currency.Amount;
+                }
+            }
             foreach (Persistence.StatusRecord status in record.Statuses ?? new Persistence.StatusRecord[0])
             {
                 _statuses.Restore(player.EntityId, status.StatusId, status.Stacks, status.Remaining, status.Power, status.ShieldLeft);
@@ -243,6 +256,7 @@ namespace Game.Server
                 PositionX = position.X,
                 PositionZ = position.Z,
                 Statuses = _statuses.Export(id),
+                Currencies = ExportWallet(player),
             };
         }
 
@@ -280,7 +294,7 @@ namespace Game.Server
                 Log.Warning(LogTags.Items, $"Saved item '{record.DefinitionId}' ({record.InstanceId}) is not in the content: skipped");
                 return null;
             }
-            return new ItemInstance
+            var item = new ItemInstance
             {
                 InstanceId = instanceId,
                 DefinitionId = record.DefinitionId,
@@ -289,6 +303,28 @@ namespace Game.Server
                 BoundTo = record.BoundTo,
                 CreatedAt = _ctx.Time,
             };
+            foreach (Persistence.SocketRecord socket in record.Sockets ?? new Persistence.SocketRecord[0])
+            {
+                item.Sockets.Add(new ItemSocket { Type = socket.Type, IsOvercap = socket.IsOvercap, IngredientId = string.IsNullOrEmpty(socket.IngredientId) ? null : socket.IngredientId });
+            }
+            foreach (Persistence.AffixRecord affix in record.Affixes ?? new Persistence.AffixRecord[0])
+            {
+                if (Enum.TryParse(affix.Stat, out StatId stat) && Enum.TryParse(affix.Op, out ModifierOp op))
+                {
+                    item.Affixes.Add(new StatModifier(stat, op, affix.Value, null));
+                }
+            }
+            return item;
+        }
+
+        private static Persistence.CurrencyRecord[] ExportWallet(PlayerCharacter player)
+        {
+            var result = new List<Persistence.CurrencyRecord>();
+            foreach (KeyValuePair<string, long> balance in player.Wallet)
+            {
+                result.Add(new Persistence.CurrencyRecord { Id = balance.Key, Amount = balance.Value });
+            }
+            return result.ToArray();
         }
 
         private static Persistence.ItemRecord ExportItem(ItemInstance item, int bagIndex, string slotId) => new Persistence.ItemRecord
@@ -300,6 +336,8 @@ namespace Game.Server
             Count = item.Count,
             UpgradeLevel = item.UpgradeLevel,
             BoundTo = item.BoundTo,
+            Sockets = item.Sockets.ConvertAll(s => new Persistence.SocketRecord { Type = s.Type, IsOvercap = s.IsOvercap, IngredientId = s.IngredientId }).ToArray(),
+            Affixes = item.Affixes.ConvertAll(a => new Persistence.AffixRecord { Stat = a.Stat.ToString(), Op = a.Op.ToString(), Value = a.Value }).ToArray(),
         };
 
         /// <summary>Removes a player and its entity (disconnect or character switch).</summary>
@@ -419,6 +457,9 @@ namespace Game.Server
                 case CancelCraftCommand _:
                     _crafting.Cancel(player, true);
                     break;
+                case InsertIngredientCommand insert:
+                    _sockets.Insert(player, insert);
+                    break;
                 case PickUpLootCommand pickUp:
                     _loot.PickUp(player, pickUp.LootId);
                     break;
@@ -464,6 +505,33 @@ namespace Game.Server
                     break;
             }
         }
+
+        /// <summary>
+        /// Gold from a kill (05, 7.14.2): a roll between GoldMin and GoldMax, split equally between those who share the
+        /// experience (temporarily, DEFAULT, question 78); the remainder goes to the killer (the first recipient).
+        /// </summary>
+        private void AwardGold(MobDto mob, List<PlayerCharacter> recipients, EntityId victim)
+        {
+            if (mob.GoldMax <= 0)
+            {
+                return;
+            }
+            long total = mob.GoldMin + (long)(_ctx.Random.NextFloat() * (mob.GoldMax - mob.GoldMin + 1));
+            total = Math.Min(total, mob.GoldMax);
+            long part = total / recipients.Count;
+            string gold = _ctx.Content.Config.GoldCurrencyId;
+            for (int i = 0; i < recipients.Count; i++)
+            {
+                long amount = part + (i == 0 ? total - part * recipients.Count : 0);
+                if (amount > 0 && _wallet.Credit(recipients[i], gold, amount, $"kill:{victim.Value}:{_tick}:{recipients[i].CharacterId}", "kill"))
+                {
+                    recipients[i].Outbox.Notifications.Add(new NotificationMessage { TextKey = NotificationKeys.GoldGained, Number = (int)amount, IsPositive = true });
+                }
+            }
+        }
+
+        /// <summary>Wallets (05, 7.14.2) for trade, tests and tools.</summary>
+        public WalletSystem Wallet => _wallet;
 
         /// <summary>Statuses changed what the entity's stats are (03, 7.12).</summary>
         private void OnStatusesChanged(EntityId id)
@@ -541,6 +609,7 @@ namespace Game.Server
                         _progression.AwardExperience(recipients[i], shares[i]);
                     }
                 }
+                AwardGold(mob, recipients, victim);
                 foreach (MobDropDto drop in mob.Drops ?? new MobDropDto[0])
                 {
                     if (_ctx.Random.NextFloat() < drop.Chance)

@@ -42,6 +42,8 @@ namespace Game.Server.Persistence
         public float PositionZ;
         /// <summary>Statuses are kept between sessions; their time runs only online (question 26).</summary>
         public StatusRecord[] Statuses;
+        /// <summary>Wallet balances (05, 7.14.2), schema v2.</summary>
+        public CurrencyRecord[] Currencies;
         public string SavedAt;
     }
 
@@ -70,6 +72,31 @@ namespace Game.Server.Persistence
         public int Count;
         public int UpgradeLevel;
         public string BoundTo;
+        public SocketRecord[] Sockets;
+        public AffixRecord[] Affixes;
+    }
+
+    [Serializable]
+    public class SocketRecord
+    {
+        public string Type;
+        public bool IsOvercap;
+        public string IngredientId;
+    }
+
+    [Serializable]
+    public class AffixRecord
+    {
+        public string Stat;
+        public string Op;
+        public float Value;
+    }
+
+    [Serializable]
+    public class CurrencyRecord
+    {
+        public string Id;
+        public long Amount;
     }
 
     [Serializable]

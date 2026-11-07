@@ -32,6 +32,15 @@ namespace Game.Client.Localization
         public const string LeaveGame = "ui.leave";
         public const string AutoLootOn = "ui.autoloot_on";
         public const string AutoLootOff = "ui.autoloot_off";
+        public const string SocketEmpty = "ui.socket_empty";
+        public const string SocketLine = "ui.socket_line";
+        public const string SocketTypePrefix = "socket.";
+        public const string IngredientFits = "ui.ingredient_fits";
+        public const string InsertIngredient = "ui.insert_ingredient";
+        public const string ReplaceIngredient = "ui.replace_ingredient";
+        public const string NoIngredient = "ui.no_ingredient";
+        public const string CurrencyLine = "ui.currency_line";
+        public const string GoldCostLine = "ui.gold_cost";
         public const string DuelChallenge = "duel.challenge";
         public const string DuelIncoming = "duel.incoming";
         public const string DuelOutgoing = "duel.outgoing";

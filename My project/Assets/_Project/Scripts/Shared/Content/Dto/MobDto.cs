@@ -19,5 +19,8 @@ namespace Game.Shared.Content.Dto
         public MobDropDto[] Drops;
         /// <summary>AI profile id (ai_profiles.json); empty = passive.</summary>
         public string AiProfile;
+        /// <summary>Gold dropped on death (05, 7.14.2), split like experience.</summary>
+        public int GoldMin;
+        public int GoldMax;
     }
 }

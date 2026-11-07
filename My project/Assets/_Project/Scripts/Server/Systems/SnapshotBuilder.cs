@@ -56,6 +56,34 @@ namespace Game.Server.Systems
             return new WorldSnapshot { Tick = tick, ServerTime = _ctx.Time, Entities = entities.ToArray() };
         }
 
+        private static SocketSnapshot[] SocketsOf(ItemInstance item)
+        {
+            if (item == null || item.Sockets.Count == 0)
+            {
+                return System.Array.Empty<SocketSnapshot>();
+            }
+            var result = new SocketSnapshot[item.Sockets.Count];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = new SocketSnapshot { Type = item.Sockets[i].Type, IsOvercap = item.Sockets[i].IsOvercap, IngredientId = item.Sockets[i].IngredientId };
+            }
+            return result;
+        }
+
+        private static AffixSnapshot[] AffixesOf(ItemInstance item)
+        {
+            if (item == null || item.Affixes.Count == 0)
+            {
+                return System.Array.Empty<AffixSnapshot>();
+            }
+            var result = new AffixSnapshot[item.Affixes.Count];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = new AffixSnapshot { Stat = item.Affixes[i].Stat, Op = item.Affixes[i].Op, Value = item.Affixes[i].Value };
+            }
+            return result;
+        }
+
         public PlayerStateSnapshot BuildPlayer(PlayerCharacter player)
         {
             ServerWorld world = _ctx.World;
@@ -125,15 +153,27 @@ namespace Game.Server.Systems
                     DefinitionId = item?.DefinitionId,
                     Count = item?.Count ?? 0,
                     UpgradeLevel = item?.UpgradeLevel ?? 0,
+                    Sockets = SocketsOf(item),
+                    Affixes = AffixesOf(item),
                 };
             }
             state.Bag = bag;
+            var currencies = new List<CurrencySnapshot>();
+            foreach (KeyValuePair<string, long> balance in player.Wallet)
+            {
+                currencies.Add(new CurrencySnapshot { CurrencyId = balance.Key, Amount = balance.Value });
+            }
+            state.Currencies = currencies.ToArray();
 
             var equipment = new List<EquipmentSlotSnapshot>();
             foreach (EquipmentSlotDto slot in _ctx.Content.SlotsFor(player.Class))
             {
                 player.Equipment.TryGetValue(slot.Id, out ItemInstance item);
-                equipment.Add(new EquipmentSlotSnapshot { SlotId = slot.Id, InstanceId = item?.SourceId, DefinitionId = item?.DefinitionId, UpgradeLevel = item?.UpgradeLevel ?? 0 });
+                equipment.Add(new EquipmentSlotSnapshot
+                {
+                    SlotId = slot.Id, InstanceId = item?.SourceId, DefinitionId = item?.DefinitionId, UpgradeLevel = item?.UpgradeLevel ?? 0,
+                    Sockets = SocketsOf(item), Affixes = AffixesOf(item),
+                });
             }
             state.Equipment = equipment.ToArray();
 
