@@ -101,6 +101,34 @@ namespace Game.Network
                 case DuelSurrenderCommand _:
                     w.Write((byte)MessageType.DuelSurrender);
                     break;
+                case GroupInviteCommand m:
+                    w.Write((byte)MessageType.GroupInvite);
+                    Id(w, m.TargetId);
+                    break;
+                case GroupInviteResponseCommand m:
+                    w.Write((byte)MessageType.GroupInviteResponse);
+                    w.Write(m.Accept);
+                    break;
+                case GroupLeaveCommand _:
+                    w.Write((byte)MessageType.GroupLeave);
+                    break;
+                case GroupKickCommand m:
+                    w.Write((byte)MessageType.GroupKick);
+                    Id(w, m.MemberId);
+                    break;
+                case GroupPromoteCommand m:
+                    w.Write((byte)MessageType.GroupPromote);
+                    Id(w, m.MemberId);
+                    break;
+                case LootModeProposeCommand m:
+                    w.Write((byte)MessageType.LootModePropose);
+                    w.Write((byte)m.Mode);
+                    break;
+                case LootModeVoteCommand m:
+                    w.Write((byte)MessageType.LootModeVote);
+                    w.Write(m.ProposalId);
+                    w.Write(m.Accept);
+                    break;
                 case WorldSnapshot m:
                     w.Write((byte)MessageType.World);
                     WriteWorld(w, m);
@@ -167,6 +195,20 @@ namespace Game.Network
                     return new DuelResponseCommand { Accept = r.ReadBoolean() };
                 case MessageType.DuelSurrender:
                     return new DuelSurrenderCommand();
+                case MessageType.GroupInvite:
+                    return new GroupInviteCommand { TargetId = Id(r) };
+                case MessageType.GroupInviteResponse:
+                    return new GroupInviteResponseCommand { Accept = r.ReadBoolean() };
+                case MessageType.GroupLeave:
+                    return new GroupLeaveCommand();
+                case MessageType.GroupKick:
+                    return new GroupKickCommand { MemberId = Id(r) };
+                case MessageType.GroupPromote:
+                    return new GroupPromoteCommand { MemberId = Id(r) };
+                case MessageType.LootModePropose:
+                    return new LootModeProposeCommand { Mode = (LootMode)r.ReadByte() };
+                case MessageType.LootModeVote:
+                    return new LootModeVoteCommand { ProposalId = r.ReadInt32(), Accept = r.ReadBoolean() };
                 case MessageType.World:
                     return ReadWorld(r);
                 case MessageType.PlayerState:
@@ -313,6 +355,78 @@ namespace Game.Network
             w.Write(m.Duel.CenterX);
             w.Write(m.Duel.CenterZ);
             w.Write(m.Duel.Radius);
+            WriteGroup(w, m.Group ?? new GroupSnapshot());
+        }
+
+        private static void WriteGroup(BinaryWriter w, GroupSnapshot g)
+        {
+            w.Write(g.InGroup);
+            Id(w, g.LeaderId);
+            w.Write((byte)g.LootMode);
+            Ids(w, g.Members);
+            Id(w, g.InviteFromId);
+            w.Write(g.InviteRemaining);
+            w.Write(g.VoteActive);
+            w.Write(g.VoteProposalId);
+            Id(w, g.VoteProposerId);
+            w.Write((byte)g.VoteMode);
+            w.Write(g.VoteRemaining);
+            Ids(w, g.VotesFor);
+            w.Write(g.ProposeCooldownRemaining);
+            w.Write(g.Log.Length);
+            foreach (GroupLogEntry e in g.Log)
+            {
+                Str(w, e.RecipientName);
+                Str(w, e.ItemDefinitionId);
+                w.Write(e.Count);
+                w.Write((byte)e.Mode);
+            }
+        }
+
+        private static GroupSnapshot ReadGroup(BinaryReader r)
+        {
+            var g = new GroupSnapshot
+            {
+                InGroup = r.ReadBoolean(),
+                LeaderId = Id(r),
+                LootMode = (LootMode)r.ReadByte(),
+                Members = Ids(r),
+                InviteFromId = Id(r),
+                InviteRemaining = r.ReadSingle(),
+                VoteActive = r.ReadBoolean(),
+                VoteProposalId = r.ReadInt32(),
+                VoteProposerId = Id(r),
+                VoteMode = (LootMode)r.ReadByte(),
+                VoteRemaining = r.ReadSingle(),
+                VotesFor = Ids(r),
+                ProposeCooldownRemaining = r.ReadSingle(),
+            };
+            g.Log = new GroupLogEntry[r.ReadInt32()];
+            for (int i = 0; i < g.Log.Length; i++)
+            {
+                g.Log[i] = new GroupLogEntry { RecipientName = Str(r), ItemDefinitionId = Str(r), Count = r.ReadInt32(), Mode = (LootMode)r.ReadByte() };
+            }
+            return g;
+        }
+
+        private static void Ids(BinaryWriter w, EntityId[] ids)
+        {
+            ids = ids ?? new EntityId[0];
+            w.Write(ids.Length);
+            foreach (EntityId id in ids)
+            {
+                Id(w, id);
+            }
+        }
+
+        private static EntityId[] Ids(BinaryReader r)
+        {
+            var ids = new EntityId[r.ReadInt32()];
+            for (int i = 0; i < ids.Length; i++)
+            {
+                ids[i] = Id(r);
+            }
+            return ids;
         }
 
         private static PlayerStateSnapshot ReadState(BinaryReader r)
@@ -382,6 +496,7 @@ namespace Game.Network
             {
                 Phase = (DuelPhase)r.ReadByte(), OpponentId = Id(r), Remaining = r.ReadSingle(), CenterX = r.ReadSingle(), CenterZ = r.ReadSingle(), Radius = r.ReadSingle(),
             };
+            m.Group = ReadGroup(r);
             return m;
         }
 

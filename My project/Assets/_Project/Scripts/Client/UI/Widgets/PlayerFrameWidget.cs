@@ -49,6 +49,10 @@ namespace Game.Client.UI.Widgets
             ILocalizationService text = _ctx.Text;
             string className = _ctx.Content.Classes.TryGetValue(state.ClassId, out ClassDefinition cls) ? text.Get(cls.NameKey) : state.ClassId;
             _title.text = className + "  " + text.Format(UiKeys.Level, state.Level);
+            if (state.Group != null && state.Group.InGroup && state.Group.LeaderId == state.EntityId)
+            {
+                _title.text = text.Format(UiKeys.GroupLeaderName, _title.text);
+            }
             _health.Set(Fraction(state.Health, state.MaxHealth), Line(UiKeys.HealthShort, state.Health, state.MaxHealth));
             _main.Set(Fraction(state.MainMana, state.MaxMainMana), Line(UiKeys.MainManaShort, state.MainMana, state.MaxMainMana));
             _reserve.Set(Fraction(state.ReserveMana, state.MaxReserveMana), Line(UiKeys.ReserveManaShort, state.ReserveMana, state.MaxReserveMana));

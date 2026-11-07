@@ -30,6 +30,8 @@ namespace Game.Server
         private readonly ProgressionSystem _progression;
         private readonly UpgradeSystem _upgrades;
         private readonly DuelSystem _duels;
+        private readonly GroupSystem _groups;
+        private readonly LootSystem _loot;
         private int _tick;
         private int _nextCharacterNumber = 1;
 
@@ -59,6 +61,10 @@ namespace Game.Server
             _snapshots = new SnapshotBuilder(_ctx, _skills);
             _progression = new ProgressionSystem(_ctx, _stats);
             _upgrades = new UpgradeSystem(_ctx, _inventory, _stats);
+            _groups = new GroupSystem(_ctx);
+            _loot = new LootSystem(_ctx, _groups, _inventory);
+            _combat.Damaged += _loot.OnDamaged;
+            _combat.Healed += _loot.OnHealed;
             _combat.Died += OnKilled;
             _duels.Ended += OnDuelEnded;
             SpawnMobs();
@@ -126,6 +132,7 @@ namespace Game.Server
                 return;
             }
             _duels.OnPlayerRemoved(id);
+            _groups.OnPlayerRemoved(id);
             _ctx.Players.Remove(id);
             foreach (PlayerCharacter other in _ctx.Players.Values)
             {
@@ -164,6 +171,7 @@ namespace Game.Server
             _resources.Update(dt);
             _respawn.Update(dt);
             _duels.Update();
+            _groups.Update();
 
             WorldSnapshot worldSnapshot = _snapshots.BuildWorld(_tick);
             foreach (PlayerCharacter player in _ctx.Players.Values)
@@ -171,6 +179,7 @@ namespace Game.Server
                 player.Outbox.World = worldSnapshot;
                 player.Outbox.State = _snapshots.BuildPlayer(player);
                 player.Outbox.State.Duel = _duels.Snapshot(player.EntityId);
+                player.Outbox.State.Group = _groups.Snapshot(player.EntityId);
             }
             Ticked?.Invoke();
         }
@@ -215,6 +224,27 @@ namespace Game.Server
                 case DuelSurrenderCommand _:
                     _duels.Surrender(player);
                     break;
+                case GroupInviteCommand invite:
+                    _groups.Invite(player, invite.TargetId);
+                    break;
+                case GroupInviteResponseCommand inviteResponse:
+                    _groups.RespondInvite(player, inviteResponse.Accept);
+                    break;
+                case GroupLeaveCommand _:
+                    _groups.Leave(player);
+                    break;
+                case GroupKickCommand kick:
+                    _groups.Kick(player, kick.MemberId);
+                    break;
+                case GroupPromoteCommand promote:
+                    _groups.Promote(player, promote.MemberId);
+                    break;
+                case LootModeProposeCommand propose:
+                    _groups.Propose(player, propose.Mode);
+                    break;
+                case LootModeVoteCommand vote:
+                    _groups.Vote(player, vote.ProposalId, vote.Accept);
+                    break;
                 default:
                     Log.Warning(LogTags.Server, $"Unknown command {command.GetType().Name}");
                     break;
@@ -244,36 +274,30 @@ namespace Game.Server
             }
         }
 
-        /// <summary>Kill rewards: experience and drops go straight to the killing player (solo; group loot is module 14).</summary>
+        /// <summary>
+        /// Kill rewards: experience to the killer (question 72); drops by the loot rules — solo to the killer, in a group
+        /// by the group's loot mode among eligible members (06, 7.8; LootSystem).
+        /// </summary>
         private void OnKilled(EntityId victim, EntityId killer)
         {
-            PlayerCharacter player = _ctx.GetPlayer(killer);
-            if (player == null || victim == killer || !_ctx.World.Mobs.Has(victim))
+            if (!_ctx.World.Mobs.Has(victim))
             {
                 return;
             }
-            MobDto mob = _ctx.Content.Mobs[_ctx.World.Identities.Get(victim).DefinitionId];
-            _progression.AwardExperience(player, mob.ExperienceReward);
-            foreach (MobDropDto drop in mob.Drops ?? new MobDropDto[0])
+            PlayerCharacter player = _ctx.GetPlayer(killer);
+            if (player != null && victim != killer)
             {
-                if (_ctx.Random.NextFloat() >= drop.Chance)
+                MobDto mob = _ctx.Content.Mobs[_ctx.World.Identities.Get(victim).DefinitionId];
+                _progression.AwardExperience(player, mob.ExperienceReward);
+                foreach (MobDropDto drop in mob.Drops ?? new MobDropDto[0])
                 {
-                    continue;
-                }
-                int before = _inventory.CountItems(player, drop.ItemId);
-                _inventory.GiveItem(player, drop.ItemId, drop.Count);
-                int given = _inventory.CountItems(player, drop.ItemId) - before;
-                if (given > 0)
-                {
-                    player.Outbox.Notifications.Add(new NotificationMessage
+                    if (_ctx.Random.NextFloat() < drop.Chance)
                     {
-                        TextKey = NotificationKeys.Loot,
-                        Number = given,
-                        ItemNameKey = _ctx.Content.Items[drop.ItemId].NameKey,
-                        IsPositive = true,
-                    });
+                        _loot.Give(player, victim, drop);
+                    }
                 }
             }
+            _loot.OnMobLooted(victim);
         }
 
         private void SpawnStations()

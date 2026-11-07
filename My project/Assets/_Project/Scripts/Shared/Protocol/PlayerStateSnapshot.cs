@@ -36,5 +36,6 @@ namespace Game.Shared.Protocol
         public StatSnapshot[] Stats;
         public CooldownGroupSnapshot[] ConsumableCooldowns;
         public DuelSnapshot Duel;
+        public GroupSnapshot Group = new GroupSnapshot();
     }
 }

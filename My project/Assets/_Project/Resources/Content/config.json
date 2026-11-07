@@ -42,5 +42,11 @@
   "DuelMaxSeconds": 180,
   "DuelRadius": 25,
   "DuelLoserHealth": 1,
-  "PvpDamageMultiplier": 1
+  "PvpDamageMultiplier": 1,
+  "GroupMaxSize": 5,
+  "GroupInviteSeconds": 60,
+  "LootVoteSeconds": 30,
+  "LootVoteRepeatSeconds": 30,
+  "LootRadius": 50,
+  "GroupLogSize": 20
 }

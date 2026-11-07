@@ -30,5 +30,18 @@ namespace Game.Shared.Protocol
         public const string DuelInCombat = "error.duel_in_combat";
         public const string DuelNotPlayer = "error.duel_not_player";
         public const string DuelNoRequest = "error.duel_no_request";
+        public const string GroupNotPlayer = "error.group_not_player";
+        public const string GroupTargetInGroup = "error.group_target_in_group";
+        public const string GroupTargetHasInvite = "error.group_target_has_invite";
+        public const string GroupNotLeader = "error.group_not_leader";
+        public const string GroupFull = "error.group_full";
+        public const string GroupNoInvite = "error.group_no_invite";
+        public const string GroupNotInGroup = "error.group_not_in_group";
+        public const string GroupNotMember = "error.group_not_member";
+        public const string LootVoteActive = "error.loot_vote_active";
+        public const string LootVoteCooldown = "error.loot_vote_cooldown";
+        public const string LootVoteSameMode = "error.loot_vote_same_mode";
+        public const string LootVoteNoQuorum = "error.loot_vote_no_quorum";
+        public const string LootVoteNotFound = "error.loot_vote_not_found";
     }
 }

@@ -47,5 +47,19 @@ namespace Game.Client
         public void RespondDuel(bool accept) => _connection.Send(new DuelResponseCommand { Accept = accept });
 
         public void SurrenderDuel() => _connection.Send(new DuelSurrenderCommand());
+
+        public void InviteToGroup(EntityId target) => _connection.Send(new GroupInviteCommand { TargetId = target });
+
+        public void RespondGroupInvite(bool accept) => _connection.Send(new GroupInviteResponseCommand { Accept = accept });
+
+        public void LeaveGroup() => _connection.Send(new GroupLeaveCommand());
+
+        public void KickFromGroup(EntityId member) => _connection.Send(new GroupKickCommand { MemberId = member });
+
+        public void PromoteToLeader(EntityId member) => _connection.Send(new GroupPromoteCommand { MemberId = member });
+
+        public void ProposeLootMode(LootMode mode) => _connection.Send(new LootModeProposeCommand { Mode = mode });
+
+        public void VoteLootMode(int proposalId, bool accept) => _connection.Send(new LootModeVoteCommand { ProposalId = proposalId, Accept = accept });
     }
 }

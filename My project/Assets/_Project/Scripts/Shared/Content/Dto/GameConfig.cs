@@ -38,6 +38,13 @@ namespace Game.Shared.Content.Dto
         public float DuelLoserHealth;
         /// <summary>CombatContext hook (01 §13): damage multiplier when a player hits a player.</summary>
         public float PvpDamageMultiplier;
+        /// <summary>Groups (06, 7.8): size, invite lifetime, loot vote timeout and repeat delay, loot radius, loot log length.</summary>
+        public int GroupMaxSize;
+        public float GroupInviteSeconds;
+        public float LootVoteSeconds;
+        public float LootVoteRepeatSeconds;
+        public float LootRadius;
+        public int GroupLogSize;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

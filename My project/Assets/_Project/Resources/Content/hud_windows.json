@@ -51,6 +51,16 @@
       "Singleton": true
     },
     {
+      "Id": "group",
+      "NameKey": "window.group",
+      "Icon": "group",
+      "MenuZone": "BottomRight",
+      "MenuOrder": 0,
+      "HotkeyBinding": "<Keyboard>/p",
+      "OpenedBy": "Menu",
+      "Singleton": true
+    },
+    {
       "Id": "settings",
       "NameKey": "window.settings",
       "Icon": "settings",

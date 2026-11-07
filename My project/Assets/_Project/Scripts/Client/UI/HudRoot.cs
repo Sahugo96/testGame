@@ -33,6 +33,8 @@ namespace Game.Client.UI
         private EntityViewManager _views;
         private Text _info;
         private DuelWidget _duel;
+        private GroupFramesWidget _groupFrames;
+        private GroupPromptWidget _groupPrompt;
         private DuelArenaView _arena;
         private string _classId;
 
@@ -84,6 +86,8 @@ namespace Game.Client.UI
             _experience = new ExperienceBarWidget(bottomRight, ctx, HudLayout.MenuButtonHeight + HudLayout.Gap);
             _message = new MessageWidget(hudLayer, ctx);
             _duel = new DuelWidget(hudLayer, ctx);
+            _groupFrames = new GroupFramesWidget(topLeft, ctx);
+            _groupPrompt = new GroupPromptWidget(hudLayer, ctx);
             _arena = new GameObject("DuelArena").AddComponent<DuelArenaView>();
             _arena.Init(ctx);
             _info = UiFactory.Label("Info", bottomLeft, ctx.Font, HudLayout.FontSmall, TextAnchor.LowerLeft, HudPalette.TextDim);
@@ -177,12 +181,18 @@ namespace Game.Client.UI
             _experience.Refresh(state);
             _targetFrame.Refresh(state);
             _duel.Refresh(state);
+            _groupFrames.Refresh(state);
+            _groupPrompt.Refresh(state);
             SkillBar.Refresh(state);
             _consumables.Refresh(state);
             Windows.Refresh(state);
         }
 
-        private void OnWorldChanged() => _targetFrame.Refresh(_ctx.State.Player);
+        private void OnWorldChanged()
+        {
+            _targetFrame.Refresh(_ctx.State.Player);
+            _groupFrames.Refresh(_ctx.State.Player);
+        }
 
         private static void EnsureEventSystem()
         {

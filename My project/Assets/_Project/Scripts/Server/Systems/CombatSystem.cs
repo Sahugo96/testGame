@@ -19,6 +19,10 @@ namespace Game.Server.Systems
         /// <summary>Called when an entity dies: (victim, killer). Casts are cancelled, rewards are given.</summary>
         public event Action<EntityId, EntityId> Died;
 
+        /// <summary>(source, target) after damage or healing was applied: loot participation (06, 7.8).</summary>
+        public event Action<EntityId, EntityId> Damaged;
+        public event Action<EntityId, EntityId> Healed;
+
         public CombatSystem(ServerContext ctx, ResourceSystem resources, DuelSystem duels)
         {
             _ctx = ctx;
@@ -89,6 +93,7 @@ namespace Game.Server.Systems
                 Amount = amount,
                 CritTier = crit.Tier,
             });
+            Damaged?.Invoke(source, target);
             if (vitals.Health <= 0f)
             {
                 if (_duels.AreOpponents(source, target))
@@ -127,6 +132,7 @@ namespace Game.Server.Systems
                 Amount = healed,
                 CritTier = crit.Tier,
             });
+            Healed?.Invoke(source, target);
             return healed;
         }
 

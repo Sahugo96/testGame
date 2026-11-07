@@ -20,5 +20,21 @@ namespace Game.Shared.Protocol
         public const string DuelLost = "notify.duel_lost";
         public const string DuelLostLeftArea = "notify.duel_left_area";
         public const string DuelDraw = "notify.duel_draw";
+        public const string GroupInvited = "notify.group_invited";
+        public const string GroupInviteDeclined = "notify.group_invite_declined";
+        public const string GroupInviteExpired = "notify.group_invite_expired";
+        public const string GroupJoined = "notify.group_joined";
+        public const string GroupLeft = "notify.group_left";
+        public const string GroupKicked = "notify.group_kicked";
+        public const string GroupDisbanded = "notify.group_disbanded";
+        public const string GroupMemberJoined = "notify.group_member_joined";
+        public const string GroupMemberLeft = "notify.group_member_left";
+        public const string GroupNewLeader = "notify.group_new_leader";
+        public const string LootVoteStarted = "notify.loot_vote_started";
+        public const string LootVotePassed = "notify.loot_vote_passed";
+        public const string LootVoteFailed = "notify.loot_vote_failed";
+        public const string LootVoteCancelled = "notify.loot_vote_cancelled";
+        /// <summary>Leader mode: the leader had no room, the item is not picked up (no ground loot yet).</summary>
+        public const string LootLeaderBagFull = "notify.loot_leader_bag_full";
     }
 }

@@ -91,6 +91,34 @@ namespace Game.Server.Systems
             return first;
         }
 
+        /// <summary>Whether count units fit into the item's bag section (free stack room plus free slots).</summary>
+        public bool CanFit(PlayerCharacter player, string definitionId, int count)
+        {
+            if (!_ctx.Content.Items.TryGetValue(definitionId, out ItemDefinition definition))
+            {
+                return false;
+            }
+            BagSection section = SectionOf(definition);
+            int room = 0;
+            for (int i = section.Start; i < section.Start + section.Size; i++)
+            {
+                ItemInstance item = player.Bag.Get(i);
+                if (item == null)
+                {
+                    room += definition.MaxStack;
+                }
+                else if (item.DefinitionId == definitionId)
+                {
+                    room += definition.MaxStack - item.Count;
+                }
+                if (room >= count)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public int CountItems(PlayerCharacter player, string definitionId)
         {
             int total = 0;

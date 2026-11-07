@@ -27,6 +27,11 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: Duel* values and PvpDamageMultiplier must be > 0 (DuelCountdownSeconds ≥ 0)");
             }
+            if (cfg.GroupMaxSize < 2 || cfg.GroupInviteSeconds <= 0f || cfg.LootVoteSeconds <= 0f || cfg.LootVoteRepeatSeconds < 0f
+                || cfg.LootRadius <= 0f || cfg.GroupLogSize <= 0)
+            {
+                errors.Add("config: GroupMaxSize ≥ 2; GroupInviteSeconds, LootVoteSeconds, LootRadius, GroupLogSize > 0; LootVoteRepeatSeconds ≥ 0");
+            }
             if (cfg.InteractRange <= 0f)
             {
                 errors.Add("config: InteractRange must be > 0");
