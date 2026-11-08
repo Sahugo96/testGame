@@ -129,6 +129,46 @@
       "HotkeyBinding": "",
       "OpenedBy": "Menu",
       "Singleton": true
+    },
+    {
+      "Id": "market",
+      "NameKey": "window.market",
+      "Icon": "market",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Npc",
+      "Singleton": true
+    },
+    {
+      "Id": "shop",
+      "NameKey": "window.shop",
+      "Icon": "shop",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Npc",
+      "Singleton": true
+    },
+    {
+      "Id": "mail",
+      "NameKey": "window.mail",
+      "Icon": "mail",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Npc",
+      "Singleton": true
+    },
+    {
+      "Id": "orders",
+      "NameKey": "window.orders",
+      "Icon": "orders",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Npc",
+      "Singleton": true
     }
   ]
 }

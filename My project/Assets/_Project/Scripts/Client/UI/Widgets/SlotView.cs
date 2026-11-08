@@ -54,7 +54,12 @@ namespace Game.Client.UI.Widgets
         /// <summary>Makes the slot draggable and a drop target.</summary>
         public void BindDrag(Action began, Action ended, Action dropped)
         {
-            DragTrigger drag = Background.gameObject.GetComponent<DragTrigger>() ?? Background.gameObject.AddComponent<DragTrigger>();
+            // Not "??": in the editor GetComponent returns a fake-null object that "??" treats as present.
+            DragTrigger drag = Background.gameObject.GetComponent<DragTrigger>();
+            if (drag == null)
+            {
+                drag = Background.gameObject.AddComponent<DragTrigger>();
+            }
             drag.Began = began;
             drag.Ended = ended;
             drag.Dropped = dropped;

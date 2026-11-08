@@ -133,9 +133,16 @@ namespace Game.Client.World
             return view;
         }
 
-        /// <summary>Content of a station entity (type, look) by its definition id.</summary>
-        public StationDto FindStation(string definitionId) =>
-            System.Array.Find(_ctx.Content.World.Stations ?? new StationDto[0], s => s.Id == definitionId);
+        /// <summary>Content of a station entity (type, look) by its definition id; a player's merchant uses World.MerchantVisual.</summary>
+        public StationDto FindStation(string definitionId)
+        {
+            StationDto merchant = _ctx.Content.World.MerchantVisual;
+            if (merchant != null && merchant.Id == definitionId)
+            {
+                return merchant;
+            }
+            return System.Array.Find(_ctx.Content.World.Stations ?? new StationDto[0], s => s.Id == definitionId);
+        }
 
         /// <summary>A drop on the ground (06, 7.8): clicking it picks it up.</summary>
         public bool IsLoot(EntityId id) => _ctx.State.TryGetEntity(id, out EntitySnapshot entity) && entity.Kind == EntityKind.Loot;

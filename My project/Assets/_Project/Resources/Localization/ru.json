@@ -2035,6 +2035,534 @@
   {
    "Key": "notify.friend_accepted",
    "Value": "{1} теперь ваш друг"
+  },
+  {
+   "Key": "ui.mail_bag_hint",
+   "Value": "Сумка: нажмите на предмет, чтобы вложить его в письмо"
+  },
+  {
+   "Key": "ui.mail_body",
+   "Value": "Текст письма"
+  },
+  {
+   "Key": "ui.mail_cancel",
+   "Value": "Отмена"
+  },
+  {
+   "Key": "ui.mail_claim",
+   "Value": "Забрать всё"
+  },
+  {
+   "Key": "ui.mail_click_attach",
+   "Value": "ЛКМ — вложить в письмо"
+  },
+  {
+   "Key": "ui.mail_click_detach",
+   "Value": "ЛКМ — убрать из письма"
+  },
+  {
+   "Key": "ui.mail_delete",
+   "Value": "Удалить"
+  },
+  {
+   "Key": "ui.mail_empty",
+   "Value": "Писем нет"
+  },
+  {
+   "Key": "ui.mail_expires",
+   "Value": "Хранится: {0}"
+  },
+  {
+   "Key": "ui.mail_fee",
+   "Value": "Сбор за вложения: {0} золота"
+  },
+  {
+   "Key": "ui.mail_from",
+   "Value": "От: {0}"
+  },
+  {
+   "Key": "ui.mail_from_system",
+   "Value": "Система"
+  },
+  {
+   "Key": "ui.mail_gold",
+   "Value": "Золото"
+  },
+  {
+   "Key": "ui.mail_gold_line",
+   "Value": "Вложено золота: {0}"
+  },
+  {
+   "Key": "ui.mail_no_subject",
+   "Value": "(без темы)"
+  },
+  {
+   "Key": "ui.mail_pick",
+   "Value": "Выберите письмо слева"
+  },
+  {
+   "Key": "ui.mail_row_read",
+   "Value": "{0} — {1}"
+  },
+  {
+   "Key": "ui.mail_row_unread",
+   "Value": "● {0} — {1}"
+  },
+  {
+   "Key": "ui.mail_send",
+   "Value": "Отправить"
+  },
+  {
+   "Key": "ui.mail_subject",
+   "Value": "Тема"
+  },
+  {
+   "Key": "ui.mail_to",
+   "Value": "Кому (имя персонажа)"
+  },
+  {
+   "Key": "hud.mail_unread",
+   "Value": "Новых писем: {0}"
+  },
+  {
+   "Key": "ui.mail_write",
+   "Value": "Новое письмо"
+  },
+  {
+   "Key": "ui.market_any_category",
+   "Value": "Все категории"
+  },
+  {
+   "Key": "ui.market_any_class",
+   "Value": "Любой класс"
+  },
+  {
+   "Key": "ui.market_any_rarity",
+   "Value": "Любая редкость"
+  },
+  {
+   "Key": "ui.market_buy",
+   "Value": "Купить"
+  },
+  {
+   "Key": "ui.market_col_item",
+   "Value": "Предмет"
+  },
+  {
+   "Key": "ui.market_col_level",
+   "Value": "Ур."
+  },
+  {
+   "Key": "ui.market_col_price",
+   "Value": "Цена за шт."
+  },
+  {
+   "Key": "ui.market_col_shop",
+   "Value": "Магазин"
+  },
+  {
+   "Key": "ui.market_empty",
+   "Value": "Ничего не найдено"
+  },
+  {
+   "Key": "ui.market_find",
+   "Value": "Найти"
+  },
+  {
+   "Key": "ui.market_max_level",
+   "Value": "Ур. до"
+  },
+  {
+   "Key": "ui.market_max_price",
+   "Value": "Цена до"
+  },
+  {
+   "Key": "ui.market_min_level",
+   "Value": "Ур. от"
+  },
+  {
+   "Key": "ui.market_min_sockets",
+   "Value": "Слотов от"
+  },
+  {
+   "Key": "ui.market_min_upgrade",
+   "Value": "Улучшение от"
+  },
+  {
+   "Key": "ui.market_name",
+   "Value": "Название предмета"
+  },
+  {
+   "Key": "ui.market_price",
+   "Value": "{0} з."
+  },
+  {
+   "Key": "ui.market_total",
+   "Value": "Найдено: {0}"
+  },
+  {
+   "Key": "ui.never_expires",
+   "Value": "бессрочно"
+  },
+  {
+   "Key": "ui.order_any_smith",
+   "Value": "любой кузнец"
+  },
+  {
+   "Key": "ui.order_cancel",
+   "Value": "Отменить"
+  },
+  {
+   "Key": "ui.order_click_choose",
+   "Value": "ЛКМ — выбрать для заказа"
+  },
+  {
+   "Key": "ui.order_create",
+   "Value": "Создать заказ"
+  },
+  {
+   "Key": "ui.order_create_hint",
+   "Value": "Новый заказ: выберите предмет, оплату и (если нужно) имя кузнеца"
+  },
+  {
+   "Key": "ui.order_fulfil",
+   "Value": "Выполнить"
+  },
+  {
+   "Key": "ui.order_payment",
+   "Value": "Оплата (золото)"
+  },
+  {
+   "Key": "ui.order_smith",
+   "Value": "Кузнец (пусто — любой)"
+  },
+  {
+   "Key": "ui.order_who",
+   "Value": "{0} → {1}, {2}"
+  },
+  {
+   "Key": "ui.orders_button",
+   "Value": "Заказы"
+  },
+  {
+   "Key": "ui.shop_click_list",
+   "Value": "ЛКМ — выставить по цене справа"
+  },
+  {
+   "Key": "ui.shop_close",
+   "Value": "Закрыть лавку"
+  },
+  {
+   "Key": "ui.shop_free_spot",
+   "Value": "Свободное место для лавки: название и уровень лавки"
+  },
+  {
+   "Key": "ui.shop_header",
+   "Value": "«{0}», владелец {1}\nРаботает ещё: {2}"
+  },
+  {
+   "Key": "ui.shop_list_hint",
+   "Value": "Выставить из сумки (стопка целиком):"
+  },
+  {
+   "Key": "ui.shop_list_price",
+   "Value": "Цена за шт."
+  },
+  {
+   "Key": "ui.shop_name",
+   "Value": "Название лавки"
+  },
+  {
+   "Key": "ui.shop_open",
+   "Value": "Открыть лавку"
+  },
+  {
+   "Key": "ui.shop_set_price",
+   "Value": "Цена"
+  },
+  {
+   "Key": "ui.shop_tier_line",
+   "Value": "{0}: комиссия {1}%, до {2} лотов, {3} ч, аренда {4} з."
+  },
+  {
+   "Key": "ui.shop_unlist",
+   "Value": "Снять"
+  },
+  {
+   "Key": "ui.time_days",
+   "Value": "{0} дн. {1} ч"
+  },
+  {
+   "Key": "ui.time_hours",
+   "Value": "{0} ч {1} мин"
+  },
+  {
+   "Key": "window.market",
+   "Value": "Рынок"
+  },
+  {
+   "Key": "window.shop",
+   "Value": "Лавка"
+  },
+  {
+   "Key": "window.mail",
+   "Value": "Почта"
+  },
+  {
+   "Key": "window.orders",
+   "Value": "Заказы улучшения"
+  },
+  {
+   "Key": "npc.market",
+   "Value": "Главный управляющий рынком"
+  },
+  {
+   "Key": "npc.mailbox",
+   "Value": "Почтовый ящик"
+  },
+  {
+   "Key": "npc.shop_spot",
+   "Value": "Место для лавки"
+  },
+  {
+   "Key": "npc.merchant",
+   "Value": "Торговец"
+  },
+  {
+   "Key": "shop.tier.small",
+   "Value": "Малая лавка"
+  },
+  {
+   "Key": "shop.tier.medium",
+   "Value": "Средняя лавка"
+  },
+  {
+   "Key": "shop.tier.large",
+   "Value": "Большая лавка"
+  },
+  {
+   "Key": "market.sort.PriceAscending",
+   "Value": "Сначала дешёвые"
+  },
+  {
+   "Key": "market.sort.PriceDescending",
+   "Value": "Сначала дорогие"
+  },
+  {
+   "Key": "market.sort.LevelAscending",
+   "Value": "Уровень ↑"
+  },
+  {
+   "Key": "market.sort.LevelDescending",
+   "Value": "Уровень ↓"
+  },
+  {
+   "Key": "market.sort.Newest",
+   "Value": "Сначала новые"
+  },
+  {
+   "Key": "category.Weapon",
+   "Value": "Оружие"
+  },
+  {
+   "Key": "category.Armor",
+   "Value": "Броня"
+  },
+  {
+   "Key": "category.Jewelry",
+   "Value": "Украшения"
+  },
+  {
+   "Key": "category.Consumable",
+   "Value": "Расходники"
+  },
+  {
+   "Key": "category.Material",
+   "Value": "Материалы"
+  },
+  {
+   "Key": "category.UpgradeMaterial",
+   "Value": "Материалы улучшения"
+  },
+  {
+   "Key": "category.SocketIngredient",
+   "Value": "Ингредиенты"
+  },
+  {
+   "Key": "category.Catalyst",
+   "Value": "Катализаторы"
+  },
+  {
+   "Key": "category.Quest",
+   "Value": "Квестовые"
+  },
+  {
+   "Key": "category.Loot",
+   "Value": "Добыча"
+  },
+  {
+   "Key": "mail.subject.sold",
+   "Value": "Продано: {0} ×{1} («{2}»)"
+  },
+  {
+   "Key": "mail.subject.purchase",
+   "Value": "Покупка: {0} ×{1} («{2}»), не хватило места в сумке"
+  },
+  {
+   "Key": "mail.subject.shop_closed",
+   "Value": "Лавка «{2}» закрыта: нераспроданное ({1})"
+  },
+  {
+   "Key": "mail.subject.returned",
+   "Value": "Возврат: письмо для {2} не забрали"
+  },
+  {
+   "Key": "mail.subject.order_success",
+   "Value": "Заказ выполнен: {0} теперь +{1} (кузнец {2})"
+  },
+  {
+   "Key": "mail.subject.order_failed",
+   "Value": "Заказ: улучшение не удалось, {0} +{1} (кузнец {2})"
+  },
+  {
+   "Key": "mail.subject.order_broken",
+   "Value": "Заказ: {0} разрушен при улучшении (кузнец {2})"
+  },
+  {
+   "Key": "mail.subject.order_returned",
+   "Value": "Заказ на {0} возвращён"
+  },
+  {
+   "Key": "mail.subject.order_payment",
+   "Value": "Оплата заказа от {2}"
+  },
+  {
+   "Key": "error.shop_spot_taken",
+   "Value": "Это место уже занято"
+  },
+  {
+   "Key": "error.shop_already_open",
+   "Value": "У вас уже есть лавка"
+  },
+  {
+   "Key": "error.shop_not_found",
+   "Value": "Лавка не найдена"
+  },
+  {
+   "Key": "error.shop_bad_name",
+   "Value": "Нужно название лавки и её уровень"
+  },
+  {
+   "Key": "error.shop_lots_full",
+   "Value": "На прилавке нет места: поднимите уровень лавки"
+  },
+  {
+   "Key": "error.market_bad_price",
+   "Value": "Неверная цена или сумма"
+  },
+  {
+   "Key": "error.market_lot_gone",
+   "Value": "Этого лота уже нет (или столько нет)"
+  },
+  {
+   "Key": "error.market_price_changed",
+   "Value": "Цена изменилась — посмотрите ещё раз"
+  },
+  {
+   "Key": "error.market_own_lot",
+   "Value": "Это ваш лот"
+  },
+  {
+   "Key": "error.market_too_fast",
+   "Value": "Слишком частый поиск — подождите"
+  },
+  {
+   "Key": "error.item_not_tradable",
+   "Value": "Этот предмет нельзя продать или передать"
+  },
+  {
+   "Key": "error.mail_no_recipient",
+   "Value": "Нет такого персонажа"
+  },
+  {
+   "Key": "error.mail_recipient_full",
+   "Value": "Почтовый ящик получателя переполнен"
+  },
+  {
+   "Key": "error.mail_too_many_items",
+   "Value": "Слишком много вложений"
+  },
+  {
+   "Key": "error.mail_not_found",
+   "Value": "Письмо не найдено"
+  },
+  {
+   "Key": "error.mail_has_attachments",
+   "Value": "Сначала заберите вложения"
+  },
+  {
+   "Key": "error.mail_bad_text",
+   "Value": "Письмо пустое"
+  },
+  {
+   "Key": "error.wallet_full",
+   "Value": "Кошелёк полон"
+  },
+  {
+   "Key": "error.order_not_found",
+   "Value": "Заказ не найден"
+  },
+  {
+   "Key": "error.order_too_many",
+   "Value": "Слишком много открытых заказов"
+  },
+  {
+   "Key": "error.order_not_for_you",
+   "Value": "Этот заказ не для вас"
+  },
+  {
+   "Key": "notify.mail_new",
+   "Value": "Новое письмо"
+  },
+  {
+   "Key": "notify.mail_sent",
+   "Value": "Письмо отправлено"
+  },
+  {
+   "Key": "notify.mail_claimed",
+   "Value": "Вложения получены"
+  },
+  {
+   "Key": "notify.shop_opened",
+   "Value": "Лавка открыта на {0} ч"
+  },
+  {
+   "Key": "notify.shop_closed",
+   "Value": "Лавка закрыта, нераспроданное — на почте"
+  },
+  {
+   "Key": "notify.shop_sold",
+   "Value": "Продано: {1} ×{0}"
+  },
+  {
+   "Key": "notify.purchase_done",
+   "Value": "Куплено: {1} ×{0}"
+  },
+  {
+   "Key": "notify.purchase_by_mail",
+   "Value": "Куплено: {1} ×{0} — в сумке нет места, отправлено на почту"
+  },
+  {
+   "Key": "notify.order_created",
+   "Value": "Заказ №{0} создан"
+  },
+  {
+   "Key": "notify.order_fulfilled",
+   "Value": "Заказ №{0} выполнен, оплата получена"
+  },
+  {
+   "Key": "notify.order_cancelled",
+   "Value": "Заказ №{0} отменён"
   }
  ]
 }

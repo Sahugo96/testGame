@@ -20,6 +20,10 @@ namespace Game.Client.UI.Windows
         public const string Friends = "friends";
         public const string Trade = "trade";
         public const string ChatTabs = "chattabs";
+        public const string Market = "market";
+        public const string Shop = "shop";
+        public const string Mail = "mail";
+        public const string UpgradeOrders = "orders";
 
         /// <summary>Window opened by clicking a station of the given type (StationTypes), or null.</summary>
         public static string ForStation(string stationType)
@@ -30,6 +34,13 @@ namespace Game.Client.UI.Windows
                     return Anvil;
                 case StationTypes.Whetstone:
                     return Whetstone;
+                case StationTypes.Market:
+                    return Market;
+                case StationTypes.Mailbox:
+                    return Mail;
+                case StationTypes.ShopSpot:
+                case StationTypes.Merchant:
+                    return Shop;
                 default:
                     return null;
             }
@@ -58,6 +69,14 @@ namespace Game.Client.UI.Windows
                     return new GroupWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Friends:
                     return new FriendsWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case Market:
+                    return new MarketWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case Shop:
+                    return new ShopWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case Mail:
+                    return new MailWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case UpgradeOrders:
+                    return new UpgradeOrdersWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case ChatTabs:
                     return new ChatTabsWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Trade:

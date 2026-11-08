@@ -62,6 +62,9 @@ namespace Game.Client.UI.Windows
             _upgradeButton = UiFactory.Button("Upgrade", right, ctx.Font, ctx.Text.Get(UiKeys.UpgradeButton), Upgrade);
             UiFactory.Place((RectTransform)_upgradeButton.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero,
                 new Vector2(HudLayout.MenuButtonWidth * 2f, HudLayout.MenuButtonHeight));
+            // Module 20: upgrade orders with escrow at the same whetstone.
+            Button orders = UiFactory.Button("Orders", right, ctx.Font, ctx.Text.Get(UiKeys.OrdersButton), () => Ctx.RequestWindow(WindowFactory.UpgradeOrders));
+            UiFactory.Place((RectTransform)orders.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), Vector2.zero, new Vector2(HudLayout.MenuButtonWidth, HudLayout.MenuButtonHeight));
         }
 
         public override void Refresh(PlayerStateSnapshot state)

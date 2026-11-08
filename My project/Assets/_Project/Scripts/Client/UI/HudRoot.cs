@@ -1,4 +1,5 @@
 using System;
+using Game.Client.Localization;
 using Game.Client.UI.Widgets;
 using Game.Client.UI.Windows;
 using Game.Client.World;
@@ -38,6 +39,8 @@ namespace Game.Client.UI
         private StatusRowWidget _playerStatuses;
         private GroupPromptWidget _groupPrompt;
         private TradePhase _tradePhase;
+        private Text _mail;
+        private const float MailBadgeHeight = 24f;
         private DuelArenaView _arena;
         private string _classId;
 
@@ -83,6 +86,10 @@ namespace Game.Client.UI
             _targetFrame = new TargetFrameWidget(topCenter, ctx, _tooltip);
             _playerStatuses = new StatusRowWidget(topLeft, ctx, _tooltip, new Vector2(0f, 1f), new Vector2(HudLayout.PlayerFrameSize.x + HudLayout.Gap, 0f), PlayerStatusColumns, PlayerStatusMax);
             _minimap = new MinimapWidget(topRight, ctx);
+            // 05, 7.14.3: a new letter shows as a badge (under the minimap; the mail window opens at a mailbox).
+            _mail = UiFactory.Label("MailBadge", topRight, ctx.Font, HudLayout.FontNormal, TextAnchor.MiddleRight, HudPalette.Cast);
+            UiFactory.Place(_mail.rectTransform, Vector2.one, Vector2.one, new Vector2(0f, -HudLayout.BarHeight - HudLayout.MinimapSize - HudLayout.Gap * 3f),
+                new Vector2(HudLayout.MinimapSize, MailBadgeHeight));
             SkillBar = new SkillBarWidget(bottomCenter, ctx, _tooltip);
             float skillRowsHeight = ctx.Content.Config.SkillBarRows * (HudLayout.SkillSlotSize + HudLayout.Gap);
             _consumables = new ConsumableBarWidget(bottomCenter, ctx, _tooltip, skillRowsHeight + HudLayout.Gap);
@@ -204,6 +211,8 @@ namespace Game.Client.UI
             _groupPrompt.Refresh(state);
             SyncTradeWindow(state);
             Chat.Refresh(state);
+            int unread = state.Market != null ? state.Market.UnreadMail : 0;
+            _mail.text = unread > 0 ? _ctx.Text.Format(UiKeys.MailUnread, unread) : string.Empty;
             SkillBar.Refresh(state);
             _consumables.Refresh(state);
             Windows.Refresh(state);
