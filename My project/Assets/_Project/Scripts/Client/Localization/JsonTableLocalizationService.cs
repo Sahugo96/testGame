@@ -4,8 +4,11 @@ using UnityEngine;
 
 namespace Game.Client.Localization
 {
-    /// <summary>Key table loaded from Resources/Localization/&lt;language&gt;.json. Missing keys show as #key and are logged once.</summary>
-    public sealed class JsonTableLocalizationService : ILocalizationService
+    /// <summary>
+    /// Key table loaded from Resources/Localization/&lt;language&gt;.json (the source of the Unity string table and its
+    /// fallback). Missing keys show as #key and are logged once. Offers only its own language.
+    /// </summary>
+    public sealed class JsonTableLocalizationService : ILocalizationService, ILanguageService
     {
         private const string Folder = "Localization/";
         private const string MissingPrefix = "#";
@@ -13,8 +16,11 @@ namespace Game.Client.Localization
         private readonly Dictionary<string, string> _table = new Dictionary<string, string>();
         private readonly HashSet<string> _reportedMissing = new HashSet<string>();
 
+        private readonly string _language;
+
         public JsonTableLocalizationService(string language)
         {
+            _language = language;
             var asset = Resources.Load<TextAsset>(Folder + language);
             if (asset == null)
             {
@@ -46,5 +52,16 @@ namespace Game.Client.Localization
         }
 
         public string Format(string key, params object[] args) => string.Format(Get(key), args);
+
+        /// <summary>The key's text, or null when the table has none (Unity Localization falls back here).</summary>
+        public string Find(string key) => key != null && _table.TryGetValue(key, out string value) ? value : null;
+
+        public IReadOnlyList<string> Codes => new[] { _language };
+
+        public string Current => _language;
+
+        public string NameOf(string code) => code;
+
+        public bool Select(string code) => code == _language;
     }
 }

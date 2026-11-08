@@ -316,6 +316,11 @@ namespace Game.Client.UI.Windows
             info.text = Ctx.Text.Get(UiKeys.SettingsInfo);
             info.color = HudPalette.TextDim;
             y -= RowHeight + HudLayout.Gap;
+            if (Ctx.Languages != null && Ctx.Languages.Codes.Count > 1)
+            {
+                CycleRow(panel, ref y, UiKeys.SettingsLanguage, NextLanguage, () => Ctx.Languages.NameOf(LanguageShown()));
+                Hint(panel, ref y, width, UiKeys.SettingsLanguageHint);
+            }
             autoLoot = PanelButton(panel, ref y, string.Empty, () => Ctx.Commands?.SetAutoLoot(!_autoLootOn));
             autoLootLabel = autoLoot.GetComponentInChildren<Text>();
             PanelButton(panel, ref y, Ctx.Text.Get(UiKeys.ChatTabsSettingsLong), () => Ctx.RequestWindow(WindowFactory.ChatTabs));
@@ -331,6 +336,15 @@ namespace Game.Client.UI.Windows
             }
             y -= HudLayout.Gap * 2f;
             PanelButton(panel, ref y, Ctx.Text.Get(UiKeys.LeaveGame), () => Ctx.RequestLeave());
+        }
+
+        private string LanguageShown() => string.IsNullOrEmpty(_local.Language) ? Ctx.Languages.Current : _local.Language;
+
+        private void NextLanguage()
+        {
+            var codes = new System.Collections.Generic.List<string>(Ctx.Languages.Codes);
+            int index = codes.IndexOf(LanguageShown());
+            _local.Language = codes[(index + 1) % codes.Count];
         }
 
         // ---- Apply / cancel / defaults ----

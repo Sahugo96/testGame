@@ -14,6 +14,8 @@ namespace Game.Client
         public ClientState State;
         public ClientCommands Commands;
         public ILocalizationService Text;
+        /// <summary>Languages to choose from (Settings → Game); module 4, question 81.</summary>
+        public ILanguageService Languages;
         public Font Font;
         public Camera Camera;
         public ModifierTracker Modifiers;

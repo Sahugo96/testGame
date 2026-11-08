@@ -1,8 +1,8 @@
 namespace Game.Client.Localization
 {
     /// <summary>
-    /// Thin localization interface (question 42, hybrid): code and data use keys only. Today a JSON key table backs it;
-    /// Unity Localization (String Tables) plugs in behind the same interface in module 4.
+    /// Thin localization interface (question 42, hybrid): code and data use keys only. Unity Localization (string table
+    /// "Game", module 4, question 81) backs it when the package is set up; the JSON key table is the fallback.
     /// </summary>
     public interface ILocalizationService
     {

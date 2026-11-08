@@ -32,7 +32,6 @@ namespace Game.Host
     /// </summary>
     public sealed class GameRoot : MonoBehaviour
     {
-        private const string LanguageCode = "ru";
         private const string BuiltinFontName = "LegacyRuntime.ttf";
         private const float PlaneSizeUnits = 10f;
         private const int DedicatedFrameRateFactor = 2;
@@ -208,11 +207,15 @@ namespace Game.Host
             camera.cullingMask &= RenderLayers.AllExceptPreview;
             _cameraRig = camera.gameObject.AddComponent<ThirdPersonCamera>();
 
+            // Module 4: Unity Localization when set up (question 81), the JSON table otherwise; the device's chosen language first.
+            var localStore = new LocalSettingsStore();
+            (ILocalizationService text, ILanguageService languages) = LocalizationFactory.Create(localStore.Load()?.Language);
             _ctx = new ClientContext
             {
                 Content = _content,
                 State = new ClientState(),
-                Text = new JsonTableLocalizationService(LanguageCode),
+                Text = text,
+                Languages = languages,
                 Font = Resources.GetBuiltinResource<Font>(BuiltinFontName),
                 Camera = camera,
                 Modifiers = new ModifierTracker(),
@@ -220,7 +223,7 @@ namespace Game.Host
             _input = new GameInput(_content.HudWindows);
             _input.Enable();
             // Module 17: device settings now; account settings when the server sends them after login.
-            _ctx.Settings = new SettingsService(_content.Config, new LocalSettingsStore(), new KeyRebinder(_input));
+            _ctx.Settings = new SettingsService(_content.Config, localStore, new KeyRebinder(_input), languages);
             _ctx.Settings.Bind(() => _ctx.Commands);
             _ctx.Settings.LoadLocal();
             _ctx.State.AccountSettings += _ctx.Settings.ApplyAccount;

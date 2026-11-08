@@ -2689,6 +2689,14 @@
    "Value": "Показывать FPS"
   },
   {
+   "Key": "ui.settings_language",
+   "Value": "Язык"
+  },
+  {
+   "Key": "ui.settings_language_hint",
+   "Value": "Новый язык: в окнах, открытых после «Применить»; везде — после перезапуска игры"
+  },
+  {
    "Key": "ui.settings_swap",
    "Value": "Поменять"
   },

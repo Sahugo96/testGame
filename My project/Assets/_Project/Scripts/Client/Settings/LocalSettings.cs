@@ -19,6 +19,8 @@ namespace Game.Client.Settings
         /// <summary>0 = no limit.</summary>
         public int FpsLimit;
         public bool ShowFps;
+        /// <summary>Locale code of the texts (module 4, question 81); empty = the system's or the project's default.</summary>
+        public string Language;
 
         public LocalSettings Copy() => (LocalSettings)MemberwiseClone();
     }

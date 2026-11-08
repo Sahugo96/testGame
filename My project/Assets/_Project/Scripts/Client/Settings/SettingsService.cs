@@ -17,9 +17,12 @@ namespace Game.Client.Settings
         private readonly LocalSettingsStore _store;
         private Func<ClientCommands> _commands;
 
-        public SettingsService(GameConfig config, LocalSettingsStore store, KeyRebinder keys)
+        private readonly Localization.ILanguageService _languages;
+
+        public SettingsService(GameConfig config, LocalSettingsStore store, KeyRebinder keys, Localization.ILanguageService languages)
         {
             _config = config;
+            _languages = languages;
             _store = store;
             Keys = keys;
             Account = DefaultAccount();
@@ -51,6 +54,10 @@ namespace Game.Client.Settings
         {
             Local = settings.Copy();
             GraphicsSettingsApplier.Apply(Local, _config);
+            if (!string.IsNullOrEmpty(Local.Language) && _languages != null && !_languages.Select(Local.Language))
+            {
+                Local.Language = _languages.Current;
+            }
             if (save)
             {
                 _store.Save(Local);

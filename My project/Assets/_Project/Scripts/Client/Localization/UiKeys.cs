@@ -264,6 +264,8 @@ namespace Game.Client.Localization
         public const string SettingsRevert = "ui.settings_revert";
         public const string SettingsSensitivity = "ui.settings_sensitivity";
         public const string SettingsShowFps = "ui.settings_show_fps";
+        public const string SettingsLanguage = "ui.settings_language";
+        public const string SettingsLanguageHint = "ui.settings_language_hint";
         public const string SettingsSwap = "ui.settings_swap";
         public const string SettingsTabControls = "ui.settings_tab_controls";
         public const string SettingsTabGame = "ui.settings_tab_game";

@@ -6,7 +6,9 @@
         "Game.Network",
         "Unity.InputSystem",
         "UnityEngine.UI",
-        "Unity.RenderPipelines.Universal.Runtime"
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.Localization",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -15,6 +17,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.localization",
+            "expression": "1.0.0",
+            "define": "GAME_UNITY_LOCALIZATION"
+        }
+    ],
     "noEngineReferences": false
 }
