@@ -1,5 +1,6 @@
 using Game.Shared.Core;
 using UnityEngine;
+using EntityId = Game.Shared.Core.EntityId;
 
 namespace Game.Client.World
 {

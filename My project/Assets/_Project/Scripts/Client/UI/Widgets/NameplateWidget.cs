@@ -4,6 +4,7 @@ using Game.Shared.Core;
 using Game.Shared.Protocol;
 using UnityEngine;
 using UnityEngine.UI;
+using EntityId = Game.Shared.Core.EntityId;
 
 namespace Game.Client.UI.Widgets
 {

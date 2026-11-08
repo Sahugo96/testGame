@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using EntityId = Game.Shared.Core.EntityId;
 
 namespace Game.Client.UI
 {

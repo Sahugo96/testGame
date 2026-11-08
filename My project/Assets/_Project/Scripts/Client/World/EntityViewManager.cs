@@ -6,6 +6,7 @@ using Game.Shared.Protocol;
 using Game.Client.UI;
 using Game.Shared.Content.Items;
 using UnityEngine;
+using EntityId = Game.Shared.Core.EntityId;
 
 namespace Game.Client.World
 {

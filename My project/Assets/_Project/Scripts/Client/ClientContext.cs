@@ -4,6 +4,7 @@ using Game.Client.Localization;
 using Game.Client.State;
 using Game.Shared.Content;
 using UnityEngine;
+using EntityId = Game.Shared.Core.EntityId;
 
 namespace Game.Client
 {

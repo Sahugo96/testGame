@@ -5,6 +5,7 @@ using Game.Shared.Content;
 using Game.Shared.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using EntityId = Game.Shared.Core.EntityId;
 
 namespace Game.Client.Input
 {

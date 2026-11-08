@@ -295,7 +295,7 @@ namespace Game.Tests
             GroupSnapshot decoded = ((PlayerStateSnapshot)ProtocolCodec.Decode(ProtocolCodec.Encode(_h.Player(leader).Outbox.State))).Group;
             Assert.That(decoded.Voters, Does.Contain(leader));
             Assert.That(decoded.Voters, Is.SupersetOf(subgroupLeaders));
-            Assert.That(decoded.Voters, Does.Not.Contain(ordinary));
+            Assert.That(decoded.Voters, Has.No.Member(ordinary));
         }
 
         [Test]
@@ -314,7 +314,7 @@ namespace Game.Tests
             _h.Server.Tick();
             var seen = _h.Player(leader).Outbox.World.Entities.Where(e => e.Kind == EntityKind.Player).Select(e => e.Id).ToList();
             Assert.That(seen, Does.Contain(members[0]), "own subgroup, far away");
-            Assert.That(seen, Does.Not.Contain(members[8]), "another subgroup far away is not always visible");
+            Assert.That(seen, Has.No.Member(members[8]), "another subgroup far away is not always visible");
         }
 
         [Test]

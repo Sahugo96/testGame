@@ -22,6 +22,7 @@ using Game.Server.Persistence;
 using Game.Shared.Content;
 using Game.Shared.Core;
 using UnityEngine;
+using EntityId = Game.Shared.Core.EntityId;
 
 namespace Game.Host
 {
