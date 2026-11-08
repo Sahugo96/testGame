@@ -101,6 +101,69 @@
       "Z": -5,
       "VisualColor": "#3E4248",
       "VisualShape": "Cube"
+    },
+    {
+      "Id": "market_1",
+      "Type": "Market",
+      "NameKey": "npc.market",
+      "X": -10,
+      "Z": 8,
+      "VisualColor": "#D9B44A",
+      "VisualShape": "Cube"
+    },
+    {
+      "Id": "mailbox_1",
+      "Type": "Mailbox",
+      "NameKey": "npc.mailbox",
+      "X": -6,
+      "Z": 8,
+      "VisualColor": "#3A6FB0",
+      "VisualShape": "Cube"
+    },
+    {
+      "Id": "shop_spot_1",
+      "Type": "ShopSpot",
+      "NameKey": "npc.shop_spot",
+      "X": 4,
+      "Z": 10,
+      "VisualColor": "#A08C6A",
+      "VisualShape": "Cylinder"
+    },
+    {
+      "Id": "shop_spot_2",
+      "Type": "ShopSpot",
+      "NameKey": "npc.shop_spot",
+      "X": 8,
+      "Z": 10,
+      "VisualColor": "#A08C6A",
+      "VisualShape": "Cylinder"
+    },
+    {
+      "Id": "shop_spot_3",
+      "Type": "ShopSpot",
+      "NameKey": "npc.shop_spot",
+      "X": 12,
+      "Z": 10,
+      "VisualColor": "#A08C6A",
+      "VisualShape": "Cylinder"
+    },
+    {
+      "Id": "shop_spot_4",
+      "Type": "ShopSpot",
+      "NameKey": "npc.shop_spot",
+      "X": 16,
+      "Z": 10,
+      "VisualColor": "#A08C6A",
+      "VisualShape": "Cylinder"
     }
-  ]
+  ],
+  "MerchantVisual": {
+    "Id": "merchant",
+    "Type": "Merchant",
+    "NameKey": "npc.merchant",
+    "X": 0,
+    "Z": 0,
+    "VisualColor": "#C9A227",
+    "VisualShape": "Cube"
+  }
 }

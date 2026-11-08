@@ -11,12 +11,13 @@ namespace Game.Server.Persistence
     /// account and character, a name index and the unique item registry. Writes are atomic (temporary file, then replace),
     /// shared files are guarded by locks. Backup copies the whole folder and keeps the last N copies.
     /// </summary>
-    public sealed class FileStorage : IAccountStore, ICharacterStore, IUniqueItemRegistry
+    public sealed class FileStorage : IAccountStore, ICharacterStore, IUniqueItemRegistry, IMarketStore
     {
         private const string AccountsFolder = "accounts";
         private const string CharactersFolder = "characters";
         private const string BackupsFolder = "backups";
         private const string NamesFile = "names.json";
+        private const string MarketFile = "market.json";
         private const string UniqueFile = "unique_items.json";
         private const string AuditFolder = "audit";
         private const string TempSuffix = ".tmp";
@@ -42,6 +43,10 @@ namespace Game.Server.Persistence
         public string AuditPath => Path.Combine(_root, AuditFolder);
 
         public AccountRecord LoadAccount(string login) => Read<AccountRecord>(AccountPath(login));
+
+        public MarketRecord LoadMarket() => Read<MarketRecord>(Path.Combine(_root, MarketFile));
+
+        public void SaveMarket(MarketRecord market) => Write(Path.Combine(_root, MarketFile), market);
 
         public void SaveAccount(AccountRecord account) => Write(AccountPath(account.Login), account);
 

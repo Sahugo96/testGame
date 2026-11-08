@@ -85,6 +85,7 @@ namespace Game.Shared.Content
             ValidateRecipes(db, errors);
             ValidateStatuses(db, errors);
             ValidateAi(db, errors);
+            ValidateMarket(db, errors);
             ValidateItemsModule11(db, errors);
             if (!db.Classes.ContainsKey(cfg.DefaultClassId ?? string.Empty))
             {
@@ -211,7 +212,8 @@ namespace Game.Shared.Content
                 }
                 foreach (StationDto station in db.World.Stations ?? new StationDto[0])
                 {
-                    if (station.Type != StationTypes.Anvil && station.Type != StationTypes.Whetstone)
+                    if (station.Type != StationTypes.Anvil && station.Type != StationTypes.Whetstone && station.Type != StationTypes.Market
+                        && station.Type != StationTypes.Mailbox && station.Type != StationTypes.ShopSpot)
                     {
                         errors.Add($"world: unknown station type '{station.Type}' of '{station.Id}'");
                     }
@@ -224,6 +226,39 @@ namespace Game.Shared.Content
         }
 
         /// <summary>Module 11: currencies, affix pools, sockets and ingredients, socket limits per slot group.</summary>
+        /// <summary>Module 20: shop levels, merchant look when there are shop spots, positive market and mail limits.</summary>
+        private static void ValidateMarket(ContentDatabase db, List<string> errors)
+        {
+            GameConfig cfg = db.Config;
+            var tiers = new HashSet<string>();
+            foreach (ShopTierDto tier in cfg.ShopTiers ?? new ShopTierDto[0])
+            {
+                if (string.IsNullOrEmpty(tier.Id) || !tiers.Add(tier.Id) || string.IsNullOrEmpty(tier.NameKey))
+                {
+                    errors.Add($"config.ShopTiers '{tier.Id}': unique Id and NameKey are required");
+                }
+                if (tier.Commission < 0f || tier.Commission >= 1f || tier.MaxLots <= 0 || tier.DurationHours <= 0f || tier.RentCost < 0)
+                {
+                    errors.Add($"config.ShopTiers '{tier.Id}': Commission in [0, 1), MaxLots > 0, DurationHours > 0, RentCost ≥ 0");
+                }
+            }
+            if (tiers.Count == 0)
+            {
+                errors.Add("config.ShopTiers: at least one shop level");
+            }
+            bool hasSpots = Array.Exists(db.World?.Stations ?? new StationDto[0], s => s.Type == StationTypes.ShopSpot);
+            if (hasSpots && (db.World.MerchantVisual == null || string.IsNullOrEmpty(db.World.MerchantVisual.Id)))
+            {
+                errors.Add("world: MerchantVisual is required when there are shop spots");
+            }
+            if (cfg.ShopNameMax <= 0 || cfg.MarketPriceMax <= 0 || cfg.MarketPageSize <= 0 || cfg.MarketSearchMinIntervalSeconds < 0f
+                || cfg.MarketRequestMemory <= 0 || cfg.MailExpireDays <= 0f || cfg.MailboxMax <= 0 || cfg.MailMaxAttachments <= 0
+                || cfg.MailFeePerAttachment < 0 || cfg.MailSubjectMax <= 0 || cfg.MailBodyMax <= 0 || cfg.UpgradeOrderHours <= 0f || cfg.UpgradeOrdersMax <= 0)
+            {
+                errors.Add("config: market, mail and upgrade order limits must be positive");
+            }
+        }
+
         private static void ValidateItemsModule11(ContentDatabase db, List<string> errors)
         {
             GameConfig cfg = db.Config;

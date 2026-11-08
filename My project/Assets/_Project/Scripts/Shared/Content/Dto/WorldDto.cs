@@ -10,5 +10,7 @@ namespace Game.Shared.Content.Dto
         public float PlayerSpawnZ;
         public SpawnDto[] Spawns;
         public StationDto[] Stations;
+        /// <summary>How a player's merchant looks (spawned on a shop spot while the shop is open).</summary>
+        public StationDto MerchantVisual;
     }
 }

@@ -43,6 +43,18 @@ namespace Game.Shared.Protocol
         /// <summary>Chat system lines with {1} = character name.</summary>
         public const string FriendRequestReceived = "notify.friend_request";
         public const string FriendAccepted = "notify.friend_accepted";
+        /// <summary>Module 20: {0} = number, {1} = item name.</summary>
+        public const string MailNew = "notify.mail_new";
+        public const string MailSent = "notify.mail_sent";
+        public const string MailClaimed = "notify.mail_claimed";
+        public const string ShopOpened = "notify.shop_opened";
+        public const string ShopClosed = "notify.shop_closed";
+        public const string ShopSold = "notify.shop_sold";
+        public const string PurchaseDone = "notify.purchase_done";
+        public const string PurchaseByMail = "notify.purchase_by_mail";
+        public const string OrderCreated = "notify.order_created";
+        public const string OrderFulfilled = "notify.order_fulfilled";
+        public const string OrderCancelled = "notify.order_cancelled";
         public const string LootVoteStarted = "notify.loot_vote_started";
         public const string LootVotePassed = "notify.loot_vote_passed";
         public const string LootVoteFailed = "notify.loot_vote_failed";

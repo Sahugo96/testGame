@@ -37,7 +37,7 @@ namespace Game.Tests
         private static CharacterPersistence Persistence(ServerHarness h, FileStorage storage)
         {
             h.Server.Context.Items.UniqueRegistry = storage;
-            return new CharacterPersistence(h.Server, storage, storage);
+            return new CharacterPersistence(h.Server, storage, storage, storage);
         }
 
         [Test]

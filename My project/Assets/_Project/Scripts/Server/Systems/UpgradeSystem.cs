@@ -44,67 +44,89 @@ namespace Game.Server.Systems
                 CombatEvents.Reject(player, RejectReasons.ItemNotFound);
                 return;
             }
-            ItemDefinition definition = _ctx.Content.Items[item.DefinitionId];
-            UpgradeableComponent upgradeable = definition.Get<UpgradeableComponent>();
-            if (upgradeable == null || definition.Rarity == Rarity.Divine
-                || !_ctx.Content.UpgradeRules.TryGetValue(upgradeable.RulesId, out UpgradeRuleDto rule))
+            UpgradeOutcome outcome = Attempt(player, item);
+            if (outcome == UpgradeOutcome.Broken)
             {
-                CombatEvents.Reject(player, RejectReasons.CannotUpgrade);
-                return;
+                _inventory.DestroyOwned(player, item, equippedSlot);
             }
-            if (item.UpgradeLevel >= rule.MaxLevel)
-            {
-                CombatEvents.Reject(player, RejectReasons.MaxUpgradeLevel);
-                return;
-            }
-            UpgradeStepDto step = rule.Steps[item.UpgradeLevel];
-            string gold = _ctx.Content.Config.GoldCurrencyId;
-            if (_wallet.Balance(player, gold) < step.GoldCost)
-            {
-                CombatEvents.Reject(player, RejectReasons.NotEnoughGold);
-                return;
-            }
-            if (_inventory.CountItems(player, rule.MaterialItemId) < rule.MaterialCount)
-            {
-                CombatEvents.Reject(player, RejectReasons.NoMaterials);
-                return;
-            }
-            // Gold and materials are both checked first, then both spent: the attempt is paid in full or not at all.
-            if (step.GoldCost > 0)
-            {
-                _wallet.Transact(new[] { new WalletEntry { Player = player, CurrencyId = gold, Amount = step.GoldCost } }, null,
-                    $"upgrade:{item.SourceId}:{item.UpgradeLevel}:{_ctx.Time}", "upgrade");
-            }
-            _inventory.ConsumeItems(player, rule.MaterialItemId, rule.MaterialCount);
-            bool success = _ctx.Random.NextFloat() < step.SuccessChance;
-            if (success)
-            {
-                item.UpgradeLevel++;
-                Audit(AuditActions.UpgradeSuccess, player, item);
-                Notify(player, NotificationKeys.UpgradeSuccess, item.UpgradeLevel, definition, true);
-            }
-            else
-            {
-                item.UpgradeLevel = System.Math.Max(0, item.UpgradeLevel - step.LevelLossOnFail);
-                Audit(AuditActions.UpgradeFail, player, item);
-                if (step.BreakChance > 0f && _ctx.Random.NextFloat() < step.BreakChance)
-                {
-                    _inventory.DestroyOwned(player, item, equippedSlot);
-                    Notify(player, NotificationKeys.UpgradeBroken, 0, definition, false);
-                    return;
-                }
-                Notify(player, NotificationKeys.UpgradeFailed, item.UpgradeLevel, definition, false);
-            }
-            if (equippedSlot != null)
+            else if (outcome != UpgradeOutcome.Refused && equippedSlot != null)
             {
                 _stats.Recalculate(player);
             }
         }
 
-        private bool IsNearWhetstone(PlayerCharacter player, EntityId stationId)
+        /// <summary>Whether the item can be upgraded at all (a rule exists, not divine, not at the maximum).</summary>
+        public bool CanUpgrade(ItemInstance item) => RuleFor(item, out UpgradeRuleDto rule) && item.UpgradeLevel < rule.MaxLevel;
+
+        /// <summary>
+        /// One attempt by <paramref name="smith"/> on any item (own, or held in escrow by an upgrade order): the smith pays the
+        /// gold and materials of the step, the roll is made here. On Broken the caller removes the item. Refused = nothing spent.
+        /// </summary>
+        public UpgradeOutcome Attempt(PlayerCharacter smith, ItemInstance item)
+        {
+            if (!RuleFor(item, out UpgradeRuleDto rule))
+            {
+                CombatEvents.Reject(smith, RejectReasons.CannotUpgrade);
+                return UpgradeOutcome.Refused;
+            }
+            if (item.UpgradeLevel >= rule.MaxLevel)
+            {
+                CombatEvents.Reject(smith, RejectReasons.MaxUpgradeLevel);
+                return UpgradeOutcome.Refused;
+            }
+            ItemDefinition definition = _ctx.Content.Items[item.DefinitionId];
+            UpgradeStepDto step = rule.Steps[item.UpgradeLevel];
+            string gold = _ctx.Content.Config.GoldCurrencyId;
+            if (_wallet.Balance(smith, gold) < step.GoldCost)
+            {
+                CombatEvents.Reject(smith, RejectReasons.NotEnoughGold);
+                return UpgradeOutcome.Refused;
+            }
+            if (_inventory.CountItems(smith, rule.MaterialItemId) < rule.MaterialCount)
+            {
+                CombatEvents.Reject(smith, RejectReasons.NoMaterials);
+                return UpgradeOutcome.Refused;
+            }
+            // Gold and materials are both checked first, then both spent: the attempt is paid in full or not at all.
+            if (step.GoldCost > 0)
+            {
+                _wallet.Transact(new[] { new WalletEntry { Player = smith, CurrencyId = gold, Amount = step.GoldCost } }, null,
+                    $"upgrade:{item.SourceId}:{item.UpgradeLevel}:{_ctx.Time}", "upgrade");
+            }
+            _inventory.ConsumeItems(smith, rule.MaterialItemId, rule.MaterialCount);
+            if (_ctx.Random.NextFloat() < step.SuccessChance)
+            {
+                item.UpgradeLevel++;
+                Audit(AuditActions.UpgradeSuccess, smith, item);
+                Notify(smith, NotificationKeys.UpgradeSuccess, item.UpgradeLevel, definition, true);
+                return UpgradeOutcome.Success;
+            }
+            item.UpgradeLevel = System.Math.Max(0, item.UpgradeLevel - step.LevelLossOnFail);
+            Audit(AuditActions.UpgradeFail, smith, item);
+            if (step.BreakChance > 0f && _ctx.Random.NextFloat() < step.BreakChance)
+            {
+                Notify(smith, NotificationKeys.UpgradeBroken, 0, definition, false);
+                return UpgradeOutcome.Broken;
+            }
+            Notify(smith, NotificationKeys.UpgradeFailed, item.UpgradeLevel, definition, false);
+            return UpgradeOutcome.Failed;
+        }
+
+        private bool RuleFor(ItemInstance item, out UpgradeRuleDto rule)
+        {
+            rule = null;
+            ItemDefinition definition = _ctx.Content.Items[item.DefinitionId];
+            UpgradeableComponent upgradeable = definition.Get<UpgradeableComponent>();
+            return upgradeable != null && definition.Rarity != Rarity.Divine && _ctx.Content.UpgradeRules.TryGetValue(upgradeable.RulesId, out rule);
+        }
+
+        public bool IsNearWhetstone(PlayerCharacter player, EntityId stationId) => IsNear(player, stationId, StationTypes.Whetstone);
+
+        /// <summary>The station exists, is of this type and the player stands within InteractRange.</summary>
+        public bool IsNear(PlayerCharacter player, EntityId stationId, string type)
         {
             ServerWorld world = _ctx.World;
-            if (!world.Stations.Has(stationId) || world.Stations.Get(stationId).Type != StationTypes.Whetstone)
+            if (!world.Stations.Has(stationId) || world.Stations.Get(stationId).Type != type)
             {
                 return false;
             }

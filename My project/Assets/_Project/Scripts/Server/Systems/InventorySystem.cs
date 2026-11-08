@@ -581,6 +581,60 @@ namespace Game.Server.Systems
                 Reason = other.SourceId,
             });
 
+        /// <summary>A bag item by instance id (not equipment), or null.</summary>
+        public ItemInstance FindInBag(PlayerCharacter player, string instanceId)
+        {
+            for (int i = 0; i < player.Bag.Size; i++)
+            {
+                ItemInstance item = player.Bag.Get(i);
+                if (item != null && item.SourceId == instanceId)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>Takes an instance out of the bag (it keeps its GUID, ownership moves elsewhere: lot, mail, escrow).</summary>
+        public void RemoveFromBag(PlayerCharacter player, ItemInstance item) => player.Bag.Set(player.Bag.IndexOf(item), null);
+
+        /// <summary>Not bound and not divine: may change hands (shops, mail, trade).</summary>
+        public bool IsTradable(ItemInstance item) =>
+            item != null && item.BoundTo == null && _ctx.Content.Items[item.DefinitionId].Rarity != Rarity.Divine;
+
+        /// <summary>Whether every instance fits into a free cell of its section (instances are never merged, they keep their GUIDs).</summary>
+        public bool CanPlaceAll(PlayerCharacter player, IList<ItemInstance> items)
+        {
+            var need = new Dictionary<BagSection, int>();
+            foreach (ItemInstance item in items)
+            {
+                BagSection section = SectionOf(_ctx.Content.Items[item.DefinitionId]);
+                need.TryGetValue(section, out int count);
+                need[section] = count + 1;
+            }
+            foreach (KeyValuePair<BagSection, int> pair in need)
+            {
+                if (player.Bag.FreeSlotCount(pair.Key.Start, pair.Key.Size) < pair.Value)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>Puts an existing instance into a free cell of its section; false if there is none.</summary>
+        public bool Place(PlayerCharacter player, ItemInstance item)
+        {
+            BagSection section = SectionOf(_ctx.Content.Items[item.DefinitionId]);
+            int index = player.Bag.FindFreeSlot(section.Start, section.Size);
+            if (index < 0)
+            {
+                return false;
+            }
+            player.Bag.Set(index, item);
+            return true;
+        }
+
         public BagSection SectionOf(ItemDefinition definition) =>
             _ctx.Content.BagSections[_ctx.Content.SectionIndexFor(definition.Category)];
 

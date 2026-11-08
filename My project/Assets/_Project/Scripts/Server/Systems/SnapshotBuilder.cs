@@ -56,6 +56,18 @@ namespace Game.Server.Systems
             return new WorldSnapshot { Tick = tick, ServerTime = _ctx.Time, Entities = entities.ToArray() };
         }
 
+        /// <summary>An item with its details for market, mail and order windows.</summary>
+        public static ItemSlotSnapshot Slot(ItemInstance item, int index) => new ItemSlotSnapshot
+        {
+            Index = index,
+            InstanceId = item.SourceId,
+            DefinitionId = item.DefinitionId,
+            Count = item.Count,
+            UpgradeLevel = item.UpgradeLevel,
+            Sockets = SocketsOf(item),
+            Affixes = AffixesOf(item),
+        };
+
         private static SocketSnapshot[] SocketsOf(ItemInstance item)
         {
             if (item == null || item.Sockets.Count == 0)

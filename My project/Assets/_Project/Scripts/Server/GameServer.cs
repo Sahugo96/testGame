@@ -36,6 +36,14 @@ namespace Game.Server
         private readonly ChatSystem _chat;
         private readonly FriendSystem _friends;
         private readonly TradeSystem _trade;
+        private readonly MarketState _market = new MarketState();
+        private readonly StationSystem _stations;
+        private readonly MailSystem _mail;
+        private readonly ShopSystem _shops;
+        private readonly UpgradeOrderSystem _orders;
+        private float _marketCheckTimer;
+        /// <summary>Shop, mail and order expiry is checked this often (real-time deadlines of hours and days).</summary>
+        private const float MarketCheckSeconds = 1f;
         private readonly DuelSystem _duels;
         private readonly GroupSystem _groups;
         private readonly LootSystem _loot;
@@ -87,6 +95,10 @@ namespace Game.Server
             _chat = new ChatSystem(_ctx, _groups);
             _friends = new FriendSystem(_ctx, _chat);
             _trade = new TradeSystem(_ctx, _inventory, _wallet, _resources);
+            _stations = new StationSystem(_ctx);
+            _mail = new MailSystem(_ctx, _market, _wallet, _inventory, _stations, _chat, _friends);
+            _shops = new ShopSystem(_ctx, _market, _wallet, _inventory, _stations, _mail);
+            _orders = new UpgradeOrderSystem(_ctx, _market, _wallet, _inventory, _upgrades, _mail, _friends);
             _groups.SystemMessage += (groupId, key) => _chat.SystemToGroup(groupId, key, null);
             _friends.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
             _chat.TabsChanged += player => AccountSettingsChanged?.Invoke(player.EntityId);
@@ -115,6 +127,18 @@ namespace Game.Server
 
         /// <summary>An account setting of the player changed (auto-pickup): persistence saves the account.</summary>
         public event Action<EntityId> AccountSettingsChanged;
+
+        /// <summary>
+        /// Shops, mail or orders changed this tick (module 20): persistence saves the touched characters first, then the
+        /// market — a crash in between can lose an operation but never duplicate an item (until a transactional database).
+        /// </summary>
+        public event Action<IReadOnlyList<EntityId>> MarketCommitted;
+
+        /// <summary>Market data for persistence (load once at start, export on MarketCommitted).</summary>
+        public MarketState Market => _market;
+
+        /// <summary>After persistence loaded the market: merchants of open shops appear on their spots.</summary>
+        public void MarketLoaded() => _shops.SpawnMerchants();
 
         /// <summary>Raised after every tick when snapshots are ready (transports send them).</summary>
         public event Action Ticked;
@@ -296,35 +320,7 @@ namespace Game.Server
             return player;
         }
 
-        private ItemInstance RestoreItem(Persistence.ItemRecord record)
-        {
-            if (!_ctx.Content.Items.ContainsKey(record.DefinitionId ?? string.Empty) || !Guid.TryParse(record.InstanceId, out Guid instanceId))
-            {
-                Log.Warning(LogTags.Items, $"Saved item '{record.DefinitionId}' ({record.InstanceId}) is not in the content: skipped");
-                return null;
-            }
-            var item = new ItemInstance
-            {
-                InstanceId = instanceId,
-                DefinitionId = record.DefinitionId,
-                Count = Math.Max(1, record.Count),
-                UpgradeLevel = record.UpgradeLevel,
-                BoundTo = record.BoundTo,
-                CreatedAt = _ctx.Time,
-            };
-            foreach (Persistence.SocketRecord socket in record.Sockets ?? new Persistence.SocketRecord[0])
-            {
-                item.Sockets.Add(new ItemSocket { Type = socket.Type, IsOvercap = socket.IsOvercap, IngredientId = string.IsNullOrEmpty(socket.IngredientId) ? null : socket.IngredientId });
-            }
-            foreach (Persistence.AffixRecord affix in record.Affixes ?? new Persistence.AffixRecord[0])
-            {
-                if (Enum.TryParse(affix.Stat, out StatId stat) && Enum.TryParse(affix.Op, out ModifierOp op))
-                {
-                    item.Affixes.Add(new StatModifier(stat, op, affix.Value, null));
-                }
-            }
-            return item;
-        }
+        private ItemInstance RestoreItem(Persistence.ItemRecord record) => Persistence.ItemRecords.Restore(_ctx.Content, record, _ctx.Time);
 
         private static Persistence.CurrencyRecord[] ExportWallet(PlayerCharacter player)
         {
@@ -336,18 +332,7 @@ namespace Game.Server
             return result.ToArray();
         }
 
-        private static Persistence.ItemRecord ExportItem(ItemInstance item, int bagIndex, string slotId) => new Persistence.ItemRecord
-        {
-            BagIndex = bagIndex,
-            SlotId = slotId,
-            InstanceId = item.SourceId,
-            DefinitionId = item.DefinitionId,
-            Count = item.Count,
-            UpgradeLevel = item.UpgradeLevel,
-            BoundTo = item.BoundTo,
-            Sockets = item.Sockets.ConvertAll(s => new Persistence.SocketRecord { Type = s.Type, IsOvercap = s.IsOvercap, IngredientId = s.IngredientId }).ToArray(),
-            Affixes = item.Affixes.ConvertAll(a => new Persistence.AffixRecord { Stat = a.Stat.ToString(), Op = a.Op.ToString(), Value = a.Value }).ToArray(),
-        };
+        private static Persistence.ItemRecord ExportItem(ItemInstance item, int bagIndex, string slotId) => Persistence.ItemRecords.Export(item, bagIndex, slotId);
 
         /// <summary>Removes a player and its entity (disconnect or character switch).</summary>
         public void RemovePlayer(EntityId id)
@@ -362,6 +347,7 @@ namespace Game.Server
             _groups.OnPlayerRemoved(id);
             _trade.OnPlayerGone(id);
             _chat.OnPlayerRemoved(id);
+            _shops.OnPlayerRemoved(id);
             _ctx.Players.Remove(id);
             foreach (PlayerCharacter other in _ctx.Players.Values)
             {
@@ -410,6 +396,14 @@ namespace Game.Server
             _loot.Update();
             _trade.Update();
             _groups.Update();
+            _marketCheckTimer += dt;
+            if (_marketCheckTimer >= MarketCheckSeconds)
+            {
+                _marketCheckTimer = 0f;
+                _shops.Update();
+                _mail.Update();
+                _orders.Update();
+            }
 
             WorldSnapshot worldSnapshot = _snapshots.BuildWorld(_tick);
             for (int i = 0; i < worldSnapshot.Entities.Length; i++)
@@ -432,6 +426,21 @@ namespace Game.Server
                 player.Outbox.State.Friends = _friends.Snapshot(player);
                 player.Outbox.State.ChatTabs = _chat.Tabs(player);
                 player.Outbox.State.Trade = _trade.Snapshot(player.EntityId);
+                var market = new MarketStateSnapshot
+                {
+                    MyMerchantId = _shops.MerchantOf(player),
+                    MarketVersion = _market.MarketVersion,
+                    OrdersVersion = _market.OrdersVersion,
+                };
+                _mail.Fill(player, market);
+                player.Outbox.State.Market = market;
+            }
+            if (_market.Dirty)
+            {
+                var touched = new List<EntityId>(_market.Touched);
+                _market.Dirty = false;
+                _market.Touched.Clear();
+                MarketCommitted?.Invoke(touched);
             }
             _tickClock.Stop();
             Metrics.RecordTick(_tickClock.Elapsed.TotalMilliseconds, _ctx.Players.Count, worldSnapshot.Entities.Length, _interest.LastTickEntitiesSent);
@@ -486,6 +495,57 @@ namespace Game.Server
                     break;
                 case SetChatTabsCommand chatTabs:
                     _chat.SetTabs(player, chatTabs.Tabs);
+                    break;
+                case OpenShopCommand openShop:
+                    _shops.Open(player, openShop);
+                    break;
+                case CloseShopCommand _:
+                    _shops.Close(player);
+                    break;
+                case ListLotCommand listLot:
+                    _shops.List(player, listLot);
+                    break;
+                case UnlistLotCommand unlistLot:
+                    _shops.Unlist(player, unlistLot);
+                    break;
+                case SetLotPriceCommand setPrice:
+                    _shops.SetPrice(player, setPrice);
+                    break;
+                case BuyLotCommand buy:
+                    _shops.Buy(player, buy);
+                    break;
+                case ViewShopCommand viewShop:
+                    _shops.View(player, viewShop);
+                    break;
+                case MarketSearchCommand search:
+                    _shops.Search(player, search);
+                    break;
+                case ViewMailboxCommand _:
+                    _mail.View(player);
+                    break;
+                case SendMailCommand sendMail:
+                    _mail.Send(player, sendMail);
+                    break;
+                case ClaimMailCommand claim:
+                    _mail.Claim(player, claim);
+                    break;
+                case ReadMailCommand read:
+                    _mail.Read(player, read);
+                    break;
+                case DeleteMailCommand deleteMail:
+                    _mail.Delete(player, deleteMail);
+                    break;
+                case CreateUpgradeOrderCommand createOrder:
+                    _orders.Create(player, createOrder);
+                    break;
+                case CancelUpgradeOrderCommand cancelOrder:
+                    _orders.Cancel(player, cancelOrder);
+                    break;
+                case FulfillUpgradeOrderCommand fulfill:
+                    _orders.Fulfill(player, fulfill);
+                    break;
+                case ViewUpgradeOrdersCommand _:
+                    _orders.View(player);
                     break;
                 case FriendRemoveCommand friendRemove:
                     _friends.Remove(player, friendRemove.Name);

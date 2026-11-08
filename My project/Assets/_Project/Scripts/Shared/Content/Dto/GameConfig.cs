@@ -95,6 +95,24 @@ namespace Game.Shared.Content.Dto
         public int TradeMaxItems;
         /// <summary>How far (m) a trader may drift before the trade is cancelled as "moved" (float noise guard).</summary>
         public float TradeMoveTolerance;
+        /// <summary>Module 20 (05, 7.14.3): personal shop levels, market search, mail and upgrade orders with escrow.</summary>
+        public ShopTierDto[] ShopTiers;
+        public int ShopNameMax;
+        public long MarketPriceMax;
+        public int MarketPageSize;
+        public float MarketSearchMinIntervalSeconds;
+        /// <summary>A single sale or mail worth this much gold is logged for an administrator (anti-fraud).</summary>
+        public long MarketSuspiciousGold;
+        /// <summary>How many recent request ids are remembered to ignore repeated buy / send commands (idempotency).</summary>
+        public int MarketRequestMemory;
+        public float MailExpireDays;
+        public int MailboxMax;
+        public int MailMaxAttachments;
+        public long MailFeePerAttachment;
+        public int MailSubjectMax;
+        public int MailBodyMax;
+        public float UpgradeOrderHours;
+        public int UpgradeOrdersMax;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

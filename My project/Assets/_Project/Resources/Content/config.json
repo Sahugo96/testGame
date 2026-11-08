@@ -113,5 +113,24 @@
   "TradeRange": 10,
   "TradeRequestSeconds": 30,
   "TradeMaxItems": 12,
-  "TradeMoveTolerance": 0.05
+  "TradeMoveTolerance": 0.05,
+  "ShopTiers": [
+    { "Id": "small", "NameKey": "shop.tier.small", "Commission": 0.15, "MaxLots": 6, "DurationHours": 12, "RentCost": 20 },
+    { "Id": "medium", "NameKey": "shop.tier.medium", "Commission": 0.10, "MaxLots": 12, "DurationHours": 24, "RentCost": 100 },
+    { "Id": "large", "NameKey": "shop.tier.large", "Commission": 0.05, "MaxLots": 24, "DurationHours": 48, "RentCost": 400 }
+  ],
+  "ShopNameMax": 24,
+  "MarketPriceMax": 1000000000,
+  "MarketPageSize": 10,
+  "MarketSearchMinIntervalSeconds": 0.5,
+  "MarketSuspiciousGold": 100000,
+  "MarketRequestMemory": 2000,
+  "MailExpireDays": 30,
+  "MailboxMax": 100,
+  "MailMaxAttachments": 6,
+  "MailFeePerAttachment": 5,
+  "MailSubjectMax": 40,
+  "MailBodyMax": 300,
+  "UpgradeOrderHours": 72,
+  "UpgradeOrdersMax": 5
 }

@@ -75,5 +75,26 @@ namespace Game.Shared.Protocol
         public const string FriendRequestPending = "error.friend_request_pending";
         public const string FriendTargetFull = "error.friend_target_full";
         public const string ChatTabsInvalid = "error.chat_tabs_invalid";
+        public const string ShopSpotTaken = "error.shop_spot_taken";
+        public const string ShopAlreadyOpen = "error.shop_already_open";
+        public const string ShopNotFound = "error.shop_not_found";
+        public const string ShopBadName = "error.shop_bad_name";
+        public const string ShopLotsFull = "error.shop_lots_full";
+        public const string MarketBadPrice = "error.market_bad_price";
+        public const string MarketLotGone = "error.market_lot_gone";
+        public const string MarketPriceChanged = "error.market_price_changed";
+        public const string MarketOwnLot = "error.market_own_lot";
+        public const string MarketTooFast = "error.market_too_fast";
+        public const string ItemNotTradable = "error.item_not_tradable";
+        public const string MailNoRecipient = "error.mail_no_recipient";
+        public const string MailRecipientFull = "error.mail_recipient_full";
+        public const string MailTooManyItems = "error.mail_too_many_items";
+        public const string MailNotFound = "error.mail_not_found";
+        public const string MailHasAttachments = "error.mail_has_attachments";
+        public const string MailBadText = "error.mail_bad_text";
+        public const string WalletFull = "error.wallet_full";
+        public const string OrderNotFound = "error.order_not_found";
+        public const string OrderTooMany = "error.order_too_many";
+        public const string OrderNotForYou = "error.order_not_for_you";
     }
 }

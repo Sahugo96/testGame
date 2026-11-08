@@ -32,7 +32,7 @@ namespace Game.Server.Persistence
         private readonly Dictionary<string, (string login, DateTime expires)> _tokens = new Dictionary<string, (string, DateTime)>();
         private float _autosaveTimer;
 
-        public CharacterPersistence(GameServer server, IAccountStore accounts, ICharacterStore characters)
+        public CharacterPersistence(GameServer server, IAccountStore accounts, ICharacterStore characters, IMarketStore market = null)
         {
             _server = server;
             _accounts = accounts;
@@ -40,6 +40,20 @@ namespace Game.Server.Persistence
             _config = server.Context.Content.Config;
             _server.AccountSettingsChanged += SaveAccountSettings;
             _server.Friends.Store = this;
+            if (market != null)
+            {
+                MarketSerializer.Import(_server.Market, market.LoadMarket(), _server.Context.Content, _server.Context.Time);
+                _server.MarketLoaded();
+                // Characters first, then the market: a crash in between loses the operation instead of duplicating items.
+                _server.MarketCommitted += touched =>
+                {
+                    foreach (EntityId id in touched)
+                    {
+                        Save(id);
+                    }
+                    market.SaveMarket(MarketSerializer.Export(_server.Market));
+                };
+            }
         }
 
         public int Online => _online.Count;

@@ -22,5 +22,13 @@ namespace Game.Server.Items
         public const string TradeGive = "trade_give";
         public const string StackSplit = "stack_split";
         public const string StackMerge = "stack_merge";
+        public const string ShopList = "shop_list";
+        public const string ShopUnlist = "shop_unlist";
+        public const string ShopSale = "shop_sale";
+        public const string MailSend = "mail_send";
+        public const string MailClaim = "mail_claim";
+        public const string MailReturn = "mail_return";
+        public const string EscrowIn = "escrow_in";
+        public const string EscrowOut = "escrow_out";
     }
 }

@@ -488,7 +488,7 @@ namespace Game.Host
             }
             var server = new GameServer(_content, new SystemRandom(Environment.TickCount), new FileAuditLog(_storage.AuditPath));
             server.Context.Items.UniqueRegistry = _storage;
-            _persistence = new CharacterPersistence(server, _storage, _storage);
+            _persistence = new CharacterPersistence(server, _storage, _storage, _storage);
             return server;
         }
 

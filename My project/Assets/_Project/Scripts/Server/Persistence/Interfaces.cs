@@ -29,6 +29,13 @@ namespace Game.Server.Persistence
         string LoginOfName(string name);
     }
 
+    /// <summary>The market of module 20 as one record (file store now; tables in PostgreSQL later, question 76).</summary>
+    public interface IMarketStore
+    {
+        MarketRecord LoadMarket();
+        void SaveMarket(MarketRecord market);
+    }
+
     /// <summary>One instance per unique definition (04, 7.11): TryReserve is atomic across threads (and later across servers).</summary>
     public interface IUniqueItemRegistry
     {

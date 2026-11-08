@@ -12,5 +12,7 @@ namespace Game.Server.Players
         public readonly List<CommandRejectedMessage> Rejections = new List<CommandRejectedMessage>();
         public readonly List<NotificationMessage> Notifications = new List<NotificationMessage>();
         public readonly List<ChatMessage> Chat = new List<ChatMessage>();
+        /// <summary>Answers to window requests (module 20): ShopViewMessage, MarketPageMessage, MailboxMessage, UpgradeOrdersMessage.</summary>
+        public readonly List<object> Replies = new List<object>();
     }
 }

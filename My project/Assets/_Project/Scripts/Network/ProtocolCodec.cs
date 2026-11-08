@@ -182,6 +182,156 @@ namespace Game.Network
                     w.Write((byte)MessageType.SetChatTabs);
                     WriteChatTabs(w, m.Tabs);
                     break;
+                case OpenShopCommand m:
+                    w.Write((byte)MessageType.OpenShop);
+                    Id(w, m.SpotId);
+                    Str(w, m.TierId);
+                    Str(w, m.Name);
+                    break;
+                case CloseShopCommand _:
+                    w.Write((byte)MessageType.CloseShop);
+                    break;
+                case ListLotCommand m:
+                    w.Write((byte)MessageType.ListLot);
+                    Str(w, m.ItemInstanceId);
+                    w.Write(m.PricePerUnit);
+                    break;
+                case UnlistLotCommand m:
+                    w.Write((byte)MessageType.UnlistLot);
+                    w.Write(m.LotId);
+                    break;
+                case SetLotPriceCommand m:
+                    w.Write((byte)MessageType.SetLotPrice);
+                    w.Write(m.LotId);
+                    w.Write(m.PricePerUnit);
+                    break;
+                case BuyLotCommand m:
+                    w.Write((byte)MessageType.BuyLot);
+                    w.Write(m.LotId);
+                    w.Write(m.Count);
+                    w.Write(m.PriceVersion);
+                    Str(w, m.RequestId);
+                    break;
+                case ViewShopCommand m:
+                    w.Write((byte)MessageType.ViewShop);
+                    Id(w, m.MerchantId);
+                    break;
+                case MarketSearchCommand m:
+                    w.Write((byte)MessageType.MarketSearch);
+                    Strs(w, m.DefinitionIds);
+                    Str(w, m.Category);
+                    Str(w, m.ClassId);
+                    w.Write(m.MinLevel);
+                    w.Write(m.MaxLevel);
+                    w.Write(m.MinSockets);
+                    w.Write(m.MinUpgrade);
+                    w.Write(m.Rarity);
+                    w.Write(m.MaxPrice);
+                    w.Write((byte)m.Sort);
+                    w.Write(m.Page);
+                    break;
+                case ViewMailboxCommand _:
+                    w.Write((byte)MessageType.ViewMailbox);
+                    break;
+                case SendMailCommand m:
+                    w.Write((byte)MessageType.SendMail);
+                    Str(w, m.Recipient);
+                    Str(w, m.Subject);
+                    Str(w, m.Body);
+                    Strs(w, m.InstanceIds);
+                    w.Write(m.Gold);
+                    Str(w, m.RequestId);
+                    break;
+                case ClaimMailCommand m:
+                    w.Write((byte)MessageType.ClaimMail);
+                    w.Write(m.MailId);
+                    break;
+                case ReadMailCommand m:
+                    w.Write((byte)MessageType.ReadMail);
+                    w.Write(m.MailId);
+                    break;
+                case DeleteMailCommand m:
+                    w.Write((byte)MessageType.DeleteMail);
+                    w.Write(m.MailId);
+                    break;
+                case CreateUpgradeOrderCommand m:
+                    w.Write((byte)MessageType.CreateUpgradeOrder);
+                    Str(w, m.ItemInstanceId);
+                    w.Write(m.Payment);
+                    Str(w, m.SmithName);
+                    Id(w, m.StationId);
+                    break;
+                case CancelUpgradeOrderCommand m:
+                    w.Write((byte)MessageType.CancelUpgradeOrder);
+                    w.Write(m.OrderId);
+                    break;
+                case FulfillUpgradeOrderCommand m:
+                    w.Write((byte)MessageType.FulfillUpgradeOrder);
+                    w.Write(m.OrderId);
+                    Id(w, m.StationId);
+                    break;
+                case ViewUpgradeOrdersCommand _:
+                    w.Write((byte)MessageType.ViewUpgradeOrders);
+                    break;
+                case ShopViewMessage m:
+                    w.Write((byte)MessageType.ShopView);
+                    Id(w, m.MerchantId);
+                    Str(w, m.Name);
+                    Str(w, m.OwnerName);
+                    Str(w, m.TierId);
+                    w.Write(m.IsMine);
+                    w.Write(m.SecondsLeft);
+                    WriteLots(w, m.Lots);
+                    break;
+                case MarketPageMessage m:
+                    w.Write((byte)MessageType.MarketPage);
+                    w.Write(m.Total);
+                    w.Write(m.Page);
+                    w.Write(m.PageCount);
+                    WriteLots(w, m.Lots);
+                    break;
+                case MailboxMessage m:
+                    w.Write((byte)MessageType.Mailbox);
+                    MailSnapshot[] mail = m.Mail ?? new MailSnapshot[0];
+                    w.Write(mail.Length);
+                    foreach (MailSnapshot letter in mail)
+                    {
+                        w.Write(letter.Id);
+                        w.Write((byte)letter.Type);
+                        Str(w, letter.From);
+                        Str(w, letter.Subject);
+                        Str(w, letter.Body);
+                        Str(w, letter.SubjectKey);
+                        Str(w, letter.ItemDefinitionId);
+                        w.Write(letter.Number);
+                        Str(w, letter.Detail);
+                        ItemSlotSnapshot[] items = letter.Items ?? new ItemSlotSnapshot[0];
+                        w.Write(items.Length);
+                        foreach (ItemSlotSnapshot item in items)
+                        {
+                            WriteSlot(w, item);
+                        }
+                        w.Write(letter.Gold);
+                        w.Write(letter.SecondsLeft);
+                        w.Write(letter.Read);
+                        w.Write(letter.Claimed);
+                    }
+                    break;
+                case UpgradeOrdersMessage m:
+                    w.Write((byte)MessageType.UpgradeOrders);
+                    UpgradeOrderSnapshot[] orders = m.Orders ?? new UpgradeOrderSnapshot[0];
+                    w.Write(orders.Length);
+                    foreach (UpgradeOrderSnapshot order in orders)
+                    {
+                        w.Write(order.Id);
+                        Str(w, order.OwnerName);
+                        Str(w, order.SmithName);
+                        WriteSlot(w, order.Item);
+                        w.Write(order.Payment);
+                        w.Write(order.SecondsLeft);
+                        w.Write(order.IsMine);
+                    }
+                    break;
                 case GroupConvertToRaidCommand _:
                     w.Write((byte)MessageType.GroupConvertToRaid);
                     break;
@@ -344,6 +494,80 @@ namespace Game.Network
                     return new MoveBagItemCommand { FromIndex = r.ReadInt32(), ToIndex = r.ReadInt32(), Count = r.ReadInt32() };
                 case MessageType.SetChatTabs:
                     return new SetChatTabsCommand { Tabs = ReadChatTabs(r) };
+                case MessageType.OpenShop:
+                    return new OpenShopCommand { SpotId = Id(r), TierId = Str(r), Name = Str(r) };
+                case MessageType.CloseShop:
+                    return new CloseShopCommand();
+                case MessageType.ListLot:
+                    return new ListLotCommand { ItemInstanceId = Str(r), PricePerUnit = r.ReadInt64() };
+                case MessageType.UnlistLot:
+                    return new UnlistLotCommand { LotId = r.ReadInt64() };
+                case MessageType.SetLotPrice:
+                    return new SetLotPriceCommand { LotId = r.ReadInt64(), PricePerUnit = r.ReadInt64() };
+                case MessageType.BuyLot:
+                    return new BuyLotCommand { LotId = r.ReadInt64(), Count = r.ReadInt32(), PriceVersion = r.ReadInt32(), RequestId = Str(r) };
+                case MessageType.ViewShop:
+                    return new ViewShopCommand { MerchantId = Id(r) };
+                case MessageType.MarketSearch:
+                    return new MarketSearchCommand
+                    {
+                        DefinitionIds = Strs(r), Category = Str(r), ClassId = Str(r), MinLevel = r.ReadInt32(), MaxLevel = r.ReadInt32(),
+                        MinSockets = r.ReadInt32(), MinUpgrade = r.ReadInt32(), Rarity = r.ReadInt32(), MaxPrice = r.ReadInt64(),
+                        Sort = (MarketSort)r.ReadByte(), Page = r.ReadInt32(),
+                    };
+                case MessageType.ViewMailbox:
+                    return new ViewMailboxCommand();
+                case MessageType.SendMail:
+                    return new SendMailCommand { Recipient = Str(r), Subject = Str(r), Body = Str(r), InstanceIds = Strs(r), Gold = r.ReadInt64(), RequestId = Str(r) };
+                case MessageType.ClaimMail:
+                    return new ClaimMailCommand { MailId = r.ReadInt64() };
+                case MessageType.ReadMail:
+                    return new ReadMailCommand { MailId = r.ReadInt64() };
+                case MessageType.DeleteMail:
+                    return new DeleteMailCommand { MailId = r.ReadInt64() };
+                case MessageType.CreateUpgradeOrder:
+                    return new CreateUpgradeOrderCommand { ItemInstanceId = Str(r), Payment = r.ReadInt64(), SmithName = Str(r), StationId = Id(r) };
+                case MessageType.CancelUpgradeOrder:
+                    return new CancelUpgradeOrderCommand { OrderId = r.ReadInt32() };
+                case MessageType.FulfillUpgradeOrder:
+                    return new FulfillUpgradeOrderCommand { OrderId = r.ReadInt32(), StationId = Id(r) };
+                case MessageType.ViewUpgradeOrders:
+                    return new ViewUpgradeOrdersCommand();
+                case MessageType.ShopView:
+                    return new ShopViewMessage { MerchantId = Id(r), Name = Str(r), OwnerName = Str(r), TierId = Str(r), IsMine = r.ReadBoolean(), SecondsLeft = r.ReadInt64(), Lots = ReadLots(r) };
+                case MessageType.MarketPage:
+                    return new MarketPageMessage { Total = r.ReadInt32(), Page = r.ReadInt32(), PageCount = r.ReadInt32(), Lots = ReadLots(r) };
+                case MessageType.Mailbox:
+                    var mailbox = new MailboxMessage { Mail = new MailSnapshot[r.ReadInt32()] };
+                    for (int i = 0; i < mailbox.Mail.Length; i++)
+                    {
+                        var letter = new MailSnapshot
+                        {
+                            Id = r.ReadInt64(), Type = (MailType)r.ReadByte(), From = Str(r), Subject = Str(r), Body = Str(r), SubjectKey = Str(r),
+                            ItemDefinitionId = Str(r), Number = r.ReadInt32(), Detail = Str(r),
+                        };
+                        letter.Items = new ItemSlotSnapshot[r.ReadInt32()];
+                        for (int k = 0; k < letter.Items.Length; k++)
+                        {
+                            letter.Items[k] = ReadSlot(r);
+                        }
+                        letter.Gold = r.ReadInt64();
+                        letter.SecondsLeft = r.ReadInt64();
+                        letter.Read = r.ReadBoolean();
+                        letter.Claimed = r.ReadBoolean();
+                        mailbox.Mail[i] = letter;
+                    }
+                    return mailbox;
+                case MessageType.UpgradeOrders:
+                    var ordersMessage = new UpgradeOrdersMessage { Orders = new UpgradeOrderSnapshot[r.ReadInt32()] };
+                    for (int i = 0; i < ordersMessage.Orders.Length; i++)
+                    {
+                        ordersMessage.Orders[i] = new UpgradeOrderSnapshot
+                        {
+                            Id = r.ReadInt32(), OwnerName = Str(r), SmithName = Str(r), Item = ReadSlot(r), Payment = r.ReadInt64(), SecondsLeft = r.ReadInt64(), IsMine = r.ReadBoolean(),
+                        };
+                    }
+                    return ordersMessage;
                 case MessageType.GroupConvertToRaid:
                     return new GroupConvertToRaidCommand();
                 case MessageType.GroupMove:
@@ -592,6 +816,12 @@ namespace Game.Network
                 w.Write((byte)f.State);
             }
             WriteChatTabs(w, m.ChatTabs);
+            MarketStateSnapshot market = m.Market ?? new MarketStateSnapshot();
+            Id(w, market.MyMerchantId);
+            w.Write(market.UnreadMail);
+            w.Write(market.MailVersion);
+            w.Write(market.MarketVersion);
+            w.Write(market.OrdersVersion);
             WriteTrade(w, m.Trade ?? new TradeSnapshot());
         }
 
@@ -671,6 +901,70 @@ namespace Game.Network
                 throw new InvalidDataException("bad array length");
             }
             return count;
+        }
+
+        /// <summary>An item with its details (sockets, affixes) for market, mail and order windows.</summary>
+        private static void WriteSlot(BinaryWriter w, ItemSlotSnapshot item)
+        {
+            w.Write(item.Index);
+            Str(w, item.InstanceId);
+            Str(w, item.DefinitionId);
+            w.Write(item.Count);
+            w.Write(item.UpgradeLevel);
+            WriteItemDetails(w, item.Sockets, item.Affixes);
+        }
+
+        private static ItemSlotSnapshot ReadSlot(BinaryReader r)
+        {
+            var item = new ItemSlotSnapshot { Index = r.ReadInt32(), InstanceId = Str(r), DefinitionId = Str(r), Count = r.ReadInt32(), UpgradeLevel = r.ReadInt32() };
+            ReadItemDetails(r, out item.Sockets, out item.Affixes);
+            return item;
+        }
+
+        private static void WriteLots(BinaryWriter w, LotSnapshot[] lots)
+        {
+            lots = lots ?? new LotSnapshot[0];
+            w.Write(lots.Length);
+            foreach (LotSnapshot lot in lots)
+            {
+                w.Write(lot.LotId);
+                Str(w, lot.ShopName);
+                Id(w, lot.MerchantId);
+                WriteSlot(w, lot.Item);
+                w.Write(lot.PricePerUnit);
+                w.Write(lot.PriceVersion);
+            }
+        }
+
+        private static LotSnapshot[] ReadLots(BinaryReader r)
+        {
+            var lots = new LotSnapshot[r.ReadInt32()];
+            for (int i = 0; i < lots.Length; i++)
+            {
+                lots[i] = new LotSnapshot { LotId = r.ReadInt64(), ShopName = Str(r), MerchantId = Id(r), Item = ReadSlot(r), PricePerUnit = r.ReadInt64(), PriceVersion = r.ReadInt32() };
+            }
+            return lots;
+        }
+
+        /// <summary>String arrays a client sends (bounded by Count).</summary>
+        private static void Strs(BinaryWriter w, string[] values)
+        {
+            values = values ?? new string[0];
+            w.Write(values.Length);
+            foreach (string value in values)
+            {
+                Str(w, value);
+            }
+        }
+
+        private static string[] Strs(BinaryReader r)
+        {
+            var values = new string[Count(r)];
+            for (int i = 0; i < values.Length; i++)
+            {
+                values[i] = Str(r);
+            }
+            return values;
         }
 
         private static void WriteChatTabs(BinaryWriter w, ChatTabSnapshot[] tabs)
@@ -914,6 +1208,7 @@ namespace Game.Network
                 m.Friends[i] = new FriendSnapshot { Name = Str(r), Online = r.ReadBoolean(), State = (FriendState)r.ReadByte() };
             }
             m.ChatTabs = ReadChatTabs(r);
+            m.Market = new MarketStateSnapshot { MyMerchantId = Id(r), UnreadMail = r.ReadInt32(), MailVersion = r.ReadInt32(), MarketVersion = r.ReadInt32(), OrdersVersion = r.ReadInt32() };
             m.Trade = ReadTrade(r);
             return m;
         }

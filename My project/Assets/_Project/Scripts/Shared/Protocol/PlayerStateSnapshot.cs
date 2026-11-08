@@ -43,6 +43,7 @@ namespace Game.Shared.Protocol
         public GroupSnapshot Group = new GroupSnapshot();
         public FriendSnapshot[] Friends;
         public ChatTabSnapshot[] ChatTabs;
+        public MarketStateSnapshot Market = new MarketStateSnapshot();
         public TradeSnapshot Trade = new TradeSnapshot();
     }
 }
