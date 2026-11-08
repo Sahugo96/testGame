@@ -7,7 +7,7 @@
 
 ## 0. Когда что читать целиком
 
-Инструкция для разработчика по запуску проекта в Unity — `docs/HOW_TO_RUN.md`.
+Инструкция для разработчика по запуску проекта в Unity — `docs/HOW_TO_RUN.md`; короткая пошаговая «как сыграть вдвоём» — `docs/PLAY_WITH_FRIEND.md`.
 
 
 | Ситуация | Читать |
@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 34)
+### `docs/00_INDEX.md` — индекс набора (версия набора 35)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v25)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v26)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,13 +37,13 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11, 1.13 — модуль 14, 1.13а — решения по вопросу 79)** | :258 |
-| 10 | Проблемы и долги (записи v9, v11–v25 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, 14, лута) | :289 |
-| 11 | Журнал решений (последние — v25; замеры модуля 3 — v19) | :316 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :371 |
-| 13 | **Заморожено :381 / Гибко :392 / Отложено + крючки (с модулями) :397** | :377 |
-| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :412 |
-| — | Рекомендации 1,5–10,17–19 | :428 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11, 1.13 — модуль 14, 1.13а — решения по вопросу 79, 1.14 — модуль 20)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11–v26 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, 14, 20, лута) | :290 |
+| 11 | Журнал решений (последние — v26; замеры модуля 3 — v19) | :318 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :374 |
+| 13 | **Заморожено :384 / Гибко :395 / Отложено + крючки (с модулями) :400** | :380 |
+| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :415 |
+| — | Рекомендации 1,5–10,17–19 | :431 |
 
 ### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v6)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
@@ -59,18 +59,18 @@
 - **7.12 Боевые характеристики** :135 — оборона до 100% / многоуровневый крит / порядок урона :137, **первичные характеристики** :144, `StatModifier` :146, статус-эффекты :155, **срез модуля 8** :175, зелья :177
 - Вопросы 1–5, 9, 25, 26, 45, 46, 52–54, 59, 60, 63, 64, 67, 74 :186 · Рекомендации 2–4, 26, 27 :210
 
-### `docs/04_ITEMS_EQUIPMENT.md` — предметы и экипировка (v12)
+### `docs/04_ITEMS_EQUIPMENT.md` — предметы и экипировка (v13)
 - **7.9 Предметы** :11 — `ItemDefinition`/`ItemInstance` :13, **рюкзак-отсеки** :40, **компоненты-свойства (реализация)** :42, редкость (6 уровней, истинные легендарки и реплики) :56, слоты/ингредиенты (рукотворные ядра, извлечение)/overcap :69, **срез модуля 11** :77, божественные (привязка при получении) + «Искра Гефеста» :79
 - **7.9.1 Виды экипировки** :90 — слоты экипировки (кольца по классу) :94, типы брони :108, виды оружия :110, правила слотов (`SocketCap`) :119, модель данных :124
 - **7.11 Реестр легендарных** (только божественные) :141 (`LegendaryRegistryEntry` :147)
 - **7.14.1 Улучшение (`UpgradeLevel`; срез: 1 осколок, 100%→55%, до +10; неудача — минус уровень), «связь» божественных** :153 (`CmdUpgradeItem` :161)
 - Вопросы 14–19, 22–24, 30–32, 36–38, 47, 48, 55, 57, 61, 65, 66, 78 :167 · Рекомендации 15, 16, 20 :195
 
-### `docs/05_ECONOMY_PROFESSIONS.md` — профессии и экономика (v10)
+### `docs/05_ECONOMY_PROFESSIONS.md` — профессии и экономика (v11)
 - **7.4 Профессии** :11 — типы («ремесленник», объединение ядер) :13, модель данных :19, правила (сервер, шанс крафта, неудача уничтожает ингредиенты, кузнец) :27
 - **7.14.2 Кошелёк** :39 (`CurrencyDefinition` со `Scope: Guild`, «Варх» :42–46, `Transact(debits, credits, idempotencyKey)` и переполнение `Cap` :47–48, **срез модуля 11** :50)
 - **7.14.3 Торговля** :55 — личные магазины (торговец-NPC, срок аренды, 1 на игрока, комиссия 15/10/5%) :57, рынок :63, почта (`MailMessage`) :69, безопасность :81
-- Вопросы 8, 33–35, 49, 50, 58, 62, 73 :89 · Рекомендации 11, 21–25 :103
+- Вопросы 8, 33–35, 49, 50, 58, 62, 73, 85 :89 · Рекомендации 11, 21–25 :104
 
 ### `docs/06_GROUPS_DUNGEONS.md` — группы и подземелье (v11)
 - **7.8 Группы и лут** :11 — группа/лидер :13, режимы лута :20, голосование и кворум (`LootModeVote`, `CmdVoteLootMode`) :28, правила раздачи (`LootEntry` :46) :37
@@ -126,7 +126,7 @@
 | 17 | Настройки пользователя | 2, 7, 13 | 02 7.6 |
 | 18 | Панели, эмодзи, редактор HUD | 7, 11, 13, 14, 17 | 02 7.7, 7.13 |
 | 19 | Реестр легендарных | 11, 13, 16 | 04 7.11 |
-| 20 | Торговля: магазины, рынок, почта, заказы улучшения с эскроу | 11, 12, 13, 14 | 05 7.14.3; 04 7.14.1 |
+| 20 | Торговля: магазины, рынок, почта, заказы улучшения с эскроу | 11, 12, 13, 14 | 05 7.14.3, вопрос 85; 04 7.14.1 |
 | 21 | Полировка | все | — |
 
 Статус: модули 0–14 — **в работе** (вертикальный срез, этапы 1–1.13, ветка `claude/vertical-slice`, см. 01 §8–§9); остальные — не начат.
@@ -182,8 +182,9 @@
 | 68 | 06 | 69, 70 | 01 | 71, 72 | 06 |
 | 73 | 05 | 74 | 03 | 75, 76 | 01 |
 | 77 | 06 | 78 | 04 | 79 | 06 |
+| 80–84 | заданы в чате (модуль 4), в файлы ещё не внесены | 85 | 05 | | |
 
-Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **79** (новый вопрос = 80). Номера не менять.
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **85** (новый вопрос = 86; 80–84 — вопросы модуля 4, ждут ответа разработчика). Номера не менять.
 
 **Статус вопроса** виден в самой строке: `**РЕШЕНО (vN):** …` — решено разработчиком (ДЕФОЛТ снят); `**Отложено разработчиком:**` — вернуться позже, действует ДЕФОЛТ; без пометки — открыт, действует ДЕФОЛТ.
 Сводка: `grep -n 'РЕШЕНО\|Отложено разработчиком' docs/0*.md`.
@@ -233,6 +234,7 @@
 | **Кошелёк, слоты, ингредиенты, аффиксы** (модуль 11, вопрос 78) | данные `currencies.json`, `affixes.json`, `SocketCap` в `equipment_slots.json`, компоненты `Shared/Content/Items/SocketsComponent.cs`, `SocketIngredientComponent.cs`, `AffixesComponent.cs`; сервер `Server/Systems/WalletSystem.cs` (`Transact`), `SocketSystem.cs`, бросок слотов и аффиксов — `ItemFactory`, бонусы — `StatSystem`; протокол `Shared/Protocol/ItemDetailSnapshots.cs`, `InsertIngredientCommand`; клиент — `TooltipText`, валюты в `BackpackWindow`, вставка в `WhetstoneWindow`; тесты — `ItemsModule11Tests` |
 | **Чат, друзья, обмен, рейды** (модуль 14, вопрос 79) | сервер `Server/Systems/ChatSystem.cs`, `FriendSystem.cs`, `TradeSystem.cs` (+ `Server/World/TradeData.cs`; отмена при шаге — `TradeMoveTolerance`), друзья по согласию — `FriendSystem` + `Server/Players/FriendLists.cs`, `IFriendStore.cs` (`CharacterPersistence` / `OnlineFriendStore.cs`), вкладки чата — `ChatSystem.SetTabs`, `config.ChatDefaultTabs`, `Windows/ChatTabsWindow.cs`, рейд — `GroupSystem` (`ConvertToRaid`, `MoveToSubgroup`, `SetAssistant`, `Voters`, `CloseMates`); друзья, заявки и вкладки в аккаунте — `AccountRecord.Friends`, `FriendRequestsIn/Out`, `ChatTabs`; протокол `Shared/Protocol/ChatMessages.cs`, `SocialMessages.cs`, `TradeMessages.cs`, `GroupCommands.cs`; клиент — `Client/UI/Widgets/ChatWidget.cs` (Enter — `GameInput.ChatSubmit`), `UiFocus.cs` (клавиши игры не работают, пока поле ввода в фокусе), `Windows/FriendsWindow.cs`, `TradeWindow.cs`, `GroupWindow.cs` (рейд), `Widgets/PagerWidget.cs`, `GroupPromptWidget.cs` (запрос обмена), `TargetFrameWidget.cs` (кнопка «Обмен»); тесты `Tests/EditMode/SocialTests.cs` |
 | **Перетаскивание и деление стопок** (вопрос 79) | `Shared/Protocol/MoveBagItemCommand.cs` → `InventorySystem.MoveBagItem` (аудит `StackSplit`/`StackMerge`); клиент — `Client/UI/DragTrigger.cs`, `SlotView.BindDrag`, `BackpackWindow` (Shift — половина, Ctrl — один); клик после перетаскивания гасит `HoverTrigger`; тесты `Tests/EditMode/StackMoveTests.cs` |
+| **Лавки, рынок, почта, заказы улучшения** (модуль 20, вопрос 85) | данные `config.ShopTiers` и лимиты в `config.json`, станции `Market` / `Mailbox` / `ShopSpot` и `MerchantVisual` в `world.json`; сервер `Server/World/MarketState.cs` (+ `ShopData`, `LotData`, `MailData`, `UpgradeOrderData`), `Server/Systems/ShopSystem.cs`, `MailSystem.cs`, `UpgradeOrderSystem.cs` (через `UpgradeSystem.Attempt`), `StationSystem.cs`, `RequestMemory.cs`, `MarketText.cs`, время — `Server/IClock.cs`; сохранение `Server/Persistence/MarketRecords.cs`, `MarketSerializer.cs`, `ItemRecords.cs`, `IMarketStore` (`FileStorage` → `market.json`), событие `GameServer.MarketCommitted`; протокол `Shared/Protocol/MarketMessages.cs`, `MailMessages.cs`, `UpgradeOrderMessages.cs`, `MailSubjects.cs`, ответы — `PlayerOutbox.Replies` / `IServerConnection.ReplyReceived` / `ClientState.Last*`; клиент `Client/UI/Windows/MarketWindow.cs`, `ShopWindow.cs`, `MailWindow.cs`, `UpgradeOrdersWindow.cs`, `MarketUi.cs`; тесты `Tests/EditMode/MarketTests.cs`, `PersistenceTests.Market_*` |
 | **Аккаунты и сохранения** (модуль 13, вопрос 76) | `Server/Persistence/` (`Records.cs` — записи, `Interfaces.cs` — репозитории и `IJsonCodec`, `FileStorage.cs`, `CharacterPersistence.cs` — вход, токены, автосохранение, `PasswordHasher.cs`, `CharacterMigrations.cs`, `FileAuditLog.cs`); `GameServer.AddPlayer(CharacterRecord)` / `ExportPlayer`; реестр уникальных — `ItemFactory.UniqueRegistry`; Unity — `Host/UnityJsonCodec.cs`, `GameRoot.CreateServer`; меню — поля логина в `StartMenuView`; протокол — `HelloMessage` (Login, Password, Token), `WelcomeMessage.Token`, ошибки `LoginErrors`; тесты — `PersistenceTests`, кодек тестов — `TestJsonCodec` |
 | **Interest management, метрики, боты** (модуль 3) | `Server/World/SpatialGrid.cs`, `Server/Systems/InterestSystem.cs`, `Server/ServerMetrics.cs`; трафик — `ProtocolCodec.EncodeWorld` (неизменные поля один раз) + кэш в `Client/Net/RemoteServerConnection.cs`, `NetConnection.BytesSent/Received`; боты — `Scripts/Bots/` (`Game.Bots`: `BotClient`, `BotSwarm`), запуск `-bots N -connect` (`Host/LaunchOptions.cs`, `GameRoot.StartBots`); вне Unity — `tools/LoadTest/` (README); тесты — `InterestTests`, `BotTests` |
 | **ИИ мобов** (модуль 10, вопрос 75) | данные `mobs.json` (`AiProfile`), `ai_profiles.json` → `AiProfile` (`Shared/Content/AiProfile.cs`), способности — навыки `mob_*` в `skills.json`; сервер `Server/Systems/MobAiSystem.cs`, `Server/World/MobAiData.cs` (Idle / Chase / Return); тесты — `Tests/EditMode/MobAiTests.cs` |
