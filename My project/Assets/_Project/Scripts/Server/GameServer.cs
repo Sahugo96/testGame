@@ -41,6 +41,7 @@ namespace Game.Server
         private readonly MailSystem _mail;
         private readonly ShopSystem _shops;
         private readonly UpgradeOrderSystem _orders;
+        private readonly SettingsSystem _settings;
         private float _marketCheckTimer;
         /// <summary>Shop, mail and order expiry is checked this often (real-time deadlines of hours and days).</summary>
         private const float MarketCheckSeconds = 1f;
@@ -99,6 +100,8 @@ namespace Game.Server
             _mail = new MailSystem(_ctx, _market, _wallet, _inventory, _stations, _chat, _friends);
             _shops = new ShopSystem(_ctx, _market, _wallet, _inventory, _stations, _mail);
             _orders = new UpgradeOrderSystem(_ctx, _market, _wallet, _inventory, _upgrades, _mail, _friends);
+            _settings = new SettingsSystem(_ctx);
+            _settings.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
             _groups.SystemMessage += (groupId, key) => _chat.SystemToGroup(groupId, key, null);
             _friends.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
             _chat.TabsChanged += player => AccountSettingsChanged?.Invoke(player.EntityId);
@@ -434,6 +437,7 @@ namespace Game.Server
                 };
                 _mail.Fill(player, market);
                 player.Outbox.State.Market = market;
+                _settings.Flush(player);
             }
             if (_market.Dirty)
             {
@@ -547,6 +551,9 @@ namespace Game.Server
                 case ViewUpgradeOrdersCommand _:
                     _orders.View(player);
                     break;
+                case SetAccountSettingsCommand settings:
+                    _settings.Set(player, settings);
+                    break;
                 case FriendRemoveCommand friendRemove:
                     _friends.Remove(player, friendRemove.Name);
                     break;
@@ -645,6 +652,58 @@ namespace Game.Server
                     recipients[i].Outbox.Notifications.Add(new NotificationMessage { TextKey = NotificationKeys.GoldGained, Number = (int)amount, IsPositive = true });
                 }
             }
+        }
+
+        /// <summary>Account settings from the record (persistence, on login); a broken or newer document falls back to the defaults.</summary>
+        public void LoadAccountSettings(EntityId id, Persistence.AccountSettingsRecord record)
+        {
+            PlayerCharacter player = GetPlayer(id);
+            if (player == null)
+            {
+                return;
+            }
+            if (record == null)
+            {
+                _settings.Load(player, null);
+                return;
+            }
+            var bindings = new List<KeyBindingSnapshot>();
+            foreach (Persistence.KeyBindingRecord binding in record.Bindings ?? new Persistence.KeyBindingRecord[0])
+            {
+                bindings.Add(new KeyBindingSnapshot { BindingId = binding?.BindingId, Path = binding?.Path });
+            }
+            var saved = new AccountSettingsSnapshot
+            {
+                SchemaVersion = record.SchemaVersion, Bindings = bindings.ToArray(), CameraSensitivity = record.CameraSensitivity, InvertY = record.InvertY,
+                ZoomSpeed = record.ZoomSpeed, UiScale = record.UiScale, PanelOpacity = record.PanelOpacity, DamageNumbers = record.DamageNumbers,
+                Nameplates = record.Nameplates, NameplateHealth = record.NameplateHealth,
+            };
+            if (_settings.Clean(saved) == null)
+            {
+                Log.Warning(LogTags.Server, $"Account settings of {player.CharacterId} (schema {record.SchemaVersion}) not accepted: defaults used");
+                saved = null;
+            }
+            _settings.Load(player, saved);
+        }
+
+        /// <summary>Account settings for the record; null while the player keeps the defaults.</summary>
+        public Persistence.AccountSettingsRecord ExportAccountSettings(EntityId id)
+        {
+            AccountSettingsSnapshot s = GetPlayer(id)?.AccountSettings;
+            if (s == null)
+            {
+                return null;
+            }
+            var bindings = new Persistence.KeyBindingRecord[s.Bindings.Length];
+            for (int i = 0; i < bindings.Length; i++)
+            {
+                bindings[i] = new Persistence.KeyBindingRecord { BindingId = s.Bindings[i].BindingId, Path = s.Bindings[i].Path };
+            }
+            return new Persistence.AccountSettingsRecord
+            {
+                SchemaVersion = s.SchemaVersion, Bindings = bindings, CameraSensitivity = s.CameraSensitivity, InvertY = s.InvertY, ZoomSpeed = s.ZoomSpeed,
+                UiScale = s.UiScale, PanelOpacity = s.PanelOpacity, DamageNumbers = s.DamageNumbers, Nameplates = s.Nameplates, NameplateHealth = s.NameplateHealth,
+            };
         }
 
         /// <summary>Chat tabs from the account record (persistence, on login); broken or missing = the defaults.</summary>

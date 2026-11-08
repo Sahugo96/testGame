@@ -119,6 +119,7 @@ namespace Game.Server.Persistence
             _server.GetPlayer(id).AutoLoot = account == null || !account.ManualLoot;
             ReadFriends(account, _server.GetPlayer(id).Friends);
             _server.LoadChatTabs(id, account?.ChatTabs);
+            _server.LoadAccountSettings(id, account?.Settings);
             newToken = trusted ? null : IssueToken(login);
             return id;
         }
@@ -158,6 +159,7 @@ namespace Game.Server.Persistence
             account.ManualLoot = !_server.GetPlayer(id).AutoLoot;
             WriteFriends(account, _server.GetPlayer(id).Friends);
             account.ChatTabs = _server.ExportChatTabs(id);
+            account.Settings = _server.ExportAccountSettings(id);
             _accounts.SaveAccount(account);
         }
 

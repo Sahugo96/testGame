@@ -41,6 +41,32 @@ namespace Game.Tests
         }
 
         [Test]
+        public void AccountSettings_FollowTheAccount_ToAnotherServerProcess()
+        {
+            var h = new ServerHarness();
+            CharacterPersistence persistence = Persistence(h, Storage());
+            EntityId id = persistence.Enter("ann", "secret1", null, "Аня", "mage", false, out string error, out _);
+            Assert.That(error, Is.Null);
+            var settings = new AccountSettingsSnapshot
+            {
+                SchemaVersion = h.Content.Config.AccountSettings.SchemaVersion,
+                Bindings = new[] { new KeyBindingSnapshot { BindingId = "CycleTarget/0", Path = "<Keyboard>/f1" } },
+                CameraSensitivity = 2f, ZoomSpeed = 1f, UiScale = 1.1f, PanelOpacity = 0.6f, InvertY = true, Nameplates = false,
+            };
+            h.Send(id, new SetAccountSettingsCommand { Settings = settings });
+            persistence.Leave(id);
+
+            // "Another PC": a new server process over the same saves; another character of the same account.
+            var restarted = new ServerHarness();
+            CharacterPersistence again = Persistence(restarted, Storage());
+            EntityId back = again.Enter("ann", "secret1", null, "АняВоин", "warrior", false, out error, out _);
+            restarted.Run(restarted.Server.TickInterval);
+            AccountSettingsSnapshot sent = restarted.Player(back).Outbox.Replies.OfType<AccountSettingsMessage>().Last().Settings;
+            Assert.That((sent.CameraSensitivity, sent.UiScale, sent.PanelOpacity, sent.InvertY, sent.Nameplates), Is.EqualTo((2f, 1.1f, 0.6f, true, false)));
+            Assert.That(sent.Bindings.Single().Path, Is.EqualTo("<Keyboard>/f1"));
+        }
+
+        [Test]
         public void Market_ShopAndSaleMail_SurviveServerRestart()
         {
             var h = new ServerHarness();

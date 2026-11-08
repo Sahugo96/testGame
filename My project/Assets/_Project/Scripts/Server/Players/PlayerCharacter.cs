@@ -35,6 +35,10 @@ namespace Game.Server.Players
         public readonly FriendLists Friends = new FriendLists();
         /// <summary>Chat tabs of the account (decision of the developer); null = the defaults from config.</summary>
         public ChatTabSnapshot[] ChatTabs;
+        /// <summary>Controls, interface and game settings of the account (module 17); null = the defaults from config.</summary>
+        public AccountSettingsSnapshot AccountSettings;
+        /// <summary>The settings document is to be sent to the client (after login or a change).</summary>
+        public bool SettingsToSend = true;
         public MoveCommand LastMove;
         public readonly PlayerOutbox Outbox = new PlayerOutbox();
         public readonly Queue<IGameCommand> PendingCommands = new Queue<IGameCommand>();

@@ -23,6 +23,31 @@ namespace Game.Server.Persistence
         public string[] FriendRequestsOut;
         /// <summary>Chat tabs (decision of the developer); none saved = the defaults from config.</summary>
         public ChatTabRecord[] ChatTabs;
+        /// <summary>Controls, interface and game settings (module 17); missing = the defaults.</summary>
+        public AccountSettingsRecord Settings;
+    }
+
+    /// <summary>The saved account settings document (02, 7.6): SchemaVersion drives future migrations.</summary>
+    [Serializable]
+    public class AccountSettingsRecord
+    {
+        public int SchemaVersion;
+        public KeyBindingRecord[] Bindings;
+        public float CameraSensitivity;
+        public bool InvertY;
+        public float ZoomSpeed;
+        public float UiScale;
+        public float PanelOpacity;
+        public bool DamageNumbers;
+        public bool Nameplates;
+        public bool NameplateHealth;
+    }
+
+    [Serializable]
+    public class KeyBindingRecord
+    {
+        public string BindingId;
+        public string Path;
     }
 
     /// <summary>A chat tab: its own name or the default's NameKey, and the channels it shows (ChatChannel names).</summary>

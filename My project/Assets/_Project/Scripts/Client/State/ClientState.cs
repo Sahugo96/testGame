@@ -46,6 +46,9 @@ namespace Game.Client.State
         public UpgradeOrdersMessage LastOrders;
         public event Action MarketData;
 
+        /// <summary>The account's settings as the server sent them (module 17): after login and after every change.</summary>
+        public event Action<AccountSettingsSnapshot> AccountSettings;
+
         public void Bind(IServerConnection connection)
         {
             _connection = connection;
@@ -135,6 +138,9 @@ namespace Game.Client.State
                 case UpgradeOrdersMessage orders:
                     LastOrders = orders;
                     break;
+                case AccountSettingsMessage settings:
+                    AccountSettings?.Invoke(settings.Settings);
+                    return;
             }
             MarketData?.Invoke();
         }

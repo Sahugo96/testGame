@@ -113,6 +113,13 @@ namespace Game.Shared.Content.Dto
         public int MailBodyMax;
         public float UpgradeOrderHours;
         public int UpgradeOrdersMax;
+        /// <summary>Module 17 (02, 7.6): account settings defaults and limits; graphics presets and choices (device-local).</summary>
+        public AccountSettingsDefaultsDto AccountSettings;
+        public GraphicsPresetDto[] GraphicsPresets;
+        /// <summary>FPS limit choices; 0 = no limit.</summary>
+        public int[] FpsLimits;
+        /// <summary>A new resolution or window mode is reverted unless confirmed within this time.</summary>
+        public float ResolutionConfirmSeconds;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

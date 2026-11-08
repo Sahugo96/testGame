@@ -273,6 +273,14 @@ namespace Game.Network
                 case ViewUpgradeOrdersCommand _:
                     w.Write((byte)MessageType.ViewUpgradeOrders);
                     break;
+                case SetAccountSettingsCommand m:
+                    w.Write((byte)MessageType.SetAccountSettings);
+                    WriteSettings(w, m.Settings ?? new AccountSettingsSnapshot());
+                    break;
+                case AccountSettingsMessage m:
+                    w.Write((byte)MessageType.AccountSettings);
+                    WriteSettings(w, m.Settings ?? new AccountSettingsSnapshot());
+                    break;
                 case ShopViewMessage m:
                     w.Write((byte)MessageType.ShopView);
                     Id(w, m.MerchantId);
@@ -533,6 +541,10 @@ namespace Game.Network
                     return new FulfillUpgradeOrderCommand { OrderId = r.ReadInt32(), StationId = Id(r) };
                 case MessageType.ViewUpgradeOrders:
                     return new ViewUpgradeOrdersCommand();
+                case MessageType.SetAccountSettings:
+                    return new SetAccountSettingsCommand { Settings = ReadSettings(r) };
+                case MessageType.AccountSettings:
+                    return new AccountSettingsMessage { Settings = ReadSettings(r) };
                 case MessageType.ShopView:
                     return new ShopViewMessage { MerchantId = Id(r), Name = Str(r), OwnerName = Str(r), TierId = Str(r), IsMine = r.ReadBoolean(), SecondsLeft = r.ReadInt64(), Lots = ReadLots(r) };
                 case MessageType.MarketPage:
@@ -944,6 +956,45 @@ namespace Game.Network
                 lots[i] = new LotSnapshot { LotId = r.ReadInt64(), ShopName = Str(r), MerchantId = Id(r), Item = ReadSlot(r), PricePerUnit = r.ReadInt64(), PriceVersion = r.ReadInt32() };
             }
             return lots;
+        }
+
+        private static void WriteSettings(BinaryWriter w, AccountSettingsSnapshot s)
+        {
+            w.Write(s.SchemaVersion);
+            KeyBindingSnapshot[] bindings = s.Bindings ?? new KeyBindingSnapshot[0];
+            w.Write(bindings.Length);
+            foreach (KeyBindingSnapshot binding in bindings)
+            {
+                Str(w, binding.BindingId);
+                Str(w, binding.Path);
+            }
+            w.Write(s.CameraSensitivity);
+            w.Write(s.InvertY);
+            w.Write(s.ZoomSpeed);
+            w.Write(s.UiScale);
+            w.Write(s.PanelOpacity);
+            w.Write(s.DamageNumbers);
+            w.Write(s.Nameplates);
+            w.Write(s.NameplateHealth);
+        }
+
+        /// <summary>Also read from client commands: the binding count is bounded (see Count).</summary>
+        private static AccountSettingsSnapshot ReadSettings(BinaryReader r)
+        {
+            var s = new AccountSettingsSnapshot { SchemaVersion = r.ReadInt32(), Bindings = new KeyBindingSnapshot[Count(r)] };
+            for (int i = 0; i < s.Bindings.Length; i++)
+            {
+                s.Bindings[i] = new KeyBindingSnapshot { BindingId = Str(r), Path = Str(r) };
+            }
+            s.CameraSensitivity = r.ReadSingle();
+            s.InvertY = r.ReadBoolean();
+            s.ZoomSpeed = r.ReadSingle();
+            s.UiScale = r.ReadSingle();
+            s.PanelOpacity = r.ReadSingle();
+            s.DamageNumbers = r.ReadBoolean();
+            s.Nameplates = r.ReadBoolean();
+            s.NameplateHealth = r.ReadBoolean();
+            return s;
         }
 
         /// <summary>String arrays a client sends (bounded by Count).</summary>

@@ -96,5 +96,6 @@ namespace Game.Shared.Protocol
         public const string OrderNotFound = "error.order_not_found";
         public const string OrderTooMany = "error.order_too_many";
         public const string OrderNotForYou = "error.order_not_for_you";
+        public const string SettingsInvalid = "error.settings_invalid";
     }
 }

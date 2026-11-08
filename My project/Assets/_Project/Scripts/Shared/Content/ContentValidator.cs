@@ -85,6 +85,7 @@ namespace Game.Shared.Content
             ValidateRecipes(db, errors);
             ValidateStatuses(db, errors);
             ValidateAi(db, errors);
+            ValidateSettings(db, errors);
             ValidateMarket(db, errors);
             ValidateItemsModule11(db, errors);
             if (!db.Classes.ContainsKey(cfg.DefaultClassId ?? string.Empty))
@@ -226,6 +227,40 @@ namespace Game.Shared.Content
         }
 
         /// <summary>Module 11: currencies, affix pools, sockets and ingredients, socket limits per slot group.</summary>
+        /// <summary>Module 17: account settings limits are consistent; graphics presets name a quality level and sane values.</summary>
+        private static void ValidateSettings(ContentDatabase db, List<string> errors)
+        {
+            AccountSettingsDefaultsDto s = db.Config.AccountSettings;
+            if (s == null)
+            {
+                errors.Add("config.AccountSettings is required");
+                return;
+            }
+            if (s.SchemaVersion <= 0 || s.MaxBindings <= 0 || s.MaxBindingIdLength <= 0 || s.MaxPathLength <= 0
+                || !InRange(s.CameraSensitivity, s.CameraSensitivityMin, s.CameraSensitivityMax) || s.CameraSensitivityMin <= 0f
+                || !InRange(s.ZoomSpeed, s.ZoomSpeedMin, s.ZoomSpeedMax) || s.ZoomSpeedMin <= 0f
+                || !InRange(s.UiScale, s.UiScaleMin, s.UiScaleMax) || s.UiScaleMin <= 0f
+                || !InRange(s.PanelOpacity, s.PanelOpacityMin, 1f) || s.PanelOpacityMin <= 0f)
+            {
+                errors.Add("config.AccountSettings: positive limits, every default within its Min..Max");
+            }
+            var ids = new HashSet<string>();
+            foreach (GraphicsPresetDto preset in db.Config.GraphicsPresets ?? new GraphicsPresetDto[0])
+            {
+                if (string.IsNullOrEmpty(preset.Id) || !ids.Add(preset.Id) || string.IsNullOrEmpty(preset.NameKey) || string.IsNullOrEmpty(preset.QualityLevel)
+                    || preset.RenderScale <= 0f || preset.ShadowDistance < 0f || preset.Msaa < 1 || preset.LodBias <= 0f || preset.MinVideoMemoryMb < 0)
+                {
+                    errors.Add($"config.GraphicsPresets '{preset.Id}': unique Id, NameKey, QualityLevel, RenderScale > 0, Msaa ≥ 1, LodBias > 0");
+                }
+            }
+            if (ids.Count == 0 || db.Config.FpsLimits == null || db.Config.FpsLimits.Length == 0 || db.Config.ResolutionConfirmSeconds <= 0f)
+            {
+                errors.Add("config: GraphicsPresets, FpsLimits and ResolutionConfirmSeconds are required");
+            }
+        }
+
+        private static bool InRange(float value, float min, float max) => min <= value && value <= max;
+
         /// <summary>Module 20: shop levels, merchant look when there are shop spots, positive market and mail limits.</summary>
         private static void ValidateMarket(ContentDatabase db, List<string> errors)
         {

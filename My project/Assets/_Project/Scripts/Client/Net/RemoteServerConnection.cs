@@ -70,6 +70,7 @@ namespace Game.Client.Net
                     case MarketPageMessage _:
                     case MailboxMessage _:
                     case UpgradeOrdersMessage _:
+                    case AccountSettingsMessage _:
                         ReplyReceived?.Invoke(message);
                         break;
                     case NotificationMessage notification:

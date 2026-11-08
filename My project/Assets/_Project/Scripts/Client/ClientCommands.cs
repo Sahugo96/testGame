@@ -97,6 +97,8 @@ namespace Game.Client
 
         public void ViewUpgradeOrders() => _connection.Send(new ViewUpgradeOrdersCommand());
 
+        public void SetAccountSettings(AccountSettingsSnapshot settings) => _connection.Send(new SetAccountSettingsCommand { Settings = settings });
+
         public void ConvertToRaid() => _connection.Send(new GroupConvertToRaidCommand());
 
         public void MoveToSubgroup(EntityId member, int subgroup) => _connection.Send(new GroupMoveCommand { MemberId = member, Subgroup = subgroup });

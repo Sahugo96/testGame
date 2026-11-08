@@ -70,5 +70,7 @@ namespace Game.Network
         CancelUpgradeOrder = 72,
         FulfillUpgradeOrder = 73,
         ViewUpgradeOrders = 74,
+        SetAccountSettings = 75,
+        AccountSettings = 76,
     }
 }

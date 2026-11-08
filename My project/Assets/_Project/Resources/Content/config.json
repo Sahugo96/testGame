@@ -132,5 +132,34 @@
   "MailSubjectMax": 40,
   "MailBodyMax": 300,
   "UpgradeOrderHours": 72,
-  "UpgradeOrdersMax": 5
+  "UpgradeOrdersMax": 5,
+  "AccountSettings": {
+    "SchemaVersion": 1,
+    "MaxBindings": 64,
+    "MaxBindingIdLength": 48,
+    "MaxPathLength": 64,
+    "CameraSensitivity": 1,
+    "CameraSensitivityMin": 0.2,
+    "CameraSensitivityMax": 3,
+    "ZoomSpeed": 1,
+    "ZoomSpeedMin": 0.2,
+    "ZoomSpeedMax": 3,
+    "UiScale": 1,
+    "UiScaleMin": 0.75,
+    "UiScaleMax": 1.5,
+    "PanelOpacity": 1,
+    "PanelOpacityMin": 0.3,
+    "InvertY": false,
+    "DamageNumbers": true,
+    "Nameplates": true,
+    "NameplateHealth": true
+  },
+  "GraphicsPresets": [
+    { "Id": "low", "NameKey": "graphics.preset.low", "QualityLevel": "Mobile", "RenderScale": 0.7, "ShadowDistance": 20, "Msaa": 1, "LodBias": 0.5, "MinVideoMemoryMb": 0 },
+    { "Id": "medium", "NameKey": "graphics.preset.medium", "QualityLevel": "Mobile", "RenderScale": 1, "ShadowDistance": 40, "Msaa": 1, "LodBias": 1, "MinVideoMemoryMb": 2048 },
+    { "Id": "high", "NameKey": "graphics.preset.high", "QualityLevel": "PC", "RenderScale": 1, "ShadowDistance": 60, "Msaa": 2, "LodBias": 1.5, "MinVideoMemoryMb": 4096 },
+    { "Id": "ultra", "NameKey": "graphics.preset.ultra", "QualityLevel": "PC", "RenderScale": 1, "ShadowDistance": 100, "Msaa": 4, "LodBias": 2, "MinVideoMemoryMb": 8192 }
+  ],
+  "FpsLimits": [ 30, 60, 120, 144, 0 ],
+  "ResolutionConfirmSeconds": 15
 }
