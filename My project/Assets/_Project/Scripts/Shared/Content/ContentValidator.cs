@@ -46,6 +46,10 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: AutosaveSeconds, PasswordIterations, MinPasswordLength, SessionTokenHours, BackupsToKeep must be > 0");
             }
+            if (cfg.MaxCommandsPerTick <= 0 || cfg.HelloTimeoutSeconds <= 0f)
+            {
+                errors.Add("config: MaxCommandsPerTick and HelloTimeoutSeconds must be > 0");
+            }
             if (cfg.LootSeconds <= 0f || cfg.LootScatterRadius < 0f)
             {
                 errors.Add("config: LootSeconds must be > 0 and LootScatterRadius ≥ 0");

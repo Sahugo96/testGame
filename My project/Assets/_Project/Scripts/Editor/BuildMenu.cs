@@ -20,10 +20,16 @@ namespace Game.EditorTools
         private const string ConfigPath = "Assets/_Project/Resources/Content/config.json";
         private const int WindowWidth = 1280;
         private const int WindowHeight = 720;
+        /// <summary>How long StopServer.bat waits for the graceful stop before killing the process.</summary>
+        private const int StopWaitSeconds = 30;
 
         [MenuItem(MenuPath)]
         public static void BuildWindows()
         {
+            if (!WorldMaterialAsset.Ensure())
+            {
+                return;
+            }
             // Windowed and running in background: two copies can be tested on one computer.
             PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
             PlayerSettings.defaultScreenWidth = WindowWidth;
@@ -78,13 +84,24 @@ namespace Game.EditorTools
                 + "start \"\" \"" + exe + "\" -batchmode -nographics -server -port " + port + " -logFile server.log\r\n"
                 + "timeout /t 3 /nobreak >nul\r\n"
                 + "powershell -NoProfile -Command \"Get-Content -Path 'server.log' -Wait -Tail 30\"\r\n");
+            // Graceful stop: server.stop asks the server to save everyone and quit; a forced kill only if it hangs.
             Write(folder, "StopServer.bat",
                 "@echo off\r\n"
                 + "cd /d \"%~dp0\"\r\n"
                 + "if not exist server.pid (echo Server is not running & pause & exit /b)\r\n"
                 + "set /p PID=<server.pid\r\n"
+                + "echo stop> server.stop\r\n"
+                + "echo Saving and stopping the server...\r\n"
+                + "for /l %%i in (1,1," + StopWaitSeconds + ") do (\r\n"
+                + "  tasklist /FI \"PID eq %PID%\" | find \"%PID%\" >nul || goto stopped\r\n"
+                + "  timeout /t 1 /nobreak >nul\r\n"
+                + ")\r\n"
+                + "echo The server did not stop in time: forced stop (progress since the last autosave may be lost).\r\n"
                 + "taskkill /PID %PID% /F\r\n"
-                + "del server.pid\r\n"
+                + ":stopped\r\n"
+                + "if exist server.pid del server.pid\r\n"
+                + "if exist server.stop del server.stop\r\n"
+                + "echo Stopped.\r\n"
                 + "pause\r\n");
             Write(folder, "StartBots.bat",
                 "@echo off\r\n"

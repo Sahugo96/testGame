@@ -232,7 +232,14 @@ namespace Game.Server.Systems
             List<ItemInstance> fromB = Collect(b, trade.OfferB);
             if (fromA == null || fromB == null)
             {
-                Close(trade, NotificationKeys.TradeFailed);
+                // Something changed after the confirmations: both see the new offer and confirm again.
+                Refresh(a, ref trade.OfferA);
+                Refresh(b, ref trade.OfferB);
+                trade.OfferA.Confirmed = false;
+                trade.OfferB.Confirmed = false;
+                _trades[trade.Id] = trade;
+                CombatEvents.Reject(a, RejectReasons.TradeInvalid);
+                CombatEvents.Reject(b, RejectReasons.TradeInvalid);
                 return;
             }
             if (!HasRoom(b, fromA, fromB) || !HasRoom(a, fromB, fromA))
@@ -253,6 +260,10 @@ namespace Game.Server.Systems
             }
             Move(a, b, fromA);
             Move(b, a, fromB);
+            // Both sides are saved together right after the swap (GameServer.Committed): if one logged out and the server
+            // then stopped, the other side's old save must not bring the given items back.
+            _ctx.Commit(a.EntityId);
+            _ctx.Commit(b.EntityId);
             Log.Info(LogTags.Items, $"Trade {trade.Id}: {a.CharacterId} gave {fromA.Count} items and {trade.OfferA.Gold} gold, {b.CharacterId} gave {fromB.Count} items and {trade.OfferB.Gold} gold");
             Close(trade, NotificationKeys.TradeDone);
         }
@@ -267,17 +278,26 @@ namespace Game.Server.Systems
             credits.Add(new WalletEntry { Player = to, CurrencyId = gold, Amount = amount });
         }
 
-        /// <summary>The offered instances, still in the giver's bag and tradable; null if anything changed.</summary>
+        /// <summary>
+        /// The offered instances, still in the giver's bag, tradable and of the confirmed size; null if anything changed
+        /// (a stack split or drunk in the same tick as the last confirmation is not seen by Update yet).
+        /// </summary>
         private List<ItemInstance> Collect(PlayerCharacter player, TradeOffer offer)
         {
             var items = new List<ItemInstance>();
-            foreach (string id in offer.InstanceIds)
+            for (int i = 0; i < offer.InstanceIds.Count; i++)
             {
+                string id = offer.InstanceIds[i];
                 if (!IsTradable(player, id))
                 {
                     return null;
                 }
-                items.Add(BagItem(player, id, out _));
+                ItemInstance item = BagItem(player, id, out _);
+                if (item.Count != offer.Counts[i])
+                {
+                    return null;
+                }
+                items.Add(item);
             }
             return items;
         }

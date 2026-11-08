@@ -24,5 +24,16 @@ namespace Game.Server
         public readonly Dictionary<EntityId, PlayerCharacter> Players = new Dictionary<EntityId, PlayerCharacter>();
 
         public PlayerCharacter GetPlayer(EntityId id) => Players.TryGetValue(id, out PlayerCharacter player) ? player : null;
+
+        /// <summary>Players whose items or gold moved to another player this tick (trade): saved together after the tick.</summary>
+        public readonly HashSet<EntityId> Committed = new HashSet<EntityId>();
+
+        public void Commit(EntityId player)
+        {
+            if (player.IsValid)
+            {
+                Committed.Add(player);
+            }
+        }
     }
 }

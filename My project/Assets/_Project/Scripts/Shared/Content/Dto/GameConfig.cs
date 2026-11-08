@@ -66,6 +66,12 @@ namespace Game.Shared.Content.Dto
         public int MinPasswordLength;
         public float SessionTokenHours;
         public int BackupsToKeep;
+        /// <summary>
+        /// Network guard (project review): commands taken from one connection per tick (the rest wait in its queue), and how
+        /// long a new connection may stay without Hello.
+        /// </summary>
+        public int MaxCommandsPerTick;
+        public float HelloTimeoutSeconds;
         /// <summary>Ground loot (06, 7.8): how long a drop lies (5 min) and how far from the death spot it lands.</summary>
         public float LootSeconds;
         public float LootScatterRadius;

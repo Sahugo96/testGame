@@ -113,7 +113,9 @@ namespace Game.Server.Net
             for (int i = _peers.Count - 1; i >= 0; i--)
             {
                 Peer peer = _peers[i];
-                while (peer.Connection.TryReceive(out object message))
+                // A flooding client gets MaxCommandsPerTick per tick; the rest waits (NetConnection closes it when too many).
+                int taken = 0;
+                while (taken++ < _config.MaxCommandsPerTick && peer.Connection.TryReceive(out object message))
                 {
                     if (!peer.Joined)
                     {
@@ -123,6 +125,10 @@ namespace Game.Server.Net
                     {
                         _server.Submit(peer.Player, command);
                     }
+                }
+                if (!peer.Joined && !peer.Connection.IsClosed && (DateTime.UtcNow - peer.Connection.OpenedAt).TotalSeconds > _config.HelloTimeoutSeconds)
+                {
+                    peer.Connection.Close("no Hello");
                 }
                 if (peer.Connection.IsClosed)
                 {

@@ -132,12 +132,13 @@ namespace Game.Server
         public event Action<EntityId> AccountSettingsChanged;
 
         /// <summary>
-        /// Shops, mail or orders changed this tick (module 20): persistence saves the touched characters first, then the
-        /// market — a crash in between can lose an operation but never duplicate an item (until a transactional database).
+        /// Items or gold moved between owners this tick — shops, mail, orders (module 20) or a trade: persistence saves the
+        /// touched characters and, when it changed, the market as one atomic commit (FileStorage.Commit), so a crash or a
+        /// stop can neither duplicate nor lose an item. Arguments: the players, whether the market changed.
         /// </summary>
-        public event Action<IReadOnlyList<EntityId>> MarketCommitted;
+        public event Action<IReadOnlyList<EntityId>, bool> Committed;
 
-        /// <summary>Market data for persistence (load once at start, export on MarketCommitted).</summary>
+        /// <summary>Market data for persistence (load once at start, export on Committed).</summary>
         public MarketState Market => _market;
 
         /// <summary>After persistence loaded the market: merchants of open shops appear on their spots.</summary>
@@ -439,12 +440,21 @@ namespace Game.Server
                 player.Outbox.State.Market = market;
                 _settings.Flush(player);
             }
-            if (_market.Dirty)
+            if (_market.Dirty || _ctx.Committed.Count > 0)
             {
                 var touched = new List<EntityId>(_market.Touched);
+                foreach (EntityId id in _ctx.Committed)
+                {
+                    if (!_market.Touched.Contains(id))
+                    {
+                        touched.Add(id);
+                    }
+                }
+                bool marketChanged = _market.Dirty;
                 _market.Dirty = false;
                 _market.Touched.Clear();
-                MarketCommitted?.Invoke(touched);
+                _ctx.Committed.Clear();
+                Committed?.Invoke(touched, marketChanged);
             }
             _tickClock.Stop();
             Metrics.RecordTick(_tickClock.Elapsed.TotalMilliseconds, _ctx.Players.Count, worldSnapshot.Entities.Length, _interest.LastTickEntitiesSent);
@@ -456,7 +466,8 @@ namespace Game.Server
             switch (command)
             {
                 case MoveCommand move:
-                    player.LastMove = move;
+                    // A forged NaN or infinity would put the player (and its save) at NaN: such a direction is "stand still".
+                    player.LastMove = IsFinite(move.DirX) && IsFinite(move.DirZ) ? move : default;
                     break;
                 case UseSkillCommand useSkill:
                     _skills.TryUse(player, useSkill);
@@ -630,6 +641,8 @@ namespace Game.Server
             }
         }
 
+        private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
         /// <summary>
         /// Gold from a kill (05, 7.14.2): a roll between GoldMin and GoldMax, split equally between those who share the
         /// experience (temporarily, DEFAULT, question 78); the remainder goes to the killer (the first recipient).
@@ -662,7 +675,8 @@ namespace Game.Server
             {
                 return;
             }
-            if (record == null)
+            // JsonUtility has no null object: an account that never changed its settings comes back with SchemaVersion 0.
+            if (record == null || record.SchemaVersion <= 0)
             {
                 _settings.Load(player, null);
                 return;

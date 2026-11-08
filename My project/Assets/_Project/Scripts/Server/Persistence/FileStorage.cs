@@ -11,13 +11,14 @@ namespace Game.Server.Persistence
     /// account and character, a name index and the unique item registry. Writes are atomic (temporary file, then replace),
     /// shared files are guarded by locks. Backup copies the whole folder and keeps the last N copies.
     /// </summary>
-    public sealed class FileStorage : IAccountStore, ICharacterStore, IUniqueItemRegistry, IMarketStore
+    public sealed class FileStorage : IAccountStore, ICharacterStore, IUniqueItemRegistry, IMarketStore, ICommitStore
     {
         private const string AccountsFolder = "accounts";
         private const string CharactersFolder = "characters";
         private const string BackupsFolder = "backups";
         private const string NamesFile = "names.json";
         private const string MarketFile = "market.json";
+        private const string CommitFile = "commit.json";
         private const string UniqueFile = "unique_items.json";
         private const string AuditFolder = "audit";
         private const string TempSuffix = ".tmp";
@@ -36,6 +37,49 @@ namespace Game.Server.Persistence
             _json = json;
             Directory.CreateDirectory(Path.Combine(_root, AccountsFolder));
             Directory.CreateDirectory(Path.Combine(_root, CharactersFolder));
+            ReplayCommit();
+        }
+
+        /// <summary>
+        /// Writes the characters and the market as one unit: first the journal (atomic), then each file, then the journal
+        /// is deleted. A crash before the journal keeps the old state, a crash after it is finished by <see cref="ReplayCommit"/>.
+        /// </summary>
+        public void Commit(CharacterRecord[] characters, MarketRecord market)
+        {
+            characters = characters ?? new CharacterRecord[0];
+            foreach (CharacterRecord character in characters)
+            {
+                character.SchemaVersion = CharacterMigrations.Current;
+            }
+            string journal = Path.Combine(_root, CommitFile);
+            Write(journal, new CommitRecord { Characters = characters, HasMarket = market != null, Market = market });
+            Apply(characters, market);
+            File.Delete(journal);
+        }
+
+        /// <summary>A commit interrupted by a crash or a forced stop is finished on start.</summary>
+        private void ReplayCommit()
+        {
+            string journal = Path.Combine(_root, CommitFile);
+            CommitRecord commit = Read<CommitRecord>(journal);
+            if (commit == null)
+            {
+                return;
+            }
+            Apply(commit.Characters ?? new CharacterRecord[0], commit.HasMarket ? commit.Market : null);
+            File.Delete(journal);
+        }
+
+        private void Apply(CharacterRecord[] characters, MarketRecord market)
+        {
+            foreach (CharacterRecord character in characters)
+            {
+                Write(CharacterPath(character.AccountLogin, character.ClassId), character);
+            }
+            if (market != null)
+            {
+                SaveMarket(market);
+            }
         }
 
         public string Root => _root;
@@ -70,7 +114,7 @@ namespace Game.Server.Persistence
                 LoadNames();
                 if (_names.TryGetValue(key, out string owner))
                 {
-                    return owner == login;
+                    return string.Equals(owner, login, StringComparison.OrdinalIgnoreCase);
                 }
                 _names[key] = login;
                 var entries = new List<NameEntryRecord>();

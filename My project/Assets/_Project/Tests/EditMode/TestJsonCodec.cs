@@ -7,7 +7,11 @@ using System.Text.Json;
 
 namespace Game.Tests
 {
-    /// <summary>The save JSON codec in tests: JsonUtility inside Unity (as the game uses), System.Text.Json in .NET.</summary>
+    /// <summary>
+    /// The save JSON codec in tests: JsonUtility inside Unity (as the game uses), System.Text.Json in .NET. In .NET the
+    /// result is made to look like JsonUtility's: it has no null for strings, arrays and [Serializable] classes (they come
+    /// back as "", [] and an empty object), so tests outside Unity catch code that relies on null surviving a save.
+    /// </summary>
     public sealed class TestJsonCodec : IJsonCodec
     {
 #if UNITY_5_3_OR_NEWER
@@ -19,7 +23,7 @@ namespace Game.Tests
 
         public string ToJson(object value) => JsonSerializer.Serialize(value, value.GetType(), Options);
 
-        public T FromJson<T>(string json) => JsonSerializer.Deserialize<T>(json, Options);
+        public T FromJson<T>(string json) => JsonUtilityLike.Normalize(JsonSerializer.Deserialize<T>(json, Options));
 #endif
     }
 }

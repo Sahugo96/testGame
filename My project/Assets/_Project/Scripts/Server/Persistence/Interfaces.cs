@@ -36,6 +36,16 @@ namespace Game.Server.Persistence
         void SaveMarket(MarketRecord market);
     }
 
+    /// <summary>
+    /// Several characters and the market written as one unit: after a crash either all of them are the new version or all
+    /// the old one (FileStorage: a journal file replayed on start; a database transaction later, question 76).
+    /// </summary>
+    public interface ICommitStore
+    {
+        /// <param name="market">Null when the market did not change.</param>
+        void Commit(CharacterRecord[] characters, MarketRecord market);
+    }
+
     /// <summary>One instance per unique definition (04, 7.11): TryReserve is atomic across threads (and later across servers).</summary>
     public interface IUniqueItemRegistry
     {

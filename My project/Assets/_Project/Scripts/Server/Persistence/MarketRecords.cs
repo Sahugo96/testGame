@@ -74,4 +74,16 @@ namespace Game.Server.Persistence
         public long CreatedAt;
         public long ExpiresAt;
     }
+
+    /// <summary>
+    /// The journal of one commit (FileStorage.Commit): written atomically before the files it lists; if it is still there
+    /// on start, the commit is replayed. HasMarket because JsonUtility cannot store a null object.
+    /// </summary>
+    [Serializable]
+    public class CommitRecord
+    {
+        public CharacterRecord[] Characters;
+        public bool HasMarket;
+        public MarketRecord Market;
+    }
 }

@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace Game.Tests
 {
-    /// <summary>Loads the real content JSON: with JsonUtility inside Unity, with System.Text.Json in the .NET harness (sim-tests).</summary>
+    /// <summary>Loads the real content JSON: with JsonUtility inside Unity, with System.Text.Json made JsonUtility-like in the .NET harness (sim-tests).</summary>
     public static class TestContentLoader
     {
         public static ContentFiles LoadFiles()
@@ -49,7 +49,7 @@ namespace Game.Tests
         private static T Read<T>(string name)
         {
             string path = Path.Combine(AppContext.BaseDirectory, ContentFileNames.Folder, name + ".json");
-            return JsonSerializer.Deserialize<T>(File.ReadAllText(path), Options);
+            return JsonUtilityLike.Normalize(JsonSerializer.Deserialize<T>(File.ReadAllText(path), Options));
         }
 #endif
     }

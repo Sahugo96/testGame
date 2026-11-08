@@ -72,7 +72,7 @@ namespace Game.Client.World
             _model = model.transform;
             _model.SetParent(transform, false);
 
-            GameObject body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            GameObject body = WorldPrimitives.Create(PrimitiveType.Capsule);
             Prepare(body, _model);
             body.transform.localPosition = new Vector3(0f, ModelCenterHeight, 0f);
             _body = body.GetComponent<Renderer>();
@@ -93,7 +93,7 @@ namespace Game.Client.World
 
         private void Spawn(PrimitiveType shape, Vector3 position, Vector3 scale, Color color)
         {
-            GameObject part = GameObject.CreatePrimitive(shape);
+            GameObject part = WorldPrimitives.Create(shape);
             Prepare(part, _model);
             part.transform.localPosition = position;
             part.transform.localScale = scale;

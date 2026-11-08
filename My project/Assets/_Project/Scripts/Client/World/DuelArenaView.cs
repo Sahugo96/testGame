@@ -27,7 +27,7 @@ namespace Game.Client.World
             _renderers = new Renderer[PostCount];
             for (int i = 0; i < PostCount; i++)
             {
-                GameObject post = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                GameObject post = WorldPrimitives.Create(PrimitiveType.Cube);
                 post.name = $"DuelPost_{i}";
                 Destroy(post.GetComponent<Collider>());
                 post.transform.SetParent(transform, false);

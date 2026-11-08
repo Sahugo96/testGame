@@ -89,9 +89,10 @@ namespace Game.Server.Persistence
             {
                 market.Mail[letter.Id] = new MailData
                 {
-                    Id = letter.Id, Type = Enum.TryParse(letter.Type, out MailType type) ? type : MailType.System, Recipient = letter.Recipient, Sender = letter.Sender,
-                    Subject = letter.Subject, Body = letter.Body, SubjectKey = letter.SubjectKey, ItemDefinitionId = letter.ItemDefinitionId, Number = letter.Number,
-                    Detail = letter.Detail, Items = Restore(content, letter.Items, time), Gold = letter.Gold, SentAt = letter.SentAt, ExpiresAt = letter.ExpiresAt,
+                    Id = letter.Id, Type = Enum.TryParse(letter.Type, out MailType type) ? type : MailType.System, Recipient = letter.Recipient,
+                    Sender = ItemRecords.NullIfEmpty(letter.Sender), Subject = letter.Subject, Body = letter.Body,
+                    SubjectKey = ItemRecords.NullIfEmpty(letter.SubjectKey), ItemDefinitionId = ItemRecords.NullIfEmpty(letter.ItemDefinitionId), Number = letter.Number,
+                    Detail = ItemRecords.NullIfEmpty(letter.Detail), Items = Restore(content, letter.Items, time), Gold = letter.Gold, SentAt = letter.SentAt, ExpiresAt = letter.ExpiresAt,
                     Read = letter.Read, Claimed = letter.Claimed,
                 };
             }
@@ -104,7 +105,7 @@ namespace Game.Server.Persistence
                 }
                 market.Orders[order.Id] = new UpgradeOrderData
                 {
-                    Id = order.Id, OwnerCharacterId = order.OwnerCharacterId, OwnerName = order.OwnerName, SmithName = string.IsNullOrEmpty(order.SmithName) ? null : order.SmithName,
+                    Id = order.Id, OwnerCharacterId = order.OwnerCharacterId, OwnerName = order.OwnerName, SmithName = ItemRecords.NullIfEmpty(order.SmithName),
                     Item = item, Payment = order.Payment, CreatedAt = order.CreatedAt, ExpiresAt = order.ExpiresAt,
                 };
             }

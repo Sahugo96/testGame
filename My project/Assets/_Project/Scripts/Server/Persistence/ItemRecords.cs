@@ -36,7 +36,8 @@ namespace Game.Server.Persistence
                 DefinitionId = record.DefinitionId,
                 Count = Math.Max(1, record.Count),
                 UpgradeLevel = record.UpgradeLevel,
-                BoundTo = record.BoundTo,
+                // JsonUtility (Unity) saves a null string as "": an unbound item must stay null, or it turns untradable.
+                BoundTo = NullIfEmpty(record.BoundTo),
                 CreatedAt = time,
             };
             foreach (SocketRecord socket in record.Sockets ?? new SocketRecord[0])
@@ -52,5 +53,8 @@ namespace Game.Server.Persistence
             }
             return item;
         }
+
+        /// <summary>Strings that mean "none" when null: JsonUtility gives them back as "" after a restart.</summary>
+        public static string NullIfEmpty(string value) => string.IsNullOrEmpty(value) ? null : value;
     }
 }

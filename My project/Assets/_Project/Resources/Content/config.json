@@ -79,6 +79,8 @@
   "MinPasswordLength": 4,
   "SessionTokenHours": 24,
   "BackupsToKeep": 5,
+  "MaxCommandsPerTick": 32,
+  "HelloTimeoutSeconds": 10,
   "LootSeconds": 300,
   "LootScatterRadius": 1.0,
   "AffixCountByRarity": [

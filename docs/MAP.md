@@ -7,7 +7,7 @@
 
 ## 0. Когда что читать целиком
 
-Инструкция для разработчика по запуску проекта в Unity — `docs/HOW_TO_RUN.md`; короткая пошаговая «как сыграть вдвоём» — `docs/PLAY_WITH_FRIEND.md`.
+Инструкция для разработчика по запуску проекта в Unity — `docs/HOW_TO_RUN.md` (первая проверка в Unity по шагам — раздел 10); короткая пошаговая «как сыграть вдвоём» — `docs/PLAY_WITH_FRIEND.md`.
 
 
 | Ситуация | Читать |
@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 36)
+### `docs/00_INDEX.md` — индекс набора (версия набора 37)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v27)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v28)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,13 +37,13 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11, 1.13 — модуль 14, 1.13а — решения по вопросу 79, 1.14 — модуль 20, 1.15 — модуль 17)** | :258 |
-| 10 | Проблемы и долги (записи v9, v11–v27 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, 14, 17, 20, лута) | :291 |
-| 11 | Журнал решений (последние — v27; замеры модуля 3 — v19) | :320 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :377 |
-| 13 | **Заморожено :387 / Гибко :398 / Отложено + крючки (с модулями) :403** | :383 |
-| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :418 |
-| — | Рекомендации 1,5–10,17–19 | :434 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11, 1.13 — модуль 14, 1.13а — решения по вопросу 79, 1.14 — модуль 20, 1.15 — модуль 17, 1.16 — ревизия перед Unity)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11–v28 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, 14, 17, 20, лута, остаток ревизии) | :292 |
+| 11 | Журнал решений (последние — v28; замеры модуля 3 — v19) | :322 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :380 |
+| 13 | **Заморожено :390 / Гибко :401 / Отложено + крючки (с модулями) :406** | :386 |
+| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76 | :421 |
+| — | Рекомендации 1,5–10,17–19 | :437 |
 
 ### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v7)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
@@ -146,7 +146,7 @@
 | `EffectDefinition`, `IEffectHandler`, `EffectHandlerRegistry` | 01 7.10 :148–152 |
 | `LegendaryDefinition` | 01 7.10 :168 |
 | `MobDefinition`, `ZoneDefinition` (только упоминание) | 01 7.10 :160–163 |
-| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :396 |
+| `ActivityDefinition`, `CombatContext` (крючки PvP) | 01 §13 :410 |
 | Сборки `Game.Shared/Network/Server/Client/Bots` | 01 §5 :68 |
 | `HudWindowDefinition` | 02 7.13 :49 |
 | `HudRoot`, `HudZone`, `WindowManager`, `WindowRegistry`, `MenuBar`, `DragDropService`, `BadgeService` | 02 7.13 :83 |
@@ -234,7 +234,7 @@
 | **Кошелёк, слоты, ингредиенты, аффиксы** (модуль 11, вопрос 78) | данные `currencies.json`, `affixes.json`, `SocketCap` в `equipment_slots.json`, компоненты `Shared/Content/Items/SocketsComponent.cs`, `SocketIngredientComponent.cs`, `AffixesComponent.cs`; сервер `Server/Systems/WalletSystem.cs` (`Transact`), `SocketSystem.cs`, бросок слотов и аффиксов — `ItemFactory`, бонусы — `StatSystem`; протокол `Shared/Protocol/ItemDetailSnapshots.cs`, `InsertIngredientCommand`; клиент — `TooltipText`, валюты в `BackpackWindow`, вставка в `WhetstoneWindow`; тесты — `ItemsModule11Tests` |
 | **Чат, друзья, обмен, рейды** (модуль 14, вопрос 79) | сервер `Server/Systems/ChatSystem.cs`, `FriendSystem.cs`, `TradeSystem.cs` (+ `Server/World/TradeData.cs`; отмена при шаге — `TradeMoveTolerance`), друзья по согласию — `FriendSystem` + `Server/Players/FriendLists.cs`, `IFriendStore.cs` (`CharacterPersistence` / `OnlineFriendStore.cs`), вкладки чата — `ChatSystem.SetTabs`, `config.ChatDefaultTabs`, `Windows/ChatTabsWindow.cs`, рейд — `GroupSystem` (`ConvertToRaid`, `MoveToSubgroup`, `SetAssistant`, `Voters`, `CloseMates`); друзья, заявки и вкладки в аккаунте — `AccountRecord.Friends`, `FriendRequestsIn/Out`, `ChatTabs`; протокол `Shared/Protocol/ChatMessages.cs`, `SocialMessages.cs`, `TradeMessages.cs`, `GroupCommands.cs`; клиент — `Client/UI/Widgets/ChatWidget.cs` (Enter — `GameInput.ChatSubmit`), `UiFocus.cs` (клавиши игры не работают, пока поле ввода в фокусе), `Windows/FriendsWindow.cs`, `TradeWindow.cs`, `GroupWindow.cs` (рейд), `Widgets/PagerWidget.cs`, `GroupPromptWidget.cs` (запрос обмена), `TargetFrameWidget.cs` (кнопка «Обмен»); тесты `Tests/EditMode/SocialTests.cs` |
 | **Перетаскивание и деление стопок** (вопрос 79) | `Shared/Protocol/MoveBagItemCommand.cs` → `InventorySystem.MoveBagItem` (аудит `StackSplit`/`StackMerge`); клиент — `Client/UI/DragTrigger.cs`, `SlotView.BindDrag`, `BackpackWindow` (Shift — половина, Ctrl — один); клик после перетаскивания гасит `HoverTrigger`; тесты `Tests/EditMode/StackMoveTests.cs` |
-| **Лавки, рынок, почта, заказы улучшения** (модуль 20, вопрос 85) | данные `config.ShopTiers` и лимиты в `config.json`, станции `Market` / `Mailbox` / `ShopSpot` и `MerchantVisual` в `world.json`; сервер `Server/World/MarketState.cs` (+ `ShopData`, `LotData`, `MailData`, `UpgradeOrderData`), `Server/Systems/ShopSystem.cs`, `MailSystem.cs`, `UpgradeOrderSystem.cs` (через `UpgradeSystem.Attempt`), `StationSystem.cs`, `RequestMemory.cs`, `MarketText.cs`, время — `Server/IClock.cs`; сохранение `Server/Persistence/MarketRecords.cs`, `MarketSerializer.cs`, `ItemRecords.cs`, `IMarketStore` (`FileStorage` → `market.json`), событие `GameServer.MarketCommitted`; протокол `Shared/Protocol/MarketMessages.cs`, `MailMessages.cs`, `UpgradeOrderMessages.cs`, `MailSubjects.cs`, ответы — `PlayerOutbox.Replies` / `IServerConnection.ReplyReceived` / `ClientState.Last*`; клиент `Client/UI/Windows/MarketWindow.cs`, `ShopWindow.cs`, `MailWindow.cs`, `UpgradeOrdersWindow.cs`, `MarketUi.cs`; тесты `Tests/EditMode/MarketTests.cs`, `PersistenceTests.Market_*` |
+| **Лавки, рынок, почта, заказы улучшения** (модуль 20, вопрос 85) | данные `config.ShopTiers` и лимиты в `config.json`, станции `Market` / `Mailbox` / `ShopSpot` и `MerchantVisual` в `world.json`; сервер `Server/World/MarketState.cs` (+ `ShopData`, `LotData`, `MailData`, `UpgradeOrderData`), `Server/Systems/ShopSystem.cs`, `MailSystem.cs`, `UpgradeOrderSystem.cs` (через `UpgradeSystem.Attempt`), `StationSystem.cs`, `RequestMemory.cs`, `MarketText.cs`, время — `Server/IClock.cs`; сохранение `Server/Persistence/MarketRecords.cs`, `MarketSerializer.cs`, `ItemRecords.cs`, `IMarketStore` (`FileStorage` → `market.json`), событие `GameServer.Committed` (персонажи и рынок одной записью, журнал `commit.json`); протокол `Shared/Protocol/MarketMessages.cs`, `MailMessages.cs`, `UpgradeOrderMessages.cs`, `MailSubjects.cs`, ответы — `PlayerOutbox.Replies` / `IServerConnection.ReplyReceived` / `ClientState.Last*`; клиент `Client/UI/Windows/MarketWindow.cs`, `ShopWindow.cs`, `MailWindow.cs`, `UpgradeOrdersWindow.cs`, `MarketUi.cs`; тесты `Tests/EditMode/MarketTests.cs`, `PersistenceTests.Market_*` |
 | **Настройки пользователя** (модуль 17, вопрос 86) | данные `config.AccountSettings` (значения по умолчанию и пределы), `config.GraphicsPresets`, `FpsLimits`, `ResolutionConfirmSeconds`; сервер `Server/Systems/SettingsSystem.cs`, `AccountRecord.Settings` (`AccountSettingsRecord`), `GameServer.Load/ExportAccountSettings`; протокол `Shared/Protocol/AccountSettingsSnapshot.cs`; клиент `Client/Settings/` (`SettingsService`, `LocalSettings`, `LocalSettingsStore` → `settings_local.json`, `GraphicsSettingsApplier`), `Client/Input/KeyRebinder.cs` (+ `RebindSlot`, `RebindResult`, `KeyLabels`), `UI/Windows/SettingsWindow.cs`, `UI/Widgets/FpsCounterWidget.cs`, `ThirdPersonCamera.Configure`; тесты `Tests/EditMode/SettingsTests.cs`, `PersistenceTests.AccountSettings_*` |
 | **Аккаунты и сохранения** (модуль 13, вопрос 76) | `Server/Persistence/` (`Records.cs` — записи, `Interfaces.cs` — репозитории и `IJsonCodec`, `FileStorage.cs`, `CharacterPersistence.cs` — вход, токены, автосохранение, `PasswordHasher.cs`, `CharacterMigrations.cs`, `FileAuditLog.cs`); `GameServer.AddPlayer(CharacterRecord)` / `ExportPlayer`; реестр уникальных — `ItemFactory.UniqueRegistry`; Unity — `Host/UnityJsonCodec.cs`, `GameRoot.CreateServer`; меню — поля логина в `StartMenuView`; протокол — `HelloMessage` (Login, Password, Token), `WelcomeMessage.Token`, ошибки `LoginErrors`; тесты — `PersistenceTests`, кодек тестов — `TestJsonCodec` |
 | **Interest management, метрики, боты** (модуль 3) | `Server/World/SpatialGrid.cs`, `Server/Systems/InterestSystem.cs`, `Server/ServerMetrics.cs`; трафик — `ProtocolCodec.EncodeWorld` (неизменные поля один раз) + кэш в `Client/Net/RemoteServerConnection.cs`, `NetConnection.BytesSent/Received`; боты — `Scripts/Bots/` (`Game.Bots`: `BotClient`, `BotSwarm`), запуск `-bots N -connect` (`Host/LaunchOptions.cs`, `GameRoot.StartBots`); вне Unity — `tools/LoadTest/` (README); тесты — `InterestTests`, `BotTests` |
@@ -244,7 +244,8 @@
 | **Группы и лут** (06 §7.8, вопросы 71, 72) | сервер `Server/Systems/GroupSystem.cs`, `LootSystem.cs` (участие в бою, выбор получателя), `Server/World/GroupData.cs`; `InventorySystem.CanFit`; протокол `Shared/Protocol/GroupCommands.cs`, `GroupSnapshot.cs`, `LootMode.cs`; клиент — `Client/UI/Windows/GroupWindow.cs` (`P`), `Widgets/GroupFramesWidget.cs`, `GroupPromptWidget.cs`, кнопка «В группу» в `TargetFrameWidget.cs`; тесты — `Tests/EditMode/GroupTests.cs` |
 | **Дуэли** (вопрос 70) | сервер `Server/Systems/DuelSystem.cs`, `Server/World/DuelData.cs`; враждебность и помощь — `CombatSystem.AreHostile` / `CanAssist`, PvP — `Server/Systems/CombatContext.cs`; протокол `Shared/Protocol/DuelCommands.cs`, `DuelSnapshot.cs`; клиент — кнопка в `Client/UI/Widgets/TargetFrameWidget.cs`, `DuelWidget.cs`, круг `Client/World/DuelArenaView.cs`; тесты — `Tests/EditMode/DuelTests.cs` |
 | Стартовое меню (одиночная / хост / подключение) | `Client/UI/StartMenuView.cs`; режимы и параметры командной строки — `Host/LaunchOptions.cs`, `Host/GameRoot.cs` |
-| Сборка Windows в один клик (меню Game) | `Editor/BuildMenu.cs` → `My project/Builds/Windows/` (+ `StartServer.bat`, `StopServer.bat`, `StartHost.bat`) |
+| Сборка Windows в один клик (меню Game) | `Editor/BuildMenu.cs` → `My project/Builds/Windows/` (+ `StartServer.bat`, `StopServer.bat` — остановка с сохранением через `server.stop`, `StartHost.bat`); материал фигур для сборки — `Editor/WorldMaterialAsset.cs` → `Resources/Materials/WorldLit.mat`, фигуры — `Client/World/WorldPrimitives.cs` |
+| **Целостность и защита (ревизия v28)** | канонический логин — `CharacterPersistence.Canonical`; атомарная запись — `GameServer.Committed`, `ServerContext.Commit`, `ICommitStore` (`Persistence/Interfaces.cs`), `FileStorage.Commit` / журнал `commit.json`, `CommitRecord` (`MarketRecords.cs`); `null` после `JsonUtility` — `ItemRecords.NullIfEmpty`; сеть — `config.MaxCommandsPerTick`, `HelloTimeoutSeconds` (`ServerNetworkHost.Poll`), очередь приёма — `NetConnection`; движение `NaN` — `GameServer.Handle`; тесты — `Tests/EditMode/IntegrityTests.cs`, JSON как в Unity — `Tests/EditMode/JsonUtilityLike.cs` |
 | Модель клиента и команды | `Client/State/ClientState.cs`, `Client/ClientCommands.cs`, сервисы — `Client/ClientContext.cs` |
 | Локализация (гибрид) | `Client/Localization/` (`ILocalizationService`, JSON-таблица, `UiKeys`) |
 | Ввод (Input Actions в коде), модификаторы | `Client/Input/GameInput.cs`, `ModifierTracker.cs`, `PlayerInputController.cs` |

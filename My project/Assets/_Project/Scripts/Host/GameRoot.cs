@@ -41,6 +41,12 @@ namespace Game.Host
         private const string DisconnectedKey = "menu.disconnected";
         private const string HostingKey = "menu.hosting";
         private const string PidFileName = "server.pid";
+        /// <summary>StopServer.bat creates this file: the dedicated server saves everyone and quits (no forced kill, no lost progress).</summary>
+        private const string StopFileName = "server.stop";
+        private const float StopCheckSeconds = 1f;
+        /// <summary>After a long hitch the dedicated server catches up at most this many ticks per frame (no spiral).</summary>
+        private const int MaxDedicatedTicksPerFrame = 10;
+        private float _stopCheckTimer;
 
         private enum Mode
         {
@@ -417,6 +423,33 @@ namespace Game.Host
             WritePidFile();
         }
 
+        /// <summary>Files of the dedicated server (pid, stop request) live next to the executable.</summary>
+        private static string ServerFile(string name) => Path.Combine(Path.GetDirectoryName(Application.dataPath), name);
+
+        private static bool StopRequested()
+        {
+            try
+            {
+                return File.Exists(ServerFile(StopFileName));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private static void DeleteServerFile(string name)
+        {
+            try
+            {
+                File.Delete(ServerFile(name));
+            }
+            catch (Exception exception)
+            {
+                Log.Warning(LogTags.Server, $"Cannot delete {name}: {exception.Message}");
+            }
+        }
+
         /// <summary>server.pid next to the executable: StopServer.bat stops exactly this process.</summary>
         private static void WritePidFile()
         {
@@ -426,8 +459,8 @@ namespace Game.Host
             }
             try
             {
-                string folder = Path.GetDirectoryName(Application.dataPath);
-                File.WriteAllText(Path.Combine(folder, PidFileName), Process.GetCurrentProcess().Id.ToString());
+                DeleteServerFile(StopFileName);
+                File.WriteAllText(ServerFile(PidFileName), Process.GetCurrentProcess().Id.ToString());
             }
             catch (Exception exception)
             {
@@ -437,13 +470,33 @@ namespace Game.Host
 
         private void UpdateDedicated(float dt)
         {
+            _stopCheckTimer += dt;
+            if (_stopCheckTimer >= StopCheckSeconds)
+            {
+                _stopCheckTimer = 0f;
+                if (StopRequested())
+                {
+                    Log.Info(LogTags.Server, "Stop requested: saving everyone and quitting");
+                    Leave();
+                    DeleteServerFile(StopFileName);
+                    DeleteServerFile(PidFileName);
+                    Application.Quit();
+                    return;
+                }
+            }
             _persistence?.Update(dt);
             _dedicatedAccumulator += dt;
-            while (_dedicatedAccumulator >= _server.TickInterval)
+            int ticks = 0;
+            while (_dedicatedAccumulator >= _server.TickInterval && ticks < MaxDedicatedTicksPerFrame)
             {
                 _dedicatedAccumulator -= _server.TickInterval;
                 _networkHost.Poll();
                 _server.Tick();
+                ticks++;
+            }
+            if (ticks == MaxDedicatedTicksPerFrame)
+            {
+                _dedicatedAccumulator = 0f;
             }
             if (_networkHost.ConnectedPlayers != _lastPlayerCount)
             {
@@ -530,7 +583,7 @@ namespace Game.Host
 
         private static void CreateGround(float halfSize)
         {
-            GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            GameObject ground = WorldPrimitives.Create(PrimitiveType.Plane);
             ground.name = "Ground";
             float scale = halfSize * 2f / PlaneSizeUnits;
             ground.transform.localScale = new Vector3(scale, 1f, scale);

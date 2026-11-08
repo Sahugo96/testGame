@@ -15,6 +15,8 @@ namespace Game.Network
     {
         private const int HeaderBytes = 4;
         private const int MaxQueuedFrames = 1024;
+        /// <summary>Received messages not yet taken by the game loop; more means a flooding peer: the connection closes.</summary>
+        private const int MaxQueuedIncoming = 1024;
 
         private readonly TcpClient _client;
         private readonly NetworkStream _stream;
@@ -34,6 +36,9 @@ namespace Game.Network
         }
 
         public string RemoteAddress { get; }
+
+        /// <summary>When the connection was made (UTC): a peer silent too long before Hello is dropped.</summary>
+        public DateTime OpenedAt { get; } = DateTime.UtcNow;
 
         public bool IsClosed => _closed;
 
@@ -135,6 +140,11 @@ namespace Game.Network
                         return;
                     }
                     Interlocked.Add(ref _bytesReceived, HeaderBytes + length);
+                    if (_incoming.Count >= MaxQueuedIncoming)
+                    {
+                        Close("receive queue overflow");
+                        return;
+                    }
                     _incoming.Enqueue(ProtocolCodec.Decode(payload));
                 }
             }

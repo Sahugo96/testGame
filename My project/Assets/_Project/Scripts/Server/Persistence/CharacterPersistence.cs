@@ -40,19 +40,45 @@ namespace Game.Server.Persistence
             _config = server.Context.Content.Config;
             _server.AccountSettingsChanged += SaveAccountSettings;
             _server.Friends.Store = this;
+            _market = market;
             if (market != null)
             {
                 MarketSerializer.Import(_server.Market, market.LoadMarket(), _server.Context.Content, _server.Context.Time);
                 _server.MarketLoaded();
-                // Characters first, then the market: a crash in between loses the operation instead of duplicating items.
-                _server.MarketCommitted += touched =>
+            }
+            _server.Committed += OnCommitted;
+        }
+
+        private readonly IMarketStore _market;
+
+        /// <summary>
+        /// Items or gold changed owners (trade, shop, mail, order): the characters involved and the market are written as one
+        /// commit — atomically when the store supports it (ICommitStore), otherwise characters first, then the market.
+        /// </summary>
+        private void OnCommitted(IReadOnlyList<EntityId> players, bool marketChanged)
+        {
+            var records = new List<CharacterRecord>();
+            foreach (EntityId id in players)
+            {
+                CharacterRecord record = Record(id);
+                if (record != null)
                 {
-                    foreach (EntityId id in touched)
-                    {
-                        Save(id);
-                    }
-                    market.SaveMarket(MarketSerializer.Export(_server.Market));
-                };
+                    records.Add(record);
+                }
+            }
+            MarketRecord market = marketChanged && _market != null ? MarketSerializer.Export(_server.Market) : null;
+            if (_characters is ICommitStore commits)
+            {
+                commits.Commit(records.ToArray(), market);
+                return;
+            }
+            foreach (CharacterRecord record in records)
+            {
+                _characters.SaveCharacter(record);
+            }
+            if (market != null)
+            {
+                _market.SaveMarket(market);
             }
         }
 
@@ -66,7 +92,9 @@ namespace Game.Server.Persistence
         {
             newToken = null;
             error = null;
-            login = (login ?? string.Empty).Trim();
+            // One account per spelling: file names are case-insensitive, so "Bob" and "bob" are the same account and must
+            // also be the same online session (otherwise the same character could be loaded twice).
+            login = Canonical(login);
             if (!trusted && !Authenticate(login, password, token, out error))
             {
                 return EntityId.None;
@@ -78,6 +106,11 @@ namespace Game.Server.Persistence
             if (!_server.HasClass(classId))
             {
                 error = Game.Network.NetworkConstants.ErrorUnknownClass;
+                return EntityId.None;
+            }
+            // A new character's name is checked before the account's live session is replaced: a typo must not kick it.
+            if (_characters.LoadCharacter(login, classId) == null && !CanCreate(login, name, out error))
+            {
                 return EntityId.None;
             }
             if (!trusted)
@@ -134,18 +167,28 @@ namespace Game.Server.Persistence
 
         public void Save(EntityId id)
         {
+            CharacterRecord record = Record(id);
+            if (record != null)
+            {
+                _characters.SaveCharacter(record);
+            }
+        }
+
+        /// <summary>The save of an online character, or null.</summary>
+        private CharacterRecord Record(EntityId id)
+        {
             if (!_online.TryGetValue(id, out var owner))
             {
-                return;
+                return null;
             }
             CharacterRecord record = _server.ExportPlayer(id);
             if (record == null)
             {
-                return;
+                return null;
             }
             record.AccountLogin = owner.login;
             record.SavedAt = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
-            _characters.SaveCharacter(record);
+            return record;
         }
 
         /// <summary>Account settings (auto-pickup) are saved at once; the local account gets a record on first change.</summary>
@@ -163,7 +206,32 @@ namespace Game.Server.Persistence
             _accounts.SaveAccount(account);
         }
 
-        string Systems.IFriendStore.AccountOf(string characterName) => _characters.LoginOfName(characterName);
+        /// <summary>The canonical form of a login: trimmed, lower case (accounts are case-insensitive).</summary>
+        public static string Canonical(string login) => (login ?? string.Empty).Trim().ToLowerInvariant();
+
+        private bool CanCreate(string login, string name, out string error)
+        {
+            error = null;
+            name = (name ?? string.Empty).Trim();
+            if (!IsValidName(name))
+            {
+                error = LoginErrors.BadName;
+                return false;
+            }
+            string owner = _characters.LoginOfName(name);
+            if (owner != null && Canonical(owner) != login)
+            {
+                error = LoginErrors.NameTaken;
+                return false;
+            }
+            return true;
+        }
+
+        string Systems.IFriendStore.AccountOf(string characterName)
+        {
+            string login = _characters.LoginOfName(characterName);
+            return login == null ? null : Canonical(login);
+        }
 
         string Systems.IFriendStore.AccountOf(EntityId player) => _online.TryGetValue(player, out var owner) ? owner.login : null;
 

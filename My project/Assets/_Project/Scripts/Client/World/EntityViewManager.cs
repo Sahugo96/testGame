@@ -38,7 +38,7 @@ namespace Game.Client.World
             _interval = tickInterval;
             ctx.State.WorldChanged += OnWorldChanged;
             ctx.State.PlayerChanged += OnPlayerChanged;
-            GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            GameObject marker = WorldPrimitives.Create(PrimitiveType.Cylinder);
             marker.name = "TargetMarker";
             Destroy(marker.GetComponent<Collider>());
             marker.GetComponent<Renderer>().material.color = WorldPalette.TargetMarker;
@@ -117,7 +117,7 @@ namespace Game.Client.World
         private EntityView Create(EntitySnapshot entity)
         {
             Vector3 scale = ShapeFor(entity, out PrimitiveType shape);
-            GameObject go = GameObject.CreatePrimitive(shape);
+            GameObject go = WorldPrimitives.Create(shape);
             go.name = $"{entity.Kind}_{entity.DefinitionId}_{entity.Id.Value}";
             go.transform.SetParent(transform, false);
             go.transform.localScale = scale;
