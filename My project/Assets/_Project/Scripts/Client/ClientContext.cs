@@ -17,6 +17,8 @@ namespace Game.Client
         public Font Font;
         public Camera Camera;
         public ModifierTracker Modifiers;
+        /// <summary>User settings (module 17): device graphics, account keys / camera / interface.</summary>
+        public Settings.SettingsService Settings;
 
         /// <summary>Station (whetstone, anvil, ...) the player is interacting with; set when its window is opened by clicking the station.</summary>
         public Game.Shared.Core.EntityId ActiveStation;

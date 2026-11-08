@@ -10,6 +10,7 @@ using Game.Client.CameraRig;
 using Game.Client.Input;
 using Game.Client.Localization;
 using Game.Client.Net;
+using Game.Client.Settings;
 using Game.Client.State;
 using Game.Client.UI;
 using Game.Client.World;
@@ -212,6 +213,12 @@ namespace Game.Host
             };
             _input = new GameInput(_content.HudWindows);
             _input.Enable();
+            // Module 17: device settings now; account settings when the server sends them after login.
+            _ctx.Settings = new SettingsService(_content.Config, new LocalSettingsStore(), new KeyRebinder(_input));
+            _ctx.Settings.Bind(() => _ctx.Commands);
+            _ctx.Settings.LoadLocal();
+            _ctx.State.AccountSettings += _ctx.Settings.ApplyAccount;
+            _ctx.Settings.AccountApplied += settings => _cameraRig.Configure(settings.CameraSensitivity, settings.InvertY, settings.ZoomSpeed);
 
             _views = new GameObject("Entities").AddComponent<EntityViewManager>();
             _views.Init(_ctx, 1f / _content.Config.TickRate);

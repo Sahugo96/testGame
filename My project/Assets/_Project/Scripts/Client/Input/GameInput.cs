@@ -73,6 +73,13 @@ namespace Game.Client.Input
         public static string DisplayKey(int slotIndex) =>
             slotIndex < SkillSlotKeys.Length ? InputControlPath.ToHumanReadableString(SkillSlotKeys[slotIndex], InputControlPath.HumanReadableStringOptions.OmitDevice) : string.Empty;
 
+        /// <summary>The key of a window as shown on menus: the account's key if rebound (module 17), else the registry's.</summary>
+        public static string WindowKey(ClientContext ctx, HudWindowDto window) =>
+            ctx.Settings != null ? ctx.Settings.Keys.WindowKey(window.Id) : DisplayBinding(window.HotkeyBinding);
+
+        /// <summary>The key of a skill slot of the first row as shown on the panel (rebound or built-in).</summary>
+        public static string SkillKey(ClientContext ctx, int slot) => ctx.Settings != null ? ctx.Settings.Keys.SkillKey(slot) : DisplayKey(slot);
+
         public static string DisplayBinding(string binding) =>
             string.IsNullOrEmpty(binding) ? string.Empty : InputControlPath.ToHumanReadableString(binding, InputControlPath.HumanReadableStringOptions.OmitDevice);
 

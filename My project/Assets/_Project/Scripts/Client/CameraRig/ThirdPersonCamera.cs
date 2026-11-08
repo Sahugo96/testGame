@@ -23,6 +23,9 @@ namespace Game.Client.CameraRig
         private float _yaw;
         private float _pitch = StartPitch;
         private float _distance = StartDistance;
+        private float _sensitivity = 1f;
+        private bool _invertY;
+        private float _zoomSpeed = 1f;
         private Vector3 _focus;
 
         /// <summary>Horizontal camera angle, used to turn WASD into a world direction.</summary>
@@ -37,10 +40,19 @@ namespace Game.Client.CameraRig
             }
         }
 
+        /// <summary>Account settings (module 17): sensitivity and zoom are multipliers of the built-in steps.</summary>
+        public void Configure(float sensitivity, bool invertY, float zoomSpeed)
+        {
+            _sensitivity = sensitivity;
+            _invertY = invertY;
+            _zoomSpeed = zoomSpeed;
+        }
+
         public void Rotate(Vector2 delta)
         {
-            _yaw += delta.x * LookSensitivity;
-            _pitch = Mathf.Clamp(_pitch - delta.y * LookSensitivity, MinPitch, MaxPitch);
+            float speed = LookSensitivity * _sensitivity;
+            _yaw += delta.x * speed;
+            _pitch = Mathf.Clamp(_pitch - (_invertY ? -delta.y : delta.y) * speed, MinPitch, MaxPitch);
         }
 
         /// <summary>Zooms one step per wheel notch; only the sign is used because scroll scale differs between platforms.</summary>
@@ -50,7 +62,7 @@ namespace Game.Client.CameraRig
             {
                 return;
             }
-            _distance = Mathf.Clamp(_distance - Mathf.Sign(scroll) * ZoomStep, MinDistance, MaxDistance);
+            _distance = Mathf.Clamp(_distance - Mathf.Sign(scroll) * ZoomStep * _zoomSpeed, MinDistance, MaxDistance);
         }
 
         private void LateUpdate()

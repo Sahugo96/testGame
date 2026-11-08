@@ -33,8 +33,15 @@ namespace Game.Client.UI.Widgets
             _root = root;
         }
 
+        /// <summary>Interface setting "damage numbers" (module 17).</summary>
+        public bool Enabled = true;
+
         public void Show(CombatEventMessage message)
         {
+            if (!Enabled)
+            {
+                return;
+            }
             bool numeric = message.Kind == CombatEventKind.Damage || message.Kind == CombatEventKind.Heal || message.Kind == CombatEventKind.ResourceRestore;
             if (!numeric || (message.Amount <= 0 && message.Absorbed <= 0) || !_views.TryGetView(message.TargetId, out EntityView view))
             {

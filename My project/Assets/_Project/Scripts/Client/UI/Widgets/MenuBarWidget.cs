@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game.Client.Input;
 using Game.Shared.Content.Dto;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Client.UI.Widgets
 {
@@ -24,14 +25,24 @@ namespace Game.Client.UI.Widgets
             for (int i = 0; i < windows.Count; i++)
             {
                 HudWindowDto window = windows[i];
-                string hotkey = GameInput.DisplayBinding(window.HotkeyBinding);
-                string caption = ctx.Text.Get(window.NameKey) + (string.IsNullOrEmpty(hotkey) ? string.Empty : $" ({hotkey})");
-                var button = UiFactory.Button($"Menu_{window.Id}", zone, ctx.Font, caption, () => toggleWindow(window.Id));
+                var button = UiFactory.Button($"Menu_{window.Id}", zone, ctx.Font, Caption(ctx, window), () => toggleWindow(window.Id));
+                Text label = button.GetComponentInChildren<Text>();
+                if (ctx.Settings != null)
+                {
+                    ctx.Settings.Keys.KeysChanged += () => label.text = Caption(ctx, window);
+                }
                 var rect = (RectTransform)button.transform;
                 float x = alignRight ? -i * step : i * step;
                 Vector2 anchor = alignRight ? new Vector2(1f, 0f) : Vector2.zero;
                 UiFactory.Place(rect, anchor, anchor, new Vector2(x, 0f), new Vector2(HudLayout.MenuButtonWidth, HudLayout.MenuButtonHeight));
             }
+        }
+
+        /// <summary>"Name (key)"; the key follows rebinding (module 17).</summary>
+        private static string Caption(ClientContext ctx, HudWindowDto window)
+        {
+            string hotkey = GameInput.WindowKey(ctx, window);
+            return ctx.Text.Get(window.NameKey) + (string.IsNullOrEmpty(hotkey) ? string.Empty : $" ({hotkey})");
         }
     }
 }

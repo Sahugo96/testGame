@@ -30,6 +30,10 @@ namespace Game.Client.UI.Widgets
             _views = views;
         }
 
+        /// <summary>Interface settings (module 17): names over characters and their health bars. Drawing only.</summary>
+        public bool ShowNames = true;
+        public bool ShowHealth = true;
+
         public void Tick()
         {
             _stale.Clear();
@@ -47,7 +51,7 @@ namespace Game.Client.UI.Widgets
                     _plates[entity.Id] = plate;
                 }
                 Vector3 screen = _ctx.Camera.WorldToScreenPoint(view.transform.position + Vector3.up * HudLayout.NameplateHeight);
-                bool visible = screen.z > 0f;
+                bool visible = screen.z > 0f && ShowNames;
                 plate.Root.gameObject.SetActive(visible);
                 if (!visible)
                 {
@@ -56,7 +60,7 @@ namespace Game.Client.UI.Widgets
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local);
                 plate.Root.anchoredPosition = local;
                 plate.Name.text = string.IsNullOrEmpty(entity.DisplayName) ? _ctx.Text.Get(entity.NameKey) : entity.DisplayName;
-                plate.Health.SetVisible(entity.MaxHealth > 0f);
+                plate.Health.SetVisible(entity.MaxHealth > 0f && ShowHealth);
                 plate.Health.Set(entity.MaxHealth > 0f ? entity.Health / entity.MaxHealth : 0f, string.Empty);
             }
             foreach (EntityId id in _stale)

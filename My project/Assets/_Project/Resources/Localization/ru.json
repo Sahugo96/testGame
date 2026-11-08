@@ -2563,6 +2563,242 @@
   {
    "Key": "notify.order_cancelled",
    "Value": "Заказ №{0} отменён"
+  },
+  {
+   "Key": "ui.settings_account_hint",
+   "Value": "Эти настройки хранятся в аккаунте и подтянутся на другом компьютере."
+  },
+  {
+   "Key": "ui.settings_all_defaults",
+   "Value": "Всё по умолчанию"
+  },
+  {
+   "Key": "ui.settings_apply",
+   "Value": "Применить"
+  },
+  {
+   "Key": "ui.settings_cancel",
+   "Value": "Отмена"
+  },
+  {
+   "Key": "ui.settings_confirm_resolution",
+   "Value": "Оставить новое разрешение? Вернётся через {0} с"
+  },
+  {
+   "Key": "ui.settings_conflict",
+   "Value": "Клавиша «{0}» уже занята: «{1}»"
+  },
+  {
+   "Key": "ui.settings_damage_numbers",
+   "Value": "Числа урона"
+  },
+  {
+   "Key": "ui.settings_defaults",
+   "Value": "По умолчанию"
+  },
+  {
+   "Key": "ui.settings_fps_limit",
+   "Value": "Ограничение кадров"
+  },
+  {
+   "Key": "ui.settings_graphics_hint",
+   "Value": "Графика хранится на этом компьютере. Новое разрешение нужно подтвердить."
+  },
+  {
+   "Key": "ui.settings_invert_y",
+   "Value": "Инверсия по вертикали"
+  },
+  {
+   "Key": "ui.settings_keep",
+   "Value": "Оставить"
+  },
+  {
+   "Key": "ui.settings_keys_hint",
+   "Value": "Клавиши: нажмите на клавишу, затем новую (Esc — отмена). Хранятся в аккаунте."
+  },
+  {
+   "Key": "ui.settings_minus",
+   "Value": "−"
+  },
+  {
+   "Key": "ui.settings_nameplate_health",
+   "Value": "Полосы здоровья над персонажами"
+  },
+  {
+   "Key": "ui.settings_nameplates",
+   "Value": "Имена над персонажами"
+  },
+  {
+   "Key": "ui.settings_no_limit",
+   "Value": "без ограничения"
+  },
+  {
+   "Key": "ui.settings_off",
+   "Value": "Выкл."
+  },
+  {
+   "Key": "ui.settings_on",
+   "Value": "Вкл."
+  },
+  {
+   "Key": "ui.settings_opacity",
+   "Value": "Непрозрачность панелей"
+  },
+  {
+   "Key": "ui.settings_percent",
+   "Value": "{0}%"
+  },
+  {
+   "Key": "ui.settings_plus",
+   "Value": "+"
+  },
+  {
+   "Key": "ui.settings_preset",
+   "Value": "Качество графики"
+  },
+  {
+   "Key": "ui.settings_press_key",
+   "Value": "Нажмите клавишу…"
+  },
+  {
+   "Key": "ui.settings_replace",
+   "Value": "Заменить"
+  },
+  {
+   "Key": "ui.settings_resolution",
+   "Value": "Разрешение"
+  },
+  {
+   "Key": "ui.settings_resolution_value",
+   "Value": "{0} × {1}"
+  },
+  {
+   "Key": "ui.settings_revert",
+   "Value": "Вернуть"
+  },
+  {
+   "Key": "ui.settings_sensitivity",
+   "Value": "Чувствительность камеры"
+  },
+  {
+   "Key": "ui.settings_show_fps",
+   "Value": "Показывать FPS"
+  },
+  {
+   "Key": "ui.settings_swap",
+   "Value": "Поменять"
+  },
+  {
+   "Key": "ui.settings_tab_controls",
+   "Value": "Управление"
+  },
+  {
+   "Key": "ui.settings_tab_game",
+   "Value": "Игровые"
+  },
+  {
+   "Key": "ui.settings_tab_graphics",
+   "Value": "Графика"
+  },
+  {
+   "Key": "ui.settings_tab_interface",
+   "Value": "Интерфейс"
+  },
+  {
+   "Key": "ui.settings_ui_scale",
+   "Value": "Масштаб интерфейса"
+  },
+  {
+   "Key": "ui.settings_unbound",
+   "Value": "не назначена"
+  },
+  {
+   "Key": "ui.settings_vsync",
+   "Value": "Вертикальная синхронизация"
+  },
+  {
+   "Key": "ui.settings_window_mode",
+   "Value": "Режим окна"
+  },
+  {
+   "Key": "ui.settings_zoom_speed",
+   "Value": "Скорость приближения"
+  },
+  {
+   "Key": "hud.fps",
+   "Value": "FPS: {0}"
+  },
+  {
+   "Key": "graphics.mode.FullScreenWindow",
+   "Value": "Без рамки"
+  },
+  {
+   "Key": "graphics.mode.ExclusiveFullScreen",
+   "Value": "Полный экран"
+  },
+  {
+   "Key": "graphics.mode.Windowed",
+   "Value": "В окне"
+  },
+  {
+   "Key": "graphics.preset.low",
+   "Value": "Низкое"
+  },
+  {
+   "Key": "graphics.preset.medium",
+   "Value": "Среднее"
+  },
+  {
+   "Key": "graphics.preset.high",
+   "Value": "Высокое"
+  },
+  {
+   "Key": "graphics.preset.ultra",
+   "Value": "Ультра"
+  },
+  {
+   "Key": "bind.move_up",
+   "Value": "Вперёд"
+  },
+  {
+   "Key": "bind.move_down",
+   "Value": "Назад"
+  },
+  {
+   "Key": "bind.move_left",
+   "Value": "Влево"
+  },
+  {
+   "Key": "bind.move_right",
+   "Value": "Вправо"
+  },
+  {
+   "Key": "bind.cycle_target",
+   "Value": "Следующая цель"
+  },
+  {
+   "Key": "bind.chat",
+   "Value": "Чат: написать / отправить"
+  },
+  {
+   "Key": "bind.modifier_empowered",
+   "Value": "Усиленный вариант навыка"
+  },
+  {
+   "Key": "bind.modifier_weakened",
+   "Value": "Ослабленный вариант навыка"
+  },
+  {
+   "Key": "bind.skill_slot",
+   "Value": "Навык, ячейка {0}"
+  },
+  {
+   "Key": "bind.window",
+   "Value": "Окно «{0}»"
+  },
+  {
+   "Key": "error.settings_invalid",
+   "Value": "Настройки не приняты сервером"
   }
  ]
 }

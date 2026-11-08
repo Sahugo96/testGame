@@ -47,7 +47,12 @@ namespace Game.Client.UI.Widgets
                         new Vector2(-rowWidth * 0.5f + column * step, row * step), new Vector2(HudLayout.SkillSlotSize, HudLayout.SkillSlotSize));
                     if (row == 0)
                     {
-                        slot.SetHotkey(GameInput.DisplayKey(column));
+                        int key = column;
+                        slot.SetHotkey(GameInput.SkillKey(ctx, key));
+                        if (ctx.Settings != null)
+                        {
+                            ctx.Settings.Keys.KeysChanged += () => slot.SetHotkey(GameInput.SkillKey(ctx, key));
+                        }
                     }
                     int captured = index;
                     slot.Bind(() => OnEnter(captured), OnExit, button => OnClick(captured, button));

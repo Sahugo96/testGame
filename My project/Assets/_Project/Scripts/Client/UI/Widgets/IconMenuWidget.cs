@@ -37,11 +37,17 @@ namespace Game.Client.UI.Widgets
                     new Vector2(HudLayout.SkillSlotSize, HudLayout.SkillSlotSize));
                 slot.SetFilled(true);
                 slot.SetCaption(ctx.Text.Get(window.NameKey + ShortSuffix), HudPalette.Text);
-                string hotkey = GameInput.DisplayBinding(window.HotkeyBinding);
-                slot.SetHotkey(hotkey);
-                string tooltipText = ctx.Text.Get(window.NameKey) + (string.IsNullOrEmpty(hotkey) ? string.Empty : "\n" + ctx.Text.Format(UiKeys.Hotkey, hotkey));
+                slot.SetHotkey(GameInput.WindowKey(ctx, window));
+                if (ctx.Settings != null)
+                {
+                    ctx.Settings.Keys.KeysChanged += () => slot.SetHotkey(GameInput.WindowKey(ctx, window));
+                }
                 string windowId = window.Id;
-                slot.Bind(() => tooltip.Show(tooltipText), tooltip.Hide, button =>
+                slot.Bind(() =>
+                {
+                    string hotkey = GameInput.WindowKey(ctx, window);
+                    tooltip.Show(ctx.Text.Get(window.NameKey) + (string.IsNullOrEmpty(hotkey) ? string.Empty : "\n" + ctx.Text.Format(UiKeys.Hotkey, hotkey)));
+                }, tooltip.Hide, button =>
                 {
                     if (button == PointerEventData.InputButton.Left)
                     {

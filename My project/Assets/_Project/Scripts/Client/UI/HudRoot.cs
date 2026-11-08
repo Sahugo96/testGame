@@ -40,6 +40,9 @@ namespace Game.Client.UI
         private GroupPromptWidget _groupPrompt;
         private TradePhase _tradePhase;
         private Text _mail;
+        private CanvasScaler _scaler;
+        private CanvasGroup _hudGroup;
+        private FpsCounterWidget _fps;
         private const float MailBadgeHeight = 24f;
         private DuelArenaView _arena;
         private string _classId;
@@ -62,6 +65,7 @@ namespace Game.Client.UI
             Canvas canvas = gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
+            _scaler = scaler;
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = HudLayout.ReferenceResolution;
             scaler.matchWidthOrHeight = HudLayout.ScalerMatch;
@@ -71,6 +75,7 @@ namespace Game.Client.UI
             RectTransform root = (RectTransform)transform;
             RectTransform worldLayer = Layer("WorldLayer", root);
             RectTransform hudLayer = Layer("HudLayer", root);
+            _hudGroup = hudLayer.gameObject.AddComponent<CanvasGroup>();
             RectTransform windowLayer = Layer("WindowLayer", root);
             _tooltip = new Tooltip(root, ctx.Font);
 
@@ -90,6 +95,7 @@ namespace Game.Client.UI
             _mail = UiFactory.Label("MailBadge", topRight, ctx.Font, HudLayout.FontNormal, TextAnchor.MiddleRight, HudPalette.Cast);
             UiFactory.Place(_mail.rectTransform, Vector2.one, Vector2.one, new Vector2(0f, -HudLayout.BarHeight - HudLayout.MinimapSize - HudLayout.Gap * 3f),
                 new Vector2(HudLayout.MinimapSize, MailBadgeHeight));
+            _fps = new FpsCounterWidget(topRight, ctx, -HudLayout.BarHeight - HudLayout.MinimapSize - HudLayout.Gap * 4f - MailBadgeHeight);
             SkillBar = new SkillBarWidget(bottomCenter, ctx, _tooltip);
             float skillRowsHeight = ctx.Content.Config.SkillBarRows * (HudLayout.SkillSlotSize + HudLayout.Gap);
             _consumables = new ConsumableBarWidget(bottomCenter, ctx, _tooltip, skillRowsHeight + HudLayout.Gap);
@@ -119,7 +125,30 @@ namespace Game.Client.UI
             ctx.State.Notification += _message.Show;
             ctx.WhisperRequested += Chat.StartWhisper;
             ctx.WindowRequested += Windows.Open;
+            if (ctx.Settings != null)
+            {
+                ctx.Settings.AccountApplied += ApplyAccountSettings;
+                ctx.Settings.LocalApplied += ApplyLocalSettings;
+                ApplyAccountSettings(ctx.Settings.Account);
+                if (ctx.Settings.Local != null)
+                {
+                    ApplyLocalSettings(ctx.Settings.Local);
+                }
+            }
         }
+
+        /// <summary>Interface settings (module 17): UI scale through the Canvas Scaler, HUD opacity, names and damage numbers.</summary>
+        private void ApplyAccountSettings(AccountSettingsSnapshot settings)
+        {
+            float scale = settings.UiScale > 0f ? settings.UiScale : 1f;
+            _scaler.referenceResolution = HudLayout.ReferenceResolution / scale;
+            _hudGroup.alpha = settings.PanelOpacity;
+            _combatText.Enabled = settings.DamageNumbers;
+            _nameplates.ShowNames = settings.Nameplates;
+            _nameplates.ShowHealth = settings.NameplateHealth;
+        }
+
+        private void ApplyLocalSettings(Settings.LocalSettings settings) => _fps.SetVisible(settings.ShowFps);
 
         /// <summary>Persistent info line bottom-left (e.g. "hosting on port ..."); empty string hides it.</summary>
         public void ShowInfo(string text)
@@ -175,6 +204,11 @@ namespace Game.Client.UI
             _ctx.State.Notification -= _message.Show;
             _ctx.WhisperRequested -= Chat.StartWhisper;
             _ctx.WindowRequested -= Windows.Open;
+            if (_ctx.Settings != null)
+            {
+                _ctx.Settings.AccountApplied -= ApplyAccountSettings;
+                _ctx.Settings.LocalApplied -= ApplyLocalSettings;
+            }
             Chat.Destroy();
             _minimap.Destroy();
         }
@@ -187,6 +221,7 @@ namespace Game.Client.UI
             }
             float dt = Time.deltaTime;
             _tooltip.Follow(_pointer());
+            _fps.Tick(Time.unscaledDeltaTime);
             _minimap.Follow(_views.LocalPlayerTransform);
             _minimap.Tick();
             _message.Tick(dt);
