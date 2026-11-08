@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 813f2ee1074d5dc4d9eae3f0adb7d0fa, type: 3}
+  m_Name: reserve_mana_potion
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.ItemCard
+  Order: 12
+  Data:
+    Id: reserve_mana_potion
+    Deprecated: 0
+    NameKey: item.reserve_mana_potion.name
+    DescriptionKey: item.reserve_mana_potion.desc
+    Icon: reserve_mana_potion
+    Category: Consumable
+    Rarity: Common
+    ItemLevel: 1
+    RequiredLevel: 1
+    ClassRestriction: []
+    Binding: None
+    Components:
+    - Type: Consumable
+      SlotType: 
+      ArmorType: 
+      WeaponType: 
+      Hands: 0
+      Stats: []
+      Effect: RestoreResource
+      StatusId: 
+      Resource: ReserveMana
+      Amount: 60
+      CooldownGroup: reserve_mana_potion
+      Cooldown: 15
+      MaxStack: 0
+      Rules: 
+      SocketTypes: []
+      SocketCount: 0
+      SocketChance: 0
+      SocketType: 
+      Pool: 
+    - Type: Stackable
+      SlotType: 
+      ArmorType: 
+      WeaponType: 
+      Hands: 0
+      Stats: []
+      Effect: 
+      StatusId: 
+      Resource: 
+      Amount: 0
+      CooldownGroup: 
+      Cooldown: 0
+      MaxStack: 20
+      Rules: 
+      SocketTypes: []
+      SocketCount: 0
+      SocketChance: 0
+      SocketType: 
+      Pool: 

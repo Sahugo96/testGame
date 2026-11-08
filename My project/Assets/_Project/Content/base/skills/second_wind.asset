@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c26c22839ab914f47a20a1c86a45f878, type: 3}
+  m_Name: second_wind
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.SkillCard
+  Order: 5
+  Data:
+    Id: second_wind
+    NameKey: skill.second_wind.name
+    DescriptionKey: skill.second_wind.desc
+    Icon: wind
+    TargetType: Self
+    Range: 0
+    UsesGlobalCooldown: 0
+    Variants:
+    - Kind: Default
+      Costs:
+      - Resource: ReserveMana
+        Amount: 40
+        Mode: Flat
+      CastTime: 0
+      Cooldown: 20
+      Effects:
+      - Key: Heal
+        Amount: 60
+        Resource: 
+        StatusId: 
+        DispelType: 
+      - Key: ApplyStatus
+        Amount: 0
+        Resource: 
+        StatusId: second_wind_regen
+        DispelType: 
+      Flags:
+      - Instant

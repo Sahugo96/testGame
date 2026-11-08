@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d97dfb0050056c40a2c4a3c344ee3a8, type: 3}
+  m_Name: balance_limits
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.BalanceLimitsCard
+  Order: 0
+  Data:
+    StatCaps:
+    - Stat: MaxHealth
+      Op: Add
+      Max: 100
+    - Stat: MaxMainMana
+      Op: Add
+      Max: 40
+    - Stat: MaxReserveMana
+      Op: Add
+      Max: 40
+    - Stat: HealthRegen
+      Op: Add
+      Max: 2
+    - Stat: MainManaRegen
+      Op: Add
+      Max: 1.5
+    - Stat: Defense
+      Op: Add
+      Max: 0.15
+    - Stat: CritChance
+      Op: Add
+      Max: 0.1
+    - Stat: CritSize
+      Op: Add
+      Max: 0.4
+    - Stat: DamageBonus
+      Op: Add
+      Max: 0.3
+    - Stat: MoveSpeed
+      Op: Add
+      Max: 0.6
+    - Stat: MoveSpeed
+      Op: PercentAdd
+      Max: 0.1
+    - Stat: Strength
+      Op: Add
+      Max: 8
+    - Stat: Intelligence
+      Op: Add
+      Max: 8
+    - Stat: Stamina
+      Op: Add
+      Max: 8
+    RarityFactors:
+    - Rarity: Common
+      Factor: 1
+    - Rarity: Uncommon
+      Factor: 1.5
+    - Rarity: Rare
+      Factor: 2
+    - Rarity: Mythic
+      Factor: 3
+    - Rarity: Legendary
+      Factor: 4
+    - Rarity: Divine
+      Factor: 5
+    StatusFactor: 1

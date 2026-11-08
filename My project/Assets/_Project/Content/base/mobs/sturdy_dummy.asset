@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd7d1f992ca1f9148a705d828ea52cd2, type: 3}
+  m_Name: sturdy_dummy
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.MobCard
+  Order: 1
+  Data:
+    Id: sturdy_dummy
+    Deprecated: 0
+    NameKey: mob.sturdy_dummy
+    Faction: Training
+    MaxHealth: 600
+    HealthRegen: 15
+    Defense: 0.5
+    RespawnSeconds: 8
+    VisualColor: '#8064A2'
+    VisualShape: Capsule
+    ExperienceReward: 0
+    Drops: []
+    AiProfile: passive
+    GoldMin: 0
+    GoldMax: 0

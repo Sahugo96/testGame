@@ -1,0 +1,214 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6a8c90af767af4fbb8c392f3e3a870, type: 3}
+  m_Name: config
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.ConfigCard
+  Order: 0
+  Data:
+    TickRate: 30
+    BootstrapScene: SampleScene
+    DefaultClassId: mage
+    PlayerFaction: Players
+    WorldHalfSize: 40
+    CombatExitSeconds: 6
+    ReserveRegenOutOfCombatFactor: 0.1
+    ManaConsumableInCombatFactor: 0.5
+    GlobalCooldownSeconds: 0.8
+    MasteryMinEfficiency: 0.3
+    MasteryMaxEfficiency: 1.5
+    InstructorMasteryCap: 0.65
+    DefenseCap: 1
+    CritChanceCap: 3
+    MinDamage: 1
+    AttributePointsPerLevel: 5
+    TargetCycleRange: 30
+    InteractRange: 4
+    DefaultPort: 7777
+    NetworkWorldEveryTicks: 2
+    NetworkStateEveryTicks: 3
+    MaxPlayerNameLength: 16
+    DuelRequestRange: 10
+    DuelRequestSeconds: 20
+    DuelCountdownSeconds: 3
+    DuelMaxSeconds: 180
+    DuelRadius: 25
+    DuelLoserHealth: 1
+    PvpDamageMultiplier: 1
+    GroupMaxSize: 5
+    GroupInviteSeconds: 60
+    LootVoteSeconds: 30
+    LootVoteRepeatSeconds: 30
+    LootRadius: 50
+    GroupLogSize: 20
+    ThreatPerDamage: 1
+    HealThreatFactor: 0.5
+    MobGlobalCooldownSeconds: 1
+    MobAggroThreat: 1
+    MobReturnArriveDistance: 0.5
+    GroupXpGapShares:
+    - 1
+    - 0.86
+    - 0.72
+    - 0.69
+    - 0.66
+    - 0.64
+    - 0.52
+    - 0.39
+    - 0.26
+    - 0.13
+    InterestRadius: 30
+    InterestCellSize: 10
+    MetricsWindowTicks: 300
+    MetricsLogSeconds: 10
+    AutosaveSeconds: 60
+    PasswordIterations: 20000
+    MinPasswordLength: 4
+    SessionTokenHours: 24
+    BackupsToKeep: 5
+    MaxCommandsPerTick: 32
+    HelloTimeoutSeconds: 10
+    LootSeconds: 300
+    LootScatterRadius: 1
+    AffixCountByRarity: 000000000100000002000000030000000400000000000000
+    SocketTypes:
+    - Core
+    - Soul
+    - Mineral
+    - Universal
+    UniversalSocketType: Universal
+    GoldCurrencyId: gold
+    StartingGold: 100
+    WalletIdempotencyMemory: 10000
+    ChatMaxLength: 200
+    ChatMinIntervalSeconds: 0.5
+    FriendsMax: 50
+    ChatDefaultTabs:
+    - NameKey: chat.tab.general
+      Channels:
+      - Say
+      - World
+      - Group
+      - Whisper
+      - System
+    - NameKey: chat.tab.private
+      Channels:
+      - Whisper
+    ChatTabsMax: 6
+    ChatTabNameMax: 16
+    RaidMaxSize: 50
+    RaidSubgroupSize: 5
+    TradeRange: 10
+    TradeRequestSeconds: 30
+    TradeMaxItems: 12
+    TradeMoveTolerance: 0.05
+    ShopTiers:
+    - Id: small
+      NameKey: shop.tier.small
+      Commission: 0.15
+      MaxLots: 6
+      DurationHours: 12
+      RentCost: 20
+    - Id: medium
+      NameKey: shop.tier.medium
+      Commission: 0.1
+      MaxLots: 12
+      DurationHours: 24
+      RentCost: 100
+    - Id: large
+      NameKey: shop.tier.large
+      Commission: 0.05
+      MaxLots: 24
+      DurationHours: 48
+      RentCost: 400
+    ShopNameMax: 24
+    MarketPriceMax: 1000000000
+    MarketPageSize: 10
+    MarketSearchMinIntervalSeconds: 0.5
+    MarketSuspiciousGold: 100000
+    MarketRequestMemory: 2000
+    MailExpireDays: 30
+    MailboxMax: 100
+    MailMaxAttachments: 6
+    MailFeePerAttachment: 5
+    MailSubjectMax: 40
+    MailBodyMax: 300
+    UpgradeOrderHours: 72
+    UpgradeOrdersMax: 5
+    AccountSettings:
+      SchemaVersion: 1
+      MaxBindings: 64
+      MaxBindingIdLength: 48
+      MaxPathLength: 64
+      CameraSensitivity: 1
+      CameraSensitivityMin: 0.2
+      CameraSensitivityMax: 3
+      ZoomSpeed: 1
+      ZoomSpeedMin: 0.2
+      ZoomSpeedMax: 3
+      UiScale: 1
+      UiScaleMin: 0.75
+      UiScaleMax: 1.5
+      PanelOpacity: 1
+      PanelOpacityMin: 0.3
+      InvertY: 0
+      DamageNumbers: 1
+      Nameplates: 1
+      NameplateHealth: 1
+    GraphicsPresets:
+    - Id: low
+      NameKey: graphics.preset.low
+      QualityLevel: Mobile
+      RenderScale: 0.7
+      ShadowDistance: 20
+      Msaa: 1
+      LodBias: 0.5
+      MinVideoMemoryMb: 0
+    - Id: medium
+      NameKey: graphics.preset.medium
+      QualityLevel: Mobile
+      RenderScale: 1
+      ShadowDistance: 40
+      Msaa: 1
+      LodBias: 1
+      MinVideoMemoryMb: 2048
+    - Id: high
+      NameKey: graphics.preset.high
+      QualityLevel: PC
+      RenderScale: 1
+      ShadowDistance: 60
+      Msaa: 2
+      LodBias: 1.5
+      MinVideoMemoryMb: 4096
+    - Id: ultra
+      NameKey: graphics.preset.ultra
+      QualityLevel: PC
+      RenderScale: 1
+      ShadowDistance: 100
+      Msaa: 4
+      LodBias: 2
+      MinVideoMemoryMb: 8192
+    FpsLimits: 1e0000003c000000780000009000000000000000
+    ResolutionConfirmSeconds: 15
+    MainHandSwapCooldownSeconds: 15
+    MainHandSwapRiskWindowSeconds: 5
+    MainHandSwapPenaltySeconds: 60
+    OffHandSwapCooldownSeconds: 5
+    PlayerRespawnSeconds: 5
+    StartingLevel: 1
+    SkillBarRows: 3
+    SkillBarSlotsPerRow: 12
+    ConsumableBarSlots: 8
+    HostileFactions:
+    - A: Players
+      B: Training
+    - A: Players
+      B: Monsters

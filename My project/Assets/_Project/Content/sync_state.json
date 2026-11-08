@@ -1,0 +1,80 @@
+{
+    "Entries": [
+        {
+            "Path": "base/affixes",
+            "Hash": "cf742197a1570cadd16de23e6ea4195b8d43157573324b1a1defc448e6131076"
+        },
+        {
+            "Path": "base/ai_profiles",
+            "Hash": "3e44afed8814aacbb8e8e0304024874afefade497af1629f3d53cdab9d898113"
+        },
+        {
+            "Path": "base/bag_sections",
+            "Hash": "70c5c6bd72e4a999398b1d835c7d497686ae590e76a27b7589606f2a6f8a418c"
+        },
+        {
+            "Path": "base/balance_limits",
+            "Hash": "c8213ea2900396b039c82bc68f0ce8558181e3250eff1a8b47bb150cd3fc7070"
+        },
+        {
+            "Path": "base/classes",
+            "Hash": "844475538dff93d88f22da26598c8cc799f66733cab9da03b8472b08e7d00217"
+        },
+        {
+            "Path": "base/config",
+            "Hash": "7507cb912f66348b80a6c88fcf403af4a1c500264c1002f8b8cdce22bef60e34"
+        },
+        {
+            "Path": "base/currencies",
+            "Hash": "57762a602222b16a72d899b1f10320538e49792d7a035cb1ec2c88ea811bd814"
+        },
+        {
+            "Path": "base/equipment_slots",
+            "Hash": "57c7826a09d24c6a0c6a2d516fc2db58b9a57278e6d1418ec65b855a4f2cdd17"
+        },
+        {
+            "Path": "base/hud_windows",
+            "Hash": "4911516e4ae278a2dfcb671da51f97034f9065a739fc01c5b8c3f13338d495ce"
+        },
+        {
+            "Path": "base/items",
+            "Hash": "749b86b4e3f97426d48824a8729d129333a012f67d49738768e8fb7a868d4e77"
+        },
+        {
+            "Path": "base/levels",
+            "Hash": "9c5c1731283fb734abf7dd5cf2d1f29e2267cd27eec4242d4e222d06a7f63d0d"
+        },
+        {
+            "Path": "base/mobs",
+            "Hash": "fbac2f1f0f47b055308211ccbe35132fdc8792e54e01cf2f1b9003a2cb21d813"
+        },
+        {
+            "Path": "base/pack",
+            "Hash": "f19c805c5e28ef8d585fd3c72ac731a65ed2680843bd838844cc0d3ce743b801"
+        },
+        {
+            "Path": "base/recipes",
+            "Hash": "51aa512487114ab70576df7e172ab23c1ca35616561f3461df10b74399c9f97f"
+        },
+        {
+            "Path": "base/skill_mastery",
+            "Hash": "f89ae276521d25d88e9f2795621a094173f703516d2f3c7d9d7d8471777845e8"
+        },
+        {
+            "Path": "base/skills",
+            "Hash": "3db953e424763b1d8f9789dce898e597eef02f6839a495a08d4460493e707575"
+        },
+        {
+            "Path": "base/status_effects",
+            "Hash": "0b5f778f8278366ac6ed14c989756a7bef643a548337a15a084775e084fcb0f9"
+        },
+        {
+            "Path": "base/upgrade_rules",
+            "Hash": "4040baf1d61149164e84332d5280f34d0c947dc5b1d13f67c8bf78e848ea878d"
+        },
+        {
+            "Path": "base/world",
+            "Hash": "70e2414c3584ca292106877d0190369e10a6ad6602f241a1b8a45004b95ed65d"
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003e3a0e385498945bde6dfb8de788b4, type: 3}
+  m_Name: stunned
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.StatusEffectCard
+  Order: 1
+  Data:
+    Id: stunned
+    NameKey: status.stunned.name
+    DescriptionKey: status.stunned.desc
+    Icon: stunned
+    Kind: Debuff
+    Category: Control
+    Duration: 1.5
+    TickInterval: 0
+    TickAmount: 0
+    Stacking: Refresh
+    MaxStacks: 1
+    Dispellable: 1
+    DispelType: Physical
+    ImmunityTags: []
+    ExclusiveGroup: 
+    ShieldAmount: 0
+    Control:
+    - Stun
+    Modifiers: []
+    HandlerKey: 

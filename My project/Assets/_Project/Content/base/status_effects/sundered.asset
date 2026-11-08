@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003e3a0e385498945bde6dfb8de788b4, type: 3}
+  m_Name: sundered
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.StatusEffectCard
+  Order: 2
+  Data:
+    Id: sundered
+    NameKey: status.sundered.name
+    DescriptionKey: status.sundered.desc
+    Icon: sundered
+    Kind: Debuff
+    Category: Stat
+    Duration: 8
+    TickInterval: 0
+    TickAmount: 0
+    Stacking: AddStacks
+    MaxStacks: 3
+    Dispellable: 1
+    DispelType: Physical
+    ImmunityTags: []
+    ExclusiveGroup: 
+    ShieldAmount: 0
+    Control: []
+    Modifiers:
+    - Stat: Defense
+      Op: Add
+      Value: -0.05
+    HandlerKey: 

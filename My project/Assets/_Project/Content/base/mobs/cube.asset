@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd7d1f992ca1f9148a705d828ea52cd2, type: 3}
+  m_Name: cube
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.MobCard
+  Order: 2
+  Data:
+    Id: cube
+    Deprecated: 0
+    NameKey: mob.cube
+    Faction: Training
+    MaxHealth: 1
+    HealthRegen: 0
+    Defense: 0
+    RespawnSeconds: 5
+    VisualColor: '#E6B422'
+    VisualShape: Cube
+    ExperienceReward: 10
+    Drops:
+    - ItemId: philosopher_stone_shard
+      Chance: 0.5
+      Count: 1
+    AiProfile: passive
+    GoldMin: 1
+    GoldMax: 3

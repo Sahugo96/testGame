@@ -1,0 +1,141 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c41a081affb5a54c98c1ae9c7ebeee4, type: 3}
+  m_Name: mage
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.ClassCard
+  Order: 0
+  Data:
+    Id: mage
+    NameKey: class.mage.name
+    DescriptionKey: class.mage.desc
+    Role: Damage
+    PrimaryAttribute: Intelligence
+    BaseStats:
+    - Stat: MaxHealth
+      Value: 0
+    - Stat: MaxMainMana
+      Value: 85
+    - Stat: MaxReserveMana
+      Value: 85
+    - Stat: HealthRegen
+      Value: 2
+    - Stat: MainManaRegen
+      Value: 3
+    - Stat: Defense
+      Value: 0.05
+    - Stat: CritChance
+      Value: 0.1
+    - Stat: CritSize
+      Value: 1.5
+    - Stat: MoveSpeed
+      Value: 5
+    StartingAttributes:
+    - Stat: Strength
+      Value: 5
+    - Stat: Intelligence
+      Value: 15
+    - Stat: Stamina
+      Value: 8
+    AttributeEffects:
+    - Attribute: Intelligence
+      Stat: DamageBonus
+      PerPoint: 0.01
+    - Attribute: Intelligence
+      Stat: MaxMainMana
+      PerPoint: 1
+    - Attribute: Intelligence
+      Stat: MaxReserveMana
+      PerPoint: 1
+    - Attribute: Stamina
+      Stat: MaxHealth
+      PerPoint: 10
+    Skills:
+    - SkillId: fireball
+      LevelUnlock: 1
+      StartingMastery: 0.35
+    - SkillId: arcane_mend
+      LevelUnlock: 1
+      StartingMastery: 0.2
+    - SkillId: reserve_nova
+      LevelUnlock: 1
+      StartingMastery: 0.2
+    EquipmentRules:
+      RingSlots: 4
+      AllowedArmorTypes:
+      - Cloth
+      AllowedWeaponTypes:
+      - Staff
+      - Wand
+    StartingItems:
+    - ItemId: apprentice_staff
+      Count: 1
+      Equip: 1
+    - ItemId: cloth_hood
+      Count: 1
+      Equip: 1
+    - ItemId: cloth_robe
+      Count: 1
+      Equip: 1
+    - ItemId: ring_of_focus
+      Count: 1
+      Equip: 0
+    - ItemId: iron_helm
+      Count: 1
+      Equip: 0
+    - ItemId: health_potion
+      Count: 5
+      Equip: 0
+    - ItemId: iron_skin_elixir
+      Count: 2
+      Equip: 0
+    - ItemId: fury_elixir
+      Count: 2
+      Equip: 0
+    - ItemId: main_mana_potion
+      Count: 5
+      Equip: 0
+    - ItemId: reserve_mana_potion
+      Count: 3
+      Equip: 0
+    - ItemId: adept_gloves
+      Count: 1
+      Equip: 0
+    - ItemId: adept_trousers
+      Count: 1
+      Equip: 0
+    - ItemId: adept_boots
+      Count: 1
+      Equip: 0
+    - ItemId: swordsman_helm
+      Count: 1
+      Equip: 0
+    - ItemId: philosopher_stone_shard
+      Count: 20
+      Equip: 0
+    - ItemId: iron_ore
+      Count: 12
+      Equip: 0
+    - ItemId: smith_letter
+      Count: 1
+      Equip: 0
+    - ItemId: amber_amulet
+      Count: 1
+      Equip: 0
+    - ItemId: wolf_core
+      Count: 1
+      Equip: 0
+    - ItemId: wolf_soul
+      Count: 1
+      Equip: 0
+    - ItemId: golem_heart
+      Count: 1
+      Equip: 0

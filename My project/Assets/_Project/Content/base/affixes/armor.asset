@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfaf7bc1bece19443a0ea54e9d06d8ad, type: 3}
+  m_Name: armor
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.AffixPoolCard
+  Order: 1
+  Data:
+    Id: armor
+    Stats:
+    - Stat: MaxHealth
+      Op: Add
+      Min: 10
+      Max: 30
+    - Stat: Defense
+      Op: Add
+      Min: 0.01
+      Max: 0.03
+    - Stat: HealthRegen
+      Op: Add
+      Min: 0.2
+      Max: 0.6
+    - Stat: Stamina
+      Op: Add
+      Min: 1
+      Max: 3

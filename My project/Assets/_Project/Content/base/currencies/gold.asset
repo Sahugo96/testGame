@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a29a57e3ca04a84fbb6c865a68c5334, type: 3}
+  m_Name: gold
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.CurrencyCard
+  Order: 0
+  Data:
+    Id: gold
+    NameKey: currency.gold
+    Icon: gold
+    Kind: Soft
+    Scope: Character
+    Tradable: 1
+    Cap: 2000000000

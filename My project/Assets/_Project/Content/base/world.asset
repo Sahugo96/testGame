@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11f90080da83c024f88383c7e8e69b9b, type: 3}
+  m_Name: world
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.WorldCard
+  Order: 0
+  Data:
+    PlayerSpawnX: 0
+    PlayerSpawnZ: 0
+    Spawns:
+    - MobId: training_dummy
+      X: 6
+      Z: 10
+    - MobId: training_dummy
+      X: -6
+      Z: 10
+    - MobId: training_dummy
+      X: 2
+      Z: 2.5
+    - MobId: sturdy_dummy
+      X: 0
+      Z: 18
+    - MobId: cube
+      X: -10
+      Z: 6
+    - MobId: cube
+      X: -13
+      Z: 9
+    - MobId: cube
+      X: -16
+      Z: 4
+    - MobId: cube
+      X: -12
+      Z: 13
+    - MobId: cube
+      X: -18
+      Z: 10
+    - MobId: cube
+      X: -9
+      Z: 15
+    - MobId: cube
+      X: -15
+      Z: 16
+    - MobId: cube
+      X: -20
+      Z: 14
+    - MobId: wolf
+      X: 18
+      Z: 18
+    - MobId: wolf
+      X: 22
+      Z: 15
+    - MobId: wolf
+      X: 15
+      Z: 23
+    - MobId: stone_golem
+      X: -25
+      Z: 28
+    Stations:
+    - Id: whetstone_1
+      Type: Whetstone
+      NameKey: npc.whetstone
+      X: -6
+      Z: -5
+      VisualColor: '#8A8F96'
+      VisualShape: Cylinder
+    - Id: anvil_1
+      Type: Anvil
+      NameKey: npc.anvil
+      X: 6
+      Z: -5
+      VisualColor: '#3E4248'
+      VisualShape: Cube
+    - Id: market_1
+      Type: Market
+      NameKey: npc.market
+      X: -10
+      Z: 8
+      VisualColor: '#D9B44A'
+      VisualShape: Cube
+    - Id: mailbox_1
+      Type: Mailbox
+      NameKey: npc.mailbox
+      X: -6
+      Z: 8
+      VisualColor: '#3A6FB0'
+      VisualShape: Cube
+    - Id: shop_spot_1
+      Type: ShopSpot
+      NameKey: npc.shop_spot
+      X: 4
+      Z: 10
+      VisualColor: '#A08C6A'
+      VisualShape: Cylinder
+    - Id: shop_spot_2
+      Type: ShopSpot
+      NameKey: npc.shop_spot
+      X: 8
+      Z: 10
+      VisualColor: '#A08C6A'
+      VisualShape: Cylinder
+    - Id: shop_spot_3
+      Type: ShopSpot
+      NameKey: npc.shop_spot
+      X: 12
+      Z: 10
+      VisualColor: '#A08C6A'
+      VisualShape: Cylinder
+    - Id: shop_spot_4
+      Type: ShopSpot
+      NameKey: npc.shop_spot
+      X: 16
+      Z: 10
+      VisualColor: '#A08C6A'
+      VisualShape: Cylinder
+    MerchantVisual:
+      Id: merchant
+      Type: Merchant
+      NameKey: npc.merchant
+      X: 0
+      Z: 0
+      VisualColor: '#C9A227'
+      VisualShape: Cube

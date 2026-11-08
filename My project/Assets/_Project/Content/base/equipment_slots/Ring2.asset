@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 194295ca4efb2364c8b4296ce9a7c35e, type: 3}
+  m_Name: Ring2
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.EquipmentSlotCard
+  Order: 6
+  Data:
+    Id: Ring2
+    SlotType: Ring
+    Group: Jewelry
+    NameKey: slot.ring2
+    MinRingSlots: 2
+    IsMainHand: 0
+    IsOffHand: 0
+    SocketCap: 0

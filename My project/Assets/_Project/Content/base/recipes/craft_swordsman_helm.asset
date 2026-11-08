@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1838b7cfd0a8e1647b8899bb7b4f56b8, type: 3}
+  m_Name: craft_swordsman_helm
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.RecipeCard
+  Order: 2
+  Data:
+    Id: craft_swordsman_helm
+    Deprecated: 0
+    NameKey: recipe.swordsman_helm
+    Profession: blacksmithing
+    RequiredLevel: 1
+    Station: Anvil
+    CraftTime: 3
+    SuccessChance: 0.05
+    XpReward: 25
+    Inputs:
+    - ItemId: iron_ore
+      Count: 5
+    - ItemId: philosopher_stone_shard
+      Count: 2
+    Outputs:
+    - ItemId: swordsman_helm
+      Count: 1

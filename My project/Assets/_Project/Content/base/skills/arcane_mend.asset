@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c26c22839ab914f47a20a1c86a45f878, type: 3}
+  m_Name: arcane_mend
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.SkillCard
+  Order: 1
+  Data:
+    Id: arcane_mend
+    NameKey: skill.arcane_mend.name
+    DescriptionKey: skill.arcane_mend.desc
+    Icon: mend
+    TargetType: Ally
+    Range: 20
+    UsesGlobalCooldown: 1
+    Variants:
+    - Kind: Default
+      Costs:
+      - Resource: Mana
+        Amount: 25
+        Mode: Flat
+      CastTime: 1
+      Cooldown: 6
+      Effects:
+      - Key: Heal
+        Amount: 35
+        Resource: 
+        StatusId: 
+        DispelType: 
+      Flags:
+      - Interruptible
+    - Kind: Empowered
+      Costs:
+      - Resource: Mana
+        Amount: 42
+        Mode: Flat
+      CastTime: 1.5
+      Cooldown: 8
+      Effects:
+      - Key: Heal
+        Amount: 56
+        Resource: 
+        StatusId: 
+        DispelType: 
+      - Key: ApplyStatus
+        Amount: 0
+        Resource: 
+        StatusId: arcane_ward
+        DispelType: 
+      Flags:
+      - Interruptible

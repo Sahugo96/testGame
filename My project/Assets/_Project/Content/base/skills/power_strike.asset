@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c26c22839ab914f47a20a1c86a45f878, type: 3}
+  m_Name: power_strike
+  m_EditorClassIdentifier: Game.EditorTools::Game.EditorTools.Content.SkillCard
+  Order: 3
+  Data:
+    Id: power_strike
+    NameKey: skill.power_strike.name
+    DescriptionKey: skill.power_strike.desc
+    Icon: strike
+    TargetType: Enemy
+    Range: 3
+    UsesGlobalCooldown: 1
+    Variants:
+    - Kind: Default
+      Costs:
+      - Resource: Mana
+        Amount: 15
+        Mode: Flat
+      CastTime: 0
+      Cooldown: 4
+      Effects:
+      - Key: Damage
+        Amount: 35
+        Resource: 
+        StatusId: 
+        DispelType: 
+      Flags:
+      - Instant
+    - Kind: Empowered
+      Costs:
+      - Resource: Mana
+        Amount: 26
+        Mode: Flat
+      CastTime: 0
+      Cooldown: 6
+      Effects:
+      - Key: Damage
+        Amount: 56
+        Resource: 
+        StatusId: 
+        DispelType: 
+      - Key: ApplyStatus
+        Amount: 0
+        Resource: 
+        StatusId: stunned
+        DispelType: 
+      Flags:
+      - Instant
+    - Kind: Weakened
+      Costs:
+      - Resource: Mana
+        Amount: 8
+        Mode: Flat
+      CastTime: 0
+      Cooldown: 2
+      Effects:
+      - Key: Damage
+        Amount: 21
+        Resource: 
+        StatusId: 
+        DispelType: 
+      Flags:
+      - Instant
