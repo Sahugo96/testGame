@@ -16,7 +16,7 @@ namespace Game.Host
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void StartGame()
         {
-            GameConfig config = UnityContentLoader.Load<GameConfig>(ContentFileNames.Config);
+            GameConfig config = UnityContentLoader.LoadConfig();
             if (config == null || SceneManager.GetActiveScene().name != config.BootstrapScene)
             {
                 return;

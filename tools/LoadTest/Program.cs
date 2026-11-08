@@ -24,7 +24,7 @@ namespace Game.LoadTest
         {
             Log.SetSink(new QuietSink());
             var errors = new List<string>();
-            ContentDatabase content = ServerContentFactory.Build(JsonContentLoader.Load(), errors);
+            ContentDatabase content = ServerContentFactory.Build(JsonContentLoader.Load(errors), errors);
             if (errors.Count > 0)
             {
                 Console.Error.WriteLine(string.Join(Environment.NewLine, errors));

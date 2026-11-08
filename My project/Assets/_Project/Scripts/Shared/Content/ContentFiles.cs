@@ -2,7 +2,10 @@ using Game.Shared.Content.Dto;
 
 namespace Game.Shared.Content
 {
-    /// <summary>Raw content files as loaded from JSON (by Unity's JsonUtility in the game, by System.Text.Json in .NET tests).</summary>
+    /// <summary>
+    /// Raw content as loaded from JSON and merged across packs (module 4): by Unity's JsonUtility in the game, by
+    /// System.Text.Json made JsonUtility-like in .NET tools. File types are listed in Packs.ContentFileTable.
+    /// </summary>
     public sealed class ContentFiles
     {
         public GameConfig Config;
@@ -22,5 +25,12 @@ namespace Game.Shared.Content
         public AiProfilesFileDto AiProfiles;
         public CurrenciesFileDto Currencies;
         public AffixPoolsFileDto AffixPools;
+        public BalanceLimitsDto BalanceLimits;
+
+        /// <summary>Loaded packs in order ("base" first) and the hash of everything loaded (compared at login).</summary>
+        public string[] Packs = new string[0];
+        public string Hash;
+        /// <summary>Every id ever released (content_ids.json); null when the file is missing.</summary>
+        public ContentIdLedgerDto Ids;
     }
 }

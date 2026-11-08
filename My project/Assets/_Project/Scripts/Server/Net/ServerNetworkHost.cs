@@ -195,6 +195,12 @@ namespace Game.Server.Net
                 Refuse(peer, NetworkConstants.ErrorVersionMismatch);
                 return;
             }
+            string contentHash = _server.Context.Content.ContentHash;
+            if (!string.IsNullOrEmpty(hello.ContentHash) && !string.IsNullOrEmpty(contentHash) && hello.ContentHash != contentHash)
+            {
+                Refuse(peer, NetworkConstants.ErrorContentMismatch);
+                return;
+            }
             if (!_server.HasClass(hello.ClassId))
             {
                 Refuse(peer, NetworkConstants.ErrorUnknownClass);

@@ -2,7 +2,7 @@ using System;
 
 namespace Game.Shared.Content.Dto
 {
-    /// <summary>File wrapper: Resources/Content/ai_profiles.json.</summary>
+    /// <summary>File wrapper: Resources/Content/<pack>/ai_profiles.json (merged across packs).</summary>
     [Serializable]
     public class AiProfilesFileDto
     {

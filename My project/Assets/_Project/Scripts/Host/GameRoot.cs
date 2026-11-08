@@ -94,7 +94,7 @@ namespace Game.Host
             Log.SetSink(new UnityLogSink());
             Application.runInBackground = true;
             var errors = new List<string>();
-            _content = ServerContentFactory.Build(UnityContentLoader.LoadAll(), errors);
+            _content = ServerContentFactory.Build(UnityContentLoader.LoadAll(errors), errors);
             if (errors.Count > 0)
             {
                 foreach (string error in errors)
@@ -288,7 +288,7 @@ namespace Game.Host
             string token = _token;
             ShowMenu(_ctx.Text.Get(ConnectingKey));
             // Connecting may take up to ConnectTimeoutMs: do it off the main thread so the window keeps drawing.
-            _pendingJoin = Task.Run(() => NetworkClientSession.Connect(address, port, playerName, classId, login, password, token));
+            _pendingJoin = Task.Run(() => NetworkClientSession.Connect(address, port, playerName, classId, login, password, token, _content.ContentHash));
         }
 
         private void CompleteJoin()

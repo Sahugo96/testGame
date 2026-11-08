@@ -1,0 +1,101 @@
+{
+    "StatCaps": [
+        {
+            "Stat": "MaxHealth",
+            "Op": "Add",
+            "Max": 100
+        },
+        {
+            "Stat": "MaxMainMana",
+            "Op": "Add",
+            "Max": 40
+        },
+        {
+            "Stat": "MaxReserveMana",
+            "Op": "Add",
+            "Max": 40
+        },
+        {
+            "Stat": "HealthRegen",
+            "Op": "Add",
+            "Max": 2
+        },
+        {
+            "Stat": "MainManaRegen",
+            "Op": "Add",
+            "Max": 1.5
+        },
+        {
+            "Stat": "Defense",
+            "Op": "Add",
+            "Max": 0.15
+        },
+        {
+            "Stat": "CritChance",
+            "Op": "Add",
+            "Max": 0.1
+        },
+        {
+            "Stat": "CritSize",
+            "Op": "Add",
+            "Max": 0.4
+        },
+        {
+            "Stat": "DamageBonus",
+            "Op": "Add",
+            "Max": 0.3
+        },
+        {
+            "Stat": "MoveSpeed",
+            "Op": "Add",
+            "Max": 0.6
+        },
+        {
+            "Stat": "MoveSpeed",
+            "Op": "PercentAdd",
+            "Max": 0.1
+        },
+        {
+            "Stat": "Strength",
+            "Op": "Add",
+            "Max": 8
+        },
+        {
+            "Stat": "Intelligence",
+            "Op": "Add",
+            "Max": 8
+        },
+        {
+            "Stat": "Stamina",
+            "Op": "Add",
+            "Max": 8
+        }
+    ],
+    "RarityFactors": [
+        {
+            "Rarity": "Common",
+            "Factor": 1
+        },
+        {
+            "Rarity": "Uncommon",
+            "Factor": 1.5
+        },
+        {
+            "Rarity": "Rare",
+            "Factor": 2
+        },
+        {
+            "Rarity": "Mythic",
+            "Factor": 3
+        },
+        {
+            "Rarity": "Legendary",
+            "Factor": 4
+        },
+        {
+            "Rarity": "Divine",
+            "Factor": 5
+        }
+    ],
+    "StatusFactor": 1
+}

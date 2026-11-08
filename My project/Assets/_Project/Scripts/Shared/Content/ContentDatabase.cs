@@ -8,6 +8,9 @@ namespace Game.Shared.Content
     public sealed class ContentDatabase
     {
         public GameConfig Config;
+        /// <summary>Loaded content packs and the hash of their files (module 4; compared at login).</summary>
+        public string[] Packs = new string[0];
+        public string ContentHash;
         public WorldDto World;
         public readonly Dictionary<string, ClassDefinition> Classes = new Dictionary<string, ClassDefinition>();
         public readonly Dictionary<string, SkillDefinition> Skills = new Dictionary<string, SkillDefinition>();

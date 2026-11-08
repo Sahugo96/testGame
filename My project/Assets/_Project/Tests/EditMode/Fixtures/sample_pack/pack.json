@@ -1,0 +1,6 @@
+{
+    "Id": "sample",
+    "Version": "1.0.0",
+    "NameKey": "pack.sample.name",
+    "Dependencies": [ "base" ]
+}

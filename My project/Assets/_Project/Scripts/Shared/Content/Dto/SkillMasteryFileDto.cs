@@ -2,7 +2,7 @@ using System;
 
 namespace Game.Shared.Content.Dto
 {
-    /// <summary>File wrapper: Resources/Content/skill_mastery.json.</summary>
+    /// <summary>File wrapper: Resources/Content/<pack>/skill_mastery.json (merged across packs).</summary>
     [Serializable]
     public class SkillMasteryFileDto
     {

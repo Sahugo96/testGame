@@ -2,7 +2,7 @@ using System;
 
 namespace Game.Shared.Content.Dto
 {
-    /// <summary>File wrapper: Resources/Content/status_effects.json.</summary>
+    /// <summary>File wrapper: Resources/Content/<pack>/status_effects.json (merged across packs).</summary>
     [Serializable]
     public class StatusEffectsFileDto
     {

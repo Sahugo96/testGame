@@ -2,7 +2,7 @@ using System;
 
 namespace Game.Shared.Content.Dto
 {
-    /// <summary>Global tuning values (no magic numbers in code). File: Resources/Content/config.json.</summary>
+    /// <summary>Global tuning values (no magic numbers in code). File: Resources/Content/base/config.json.</summary>
     [Serializable]
     public class GameConfig
     {

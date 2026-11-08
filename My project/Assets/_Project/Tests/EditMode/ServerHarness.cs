@@ -18,11 +18,20 @@ namespace Game.Tests
         public readonly FixedRandom Random = new FixedRandom(0.99f);
         public readonly InMemoryAuditLog Audit = new InMemoryAuditLog();
 
-        public ServerHarness()
+        public ServerHarness() : this(null)
         {
-            var errors = new List<string>();
-            Content = ServerContentFactory.Build(TestContentLoader.LoadFiles(), errors);
-            Assert.That(errors, Is.Empty, string.Join("\n", errors));
+        }
+
+        /// <summary>A server over the given content (e.g. with an extra pack); null = the real packs.</summary>
+        public ServerHarness(ContentDatabase content)
+        {
+            if (content == null)
+            {
+                var errors = new List<string>();
+                content = ServerContentFactory.Build(TestContentLoader.LoadFiles(), errors);
+                Assert.That(errors, Is.Empty, string.Join("\n", errors));
+            }
+            Content = content;
             Server = new GameServer(Content, Random, Audit);
         }
 

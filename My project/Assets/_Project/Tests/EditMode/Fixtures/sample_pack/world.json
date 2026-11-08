@@ -1,0 +1,4 @@
+{
+    "Spawns": [ { "MobId": "sample_pup", "X": 30, "Z": -30 } ],
+    "Stations": []
+}

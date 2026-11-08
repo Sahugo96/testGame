@@ -1,0 +1,6 @@
+{
+    "Id": "base",
+    "Version": "1.0.0",
+    "NameKey": "pack.base.name",
+    "Dependencies": []
+}

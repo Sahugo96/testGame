@@ -1,0 +1,23 @@
+{
+    "Skills": [
+        {
+            "Id": "mob_sample_nip",
+            "NameKey": "skill.mob_sample_nip.name",
+            "DescriptionKey": "skill.mob_sample_nip.desc",
+            "Icon": "bite",
+            "TargetType": "Enemy",
+            "Range": 2.0,
+            "UsesGlobalCooldown": false,
+            "Variants": [
+                {
+                    "Kind": "Default",
+                    "Costs": [],
+                    "CastTime": 0,
+                    "Cooldown": 2.0,
+                    "Effects": [ { "Key": "Damage", "Amount": 3 } ],
+                    "Flags": [ "Instant" ]
+                }
+            ]
+        }
+    ]
+}

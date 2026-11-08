@@ -63,6 +63,7 @@ namespace Game.Network
                     Str(w, m.Login);
                     Str(w, m.Password);
                     Str(w, m.Token);
+                    Str(w, m.ContentHash);
                     break;
                 case WelcomeMessage m:
                     w.Write((byte)MessageType.Welcome);
@@ -447,7 +448,7 @@ namespace Game.Network
             switch (type)
             {
                 case MessageType.Hello:
-                    return new HelloMessage { ProtocolVersion = r.ReadInt32(), PlayerName = Str(r), ClassId = Str(r), Login = Str(r), Password = Str(r), Token = Str(r) };
+                    return new HelloMessage { ProtocolVersion = r.ReadInt32(), PlayerName = Str(r), ClassId = Str(r), Login = Str(r), Password = Str(r), Token = Str(r), ContentHash = Str(r) };
                 case MessageType.Welcome:
                     return new WelcomeMessage { PlayerId = Id(r), TickRate = r.ReadInt32(), WorldEveryTicks = r.ReadInt32(), Error = Str(r), Token = Str(r) };
                 case MessageType.Move:

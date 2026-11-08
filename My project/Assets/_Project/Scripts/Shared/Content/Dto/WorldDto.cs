@@ -2,7 +2,7 @@ using System;
 
 namespace Game.Shared.Content.Dto
 {
-    /// <summary>Test location layout. File: Resources/Content/world.json.</summary>
+    /// <summary>Test location layout. File: Resources/Content/base/world.json.</summary>
     [Serializable]
     public class WorldDto
     {

@@ -11,6 +11,8 @@ namespace Game.Shared.Content.Dto
     public class RecipeDto
     {
         public string Id;
+        /// <summary>Retired (question 83): kept so old ids stay valid, but no longer offered at the anvil.</summary>
+        public bool Deprecated;
         public string NameKey;
         public string Profession;
         public int RequiredLevel;

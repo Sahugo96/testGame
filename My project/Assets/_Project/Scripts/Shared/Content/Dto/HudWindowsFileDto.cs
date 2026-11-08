@@ -2,7 +2,7 @@ using System;
 
 namespace Game.Shared.Content.Dto
 {
-    /// <summary>File wrapper: Resources/Content/hud_windows.json.</summary>
+    /// <summary>File wrapper: Resources/Content/<pack>/hud_windows.json (merged across packs).</summary>
     [Serializable]
     public class HudWindowsFileDto
     {

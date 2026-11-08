@@ -1,0 +1,17 @@
+{
+    "Items": [
+        {
+            "Id": "sample_pup_fang",
+            "NameKey": "item.sample_pup_fang.name",
+            "DescriptionKey": "item.sample_pup_fang.desc",
+            "Icon": "sample_pup_fang",
+            "Category": "Loot",
+            "Rarity": "Common",
+            "ItemLevel": 1,
+            "RequiredLevel": 1,
+            "ClassRestriction": [],
+            "Binding": "None",
+            "Components": [ { "Type": "Stackable", "MaxStack": 50 } ]
+        }
+    ]
+}

@@ -1,56 +1,49 @@
+using System.Collections.Generic;
 using System.IO;
 using Game.Shared.Content;
-using Game.Shared.Content.Dto;
+using Game.Shared.Content.Packs;
 #if UNITY_5_3_OR_NEWER
 using UnityEngine;
 #else
 using System;
-using System.Text.Json;
 #endif
 
 namespace Game.Tests
 {
-    /// <summary>Loads the real content JSON: with JsonUtility inside Unity, with System.Text.Json made JsonUtility-like in the .NET harness (sim-tests).</summary>
+    /// <summary>
+    /// Loads the real content packs: with JsonUtility inside Unity, with System.Text.Json made JsonUtility-like in the .NET
+    /// harness (sim-tests). Loading errors fail the caller's build of the content like any content error.
+    /// </summary>
     public static class TestContentLoader
     {
+#if UNITY_5_3_OR_NEWER
+        public static string Root => Path.Combine(Application.dataPath, "_Project", "Resources", ContentPacks.Folder);
+
+        /// <summary>Test data packs (Tests/EditMode/Fixtures).</summary>
+        public static string FixturesRoot => Path.Combine(Application.dataPath, "_Project", "Tests", "EditMode", "Fixtures");
+
+        public static object Parse(string json, System.Type type) => JsonUtility.FromJson(json, type);
+#else
+        public static string Root => Path.Combine(AppContext.BaseDirectory, ContentPacks.Folder);
+
+        /// <summary>Test data packs (copied next to the test assembly by sim-tests).</summary>
+        public static string FixturesRoot => Path.Combine(AppContext.BaseDirectory, "Fixtures");
+
+        public static object Parse(string json, Type type) => JsonUtilityLike.Parse(json, type);
+#endif
+
+        /// <summary>The packs; a broken layout (missing file, pack redefining a record) throws with the errors.</summary>
         public static ContentFiles LoadFiles()
         {
-            return new ContentFiles
+            var errors = new List<string>();
+            ContentFiles files = LoadFiles(errors);
+            if (errors.Count > 0)
             {
-                Config = Read<GameConfig>(ContentFileNames.Config),
-                Classes = Read<ClassesFileDto>(ContentFileNames.Classes),
-                Skills = Read<SkillsFileDto>(ContentFileNames.Skills),
-                SkillMastery = Read<SkillMasteryFileDto>(ContentFileNames.SkillMastery),
-                Items = Read<ItemsFileDto>(ContentFileNames.Items),
-                EquipmentSlots = Read<EquipmentSlotsFileDto>(ContentFileNames.EquipmentSlots),
-                Mobs = Read<MobsFileDto>(ContentFileNames.Mobs),
-                World = Read<WorldDto>(ContentFileNames.World),
-                HudWindows = Read<HudWindowsFileDto>(ContentFileNames.HudWindows),
-                BagSections = Read<BagSectionsFileDto>(ContentFileNames.BagSections),
-                UpgradeRules = Read<UpgradeRulesFileDto>(ContentFileNames.UpgradeRules),
-                Levels = Read<LevelsFileDto>(ContentFileNames.Levels),
-                Recipes = Read<RecipesFileDto>(ContentFileNames.Recipes),
-                StatusEffects = Read<StatusEffectsFileDto>(ContentFileNames.StatusEffects),
-                AiProfiles = Read<AiProfilesFileDto>(ContentFileNames.AiProfiles),
-                Currencies = Read<CurrenciesFileDto>(ContentFileNames.Currencies),
-                AffixPools = Read<AffixPoolsFileDto>(ContentFileNames.AffixPools),
-            };
+                throw new System.InvalidOperationException(string.Join("\n", errors));
+            }
+            return files;
         }
 
-#if UNITY_5_3_OR_NEWER
-        private static T Read<T>(string name)
-        {
-            string path = Path.Combine(Application.dataPath, "_Project", "Resources", ContentFileNames.Folder, name + ".json");
-            return JsonUtility.FromJson<T>(File.ReadAllText(path));
-        }
-#else
-        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions { IncludeFields = true };
-
-        private static T Read<T>(string name)
-        {
-            string path = Path.Combine(AppContext.BaseDirectory, ContentFileNames.Folder, name + ".json");
-            return JsonUtilityLike.Normalize(JsonSerializer.Deserialize<T>(File.ReadAllText(path), Options));
-        }
-#endif
+        public static ContentFiles LoadFiles(List<string> errors) => ContentPackLoader.Load(new FileContentSource(Root), Parse, errors);
     }
 }

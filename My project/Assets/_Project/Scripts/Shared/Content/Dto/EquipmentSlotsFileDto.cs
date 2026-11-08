@@ -2,7 +2,7 @@ using System;
 
 namespace Game.Shared.Content.Dto
 {
-    /// <summary>File wrapper: Resources/Content/equipment_slots.json.</summary>
+    /// <summary>File wrapper: Resources/Content/<pack>/equipment_slots.json (merged across packs).</summary>
     [Serializable]
     public class EquipmentSlotsFileDto
     {

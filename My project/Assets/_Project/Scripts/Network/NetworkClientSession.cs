@@ -35,7 +35,11 @@ namespace Game.Network
             Connect(host, port, playerName, classId, playerName, null, null);
 
         /// <summary>Connects with an account (module 13): login + password, or a session token from a previous Welcome.</summary>
-        public static NetworkClientSession Connect(string host, int port, string playerName, string classId, string login, string password, string token)
+        public static NetworkClientSession Connect(string host, int port, string playerName, string classId, string login, string password, string token) =>
+            Connect(host, port, playerName, classId, login, password, token, null);
+
+        /// <summary>With the hash of the client's content (module 4): the server refuses a client with other data.</summary>
+        public static NetworkClientSession Connect(string host, int port, string playerName, string classId, string login, string password, string token, string contentHash)
         {
             var client = new TcpClient();
             if (!client.ConnectAsync(host, port).Wait(NetworkConstants.ConnectTimeoutMs) || !client.Connected)
@@ -47,6 +51,7 @@ namespace Game.Network
             session._connection.Send(new HelloMessage
             {
                 ProtocolVersion = NetworkConstants.ProtocolVersion, PlayerName = playerName, ClassId = classId, Login = login, Password = password, Token = token,
+                ContentHash = contentHash,
             });
             return session;
         }

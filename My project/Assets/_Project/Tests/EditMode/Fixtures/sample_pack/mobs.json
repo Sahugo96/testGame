@@ -1,0 +1,20 @@
+{
+    "Mobs": [
+        {
+            "Id": "sample_pup",
+            "NameKey": "mob.sample_pup",
+            "Faction": "Monsters",
+            "MaxHealth": 30,
+            "HealthRegen": 1,
+            "Defense": 0,
+            "RespawnSeconds": 10,
+            "VisualColor": "#9A8A75",
+            "VisualShape": "Capsule",
+            "ExperienceReward": 8,
+            "AiProfile": "sample_pup",
+            "Drops": [ { "ItemId": "sample_pup_fang", "Chance": 1.0, "Count": 1 } ],
+            "GoldMin": 1,
+            "GoldMax": 2
+        }
+    ]
+}

@@ -1,0 +1,194 @@
+{
+    "Files": [
+        {
+            "File": "affixes",
+            "Ids": [
+                "armor",
+                "jewelry",
+                "weapon"
+            ]
+        },
+        {
+            "File": "ai_profiles",
+            "Ids": [
+                "golem",
+                "passive",
+                "wolf"
+            ]
+        },
+        {
+            "File": "bag_sections",
+            "Ids": [
+                "consumables",
+                "equipment",
+                "loot",
+                "quest",
+                "resources"
+            ]
+        },
+        {
+            "File": "classes",
+            "Ids": [
+                "mage",
+                "warrior"
+            ]
+        },
+        {
+            "File": "currencies",
+            "Ids": [
+                "gold"
+            ]
+        },
+        {
+            "File": "equipment_slots",
+            "Ids": [
+                "Body",
+                "Feet",
+                "Hands",
+                "Head",
+                "Legs",
+                "MainHand",
+                "Necklace",
+                "OffHand",
+                "Ring1",
+                "Ring2",
+                "Ring3",
+                "Ring4"
+            ]
+        },
+        {
+            "File": "hud_windows",
+            "Ids": [
+                "anvil",
+                "backpack",
+                "character",
+                "chattabs",
+                "combatlog",
+                "friends",
+                "group",
+                "mail",
+                "map",
+                "market",
+                "orders",
+                "settings",
+                "shop",
+                "skillbook",
+                "talents",
+                "trade",
+                "whetstone"
+            ]
+        },
+        {
+            "File": "items",
+            "Ids": [
+                "adept_boots",
+                "adept_gloves",
+                "adept_trousers",
+                "amber_amulet",
+                "apprentice_staff",
+                "cloth_hood",
+                "cloth_robe",
+                "cube_fragment",
+                "fury_elixir",
+                "golem_heart",
+                "great_axe",
+                "health_potion",
+                "iron_helm",
+                "iron_ore",
+                "iron_skin_elixir",
+                "iron_sword",
+                "leather_gloves",
+                "main_mana_potion",
+                "philosopher_stone_shard",
+                "plate_armor",
+                "reserve_mana_potion",
+                "ring_of_focus",
+                "smith_letter",
+                "swordsman_armor",
+                "swordsman_boots",
+                "swordsman_gauntlets",
+                "swordsman_greaves",
+                "swordsman_helm",
+                "swordsman_shield",
+                "swordsman_sword",
+                "wolf_core",
+                "wolf_soul",
+                "wooden_shield"
+            ]
+        },
+        {
+            "File": "mobs",
+            "Ids": [
+                "cube",
+                "stone_golem",
+                "sturdy_dummy",
+                "training_dummy",
+                "wolf"
+            ]
+        },
+        {
+            "File": "recipes",
+            "Ids": [
+                "craft_iron_helm",
+                "craft_iron_sword",
+                "craft_swordsman_helm"
+            ]
+        },
+        {
+            "File": "skill_mastery",
+            "Ids": [
+                "arcane_mend",
+                "blood_strike",
+                "fireball",
+                "power_strike",
+                "reserve_nova",
+                "second_wind"
+            ]
+        },
+        {
+            "File": "skills",
+            "Ids": [
+                "arcane_mend",
+                "blood_strike",
+                "fireball",
+                "mob_bite",
+                "mob_slam",
+                "mob_smash",
+                "power_strike",
+                "reserve_nova",
+                "second_wind"
+            ]
+        },
+        {
+            "File": "status_effects",
+            "Ids": [
+                "arcane_ward",
+                "burning",
+                "fury",
+                "iron_skin",
+                "second_wind_regen",
+                "stunned",
+                "sundered"
+            ]
+        },
+        {
+            "File": "upgrade_rules",
+            "Ids": [
+                "default"
+            ]
+        },
+        {
+            "File": "world.stations",
+            "Ids": [
+                "anvil_1",
+                "mailbox_1",
+                "market_1",
+                "shop_spot_1",
+                "shop_spot_2",
+                "shop_spot_3",
+                "shop_spot_4",
+                "whetstone_1"
+            ]
+        }
+    ]
+}

@@ -17,7 +17,7 @@ namespace Game.EditorTools
         private const string ScenePath = "Assets/Scenes/SampleScene.unity";
         private const string OutputFolder = "Builds/Windows";
         private const string ExecutableName = "MyGame.exe";
-        private const string ConfigPath = "Assets/_Project/Resources/Content/config.json";
+        private const string ConfigPath = "Assets/_Project/Resources/Content/base/config.json";
         private const int WindowWidth = 1280;
         private const int WindowHeight = 720;
         /// <summary>How long StopServer.bat waits for the graceful stop before killing the process.</summary>

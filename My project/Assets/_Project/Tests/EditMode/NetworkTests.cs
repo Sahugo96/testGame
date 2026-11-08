@@ -144,7 +144,7 @@ namespace Game.Tests
             }
         }
 
-        private static void Pump(ServerHarness h, ServerNetworkHost host, Func<bool> done)
+        public static void Pump(ServerHarness h, ServerNetworkHost host, Func<bool> done)
         {
             var clock = Stopwatch.StartNew();
             while (clock.ElapsedMilliseconds < TimeoutMs)

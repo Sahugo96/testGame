@@ -7,6 +7,8 @@ namespace Game.Shared.Content.Dto
     public class ItemDto
     {
         public string Id;
+        /// <summary>Retired (question 83): kept so old saves load, but no longer dropped, crafted or spawned.</summary>
+        public bool Deprecated;
         public string NameKey;
         public string DescriptionKey;
         public string Icon;

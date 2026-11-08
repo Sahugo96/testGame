@@ -10,12 +10,16 @@ namespace Game.Shared.Content
     {
         public static ContentDatabase Build(ContentFiles files, ItemComponentRegistry registry, ICollection<string> knownEffectKeys, List<string> errors)
         {
-            var db = new ContentDatabase { Config = files.Config, World = files.World };
+            var db = new ContentDatabase { Config = files.Config, World = files.World, Packs = files.Packs ?? new string[0], ContentHash = files.Hash };
             if (files.Config == null)
             {
                 errors.Add("config: file is missing");
                 return db;
             }
+            // Module 4: released ids must stay (question 83), retired records leave drops, spawns and recipes, limits catch typos (question 84).
+            Ids.ContentIdLedger.Check(files, errors);
+            Ids.ContentDeprecation.Apply(files);
+            BalanceLimitsValidator.Validate(files, errors);
             foreach (FactionRelationDto relation in files.Config.HostileFactions ?? new FactionRelationDto[0])
             {
                 db.HostileFactions.Add((relation.A, relation.B));

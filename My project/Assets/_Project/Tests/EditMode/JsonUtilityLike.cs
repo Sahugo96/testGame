@@ -23,6 +23,10 @@ namespace Game.Tests
             return value;
         }
 
+        /// <summary>System.Text.Json parse of <paramref name="type"/> made JsonUtility-like (content and save loaders in .NET).</summary>
+        public static object Parse(string json, Type type) =>
+            Normalize(System.Text.Json.JsonSerializer.Deserialize(json, type, new System.Text.Json.JsonSerializerOptions { IncludeFields = true }));
+
         private static void Visit(object value, int depth)
         {
             if (value == null || depth > MaxDepth)

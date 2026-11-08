@@ -1,0 +1,14 @@
+{
+    "Profiles": [
+        {
+            "Id": "sample_pup",
+            "Behavior": "Aggressive",
+            "MoveSpeed": 4.0,
+            "AggroRadius": 5,
+            "LeashRadius": 20,
+            "Abilities": [ "mob_sample_nip" ],
+            "Herd": false,
+            "AssistRadius": 0
+        }
+    ]
+}
