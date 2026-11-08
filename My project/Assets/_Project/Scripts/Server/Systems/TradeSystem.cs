@@ -60,6 +60,8 @@ namespace Game.Server.Systems
                 RequestExpiresAt = _ctx.Time + _ctx.Content.Config.TradeRequestSeconds,
                 OfferA = NewOffer(),
                 OfferB = NewOffer(),
+                PositionA = PositionOf(player.EntityId),
+                PositionB = PositionOf(targetId),
             };
             _trades.Add(trade.Id, trade);
             _byPlayer[trade.A] = trade.Id;
@@ -80,6 +82,8 @@ namespace Game.Server.Systems
                 return;
             }
             trade.Open = true;
+            // From now on neither may move (the requester already had to stand still while waiting).
+            trade.PositionB = PositionOf(trade.B);
             _trades[trade.Id] = trade;
         }
 
@@ -114,7 +118,7 @@ namespace Game.Server.Systems
                 CombatEvents.Reject(player, RejectReasons.NotEnoughGold);
                 return;
             }
-            var offer = new TradeOffer { InstanceIds = ids, Gold = command.Gold };
+            var offer = new TradeOffer { InstanceIds = ids, Counts = ids.ConvertAll(id => BagItem(player, id, out _).Count), Gold = command.Gold };
             if (trade.A == player.EntityId)
             {
                 trade.OfferA = offer;
@@ -178,9 +182,21 @@ namespace Game.Server.Systems
                     continue;
                 }
                 bool expired = !trade.Open && _ctx.Time >= trade.RequestExpiresAt;
-                if (expired || !CanStay(trade.A, trade.B))
+                if (expired || !CanStay(trade.A, trade.B) || Moved(trade))
                 {
                     Close(trade, NotificationKeys.TradeCancelled);
+                    continue;
+                }
+                if (trade.Open)
+                {
+                    bool changedA = Refresh(_ctx.GetPlayer(trade.A), ref trade.OfferA);
+                    bool changedB = Refresh(_ctx.GetPlayer(trade.B), ref trade.OfferB);
+                    if (changedA || changedB)
+                    {
+                        trade.OfferA.Confirmed = false;
+                        trade.OfferB.Confirmed = false;
+                        _trades[trade.Id] = trade;
+                    }
                 }
             }
         }
@@ -389,6 +405,48 @@ namespace Game.Server.Systems
             return false;
         }
 
-        private static TradeOffer NewOffer() => new TradeOffer { InstanceIds = new List<string>() };
+        private static TradeOffer NewOffer() => new TradeOffer { InstanceIds = new List<string>(), Counts = new List<int>() };
+
+        /// <summary>The requester moved, or (once open) either side moved: decision of the developer, cancel at once.</summary>
+        private bool Moved(TradeData trade)
+        {
+            float tolerance = _ctx.Content.Config.TradeMoveTolerance;
+            if (Vec3.DistanceXZ(PositionOf(trade.A), trade.PositionA) > tolerance)
+            {
+                return true;
+            }
+            return trade.Open && Vec3.DistanceXZ(PositionOf(trade.B), trade.PositionB) > tolerance;
+        }
+
+        private Vec3 PositionOf(EntityId id) => _ctx.World.Transforms.Has(id) ? _ctx.World.Transforms.Get(id).Position : default;
+
+        /// <summary>
+        /// Drops offered instances that left the bag and notes changed stack sizes (a potion drunk, a stack split) so a side
+        /// never confirms one thing and gives another. True if the offer changed.
+        /// </summary>
+        private static bool Refresh(PlayerCharacter owner, ref TradeOffer offer)
+        {
+            if (owner == null)
+            {
+                return false;
+            }
+            bool changed = false;
+            for (int i = offer.InstanceIds.Count - 1; i >= 0; i--)
+            {
+                ItemInstance item = BagItem(owner, offer.InstanceIds[i], out _);
+                if (item == null)
+                {
+                    offer.InstanceIds.RemoveAt(i);
+                    offer.Counts.RemoveAt(i);
+                    changed = true;
+                }
+                else if (item.Count != offer.Counts[i])
+                {
+                    offer.Counts[i] = item.Count;
+                    changed = true;
+                }
+            }
+            return changed;
+        }
     }
 }

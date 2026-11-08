@@ -119,6 +119,16 @@
       "HotkeyBinding": "",
       "OpenedBy": "Event",
       "Singleton": true
+    },
+    {
+      "Id": "chattabs",
+      "NameKey": "window.chattabs",
+      "Icon": "chat",
+      "MenuZone": "None",
+      "MenuOrder": 0,
+      "HotkeyBinding": "",
+      "OpenedBy": "Menu",
+      "Singleton": true
     }
   ]
 }

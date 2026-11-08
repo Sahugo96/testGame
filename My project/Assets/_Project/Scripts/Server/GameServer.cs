@@ -89,6 +89,7 @@ namespace Game.Server
             _trade = new TradeSystem(_ctx, _inventory, _wallet, _resources);
             _groups.SystemMessage += (groupId, key) => _chat.SystemToGroup(groupId, key, null);
             _friends.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
+            _chat.TabsChanged += player => AccountSettingsChanged?.Invoke(player.EntityId);
             _loot = new LootSystem(_ctx, _groups, _inventory);
             _crafting = new CraftingSystem(_ctx, _inventory, _resources);
             _interest = new InterestSystem(_ctx, _groups, _duels);
@@ -429,6 +430,7 @@ namespace Game.Server
                 player.Outbox.State.CraftProgress = _crafting.Progress(player);
                 player.Outbox.State.Group = _groups.Snapshot(player.EntityId);
                 player.Outbox.State.Friends = _friends.Snapshot(player);
+                player.Outbox.State.ChatTabs = _chat.Tabs(player);
                 player.Outbox.State.Trade = _trade.Snapshot(player.EntityId);
             }
             _tickClock.Stop();
@@ -461,6 +463,9 @@ namespace Game.Server
                 case UseConsumableCommand consume:
                     _inventory.UseConsumable(player, consume);
                     break;
+                case MoveBagItemCommand move:
+                    _inventory.MoveBagItem(player, move);
+                    break;
                 case UpgradeItemCommand upgrade:
                     _upgrades.TryUpgrade(player, upgrade);
                     break;
@@ -474,7 +479,13 @@ namespace Game.Server
                     _chat.Send(player, chat);
                     break;
                 case FriendAddCommand friendAdd:
-                    _friends.Add(player, friendAdd.Name);
+                    _friends.Request(player, friendAdd.Name);
+                    break;
+                case FriendRespondCommand friendRespond:
+                    _friends.Respond(player, friendRespond.Name, friendRespond.Accept);
+                    break;
+                case SetChatTabsCommand chatTabs:
+                    _chat.SetTabs(player, chatTabs.Tabs);
                     break;
                 case FriendRemoveCommand friendRemove:
                     _friends.Remove(player, friendRemove.Name);
@@ -576,7 +587,52 @@ namespace Game.Server
             }
         }
 
-        /// <summary>Friends (module 14): persistence sets NameExists so offline characters can be added.</summary>
+        /// <summary>Chat tabs from the account record (persistence, on login); broken or missing = the defaults.</summary>
+        public void LoadChatTabs(EntityId id, Persistence.ChatTabRecord[] records)
+        {
+            PlayerCharacter player = GetPlayer(id);
+            if (player == null || records == null || records.Length == 0)
+            {
+                return;
+            }
+            var tabs = new ChatTabSnapshot[records.Length];
+            for (int i = 0; i < records.Length; i++)
+            {
+                var channels = new List<ChatChannel>();
+                foreach (string name in records[i]?.Channels ?? new string[0])
+                {
+                    if (Enum.TryParse(name, out ChatChannel channel))
+                    {
+                        channels.Add(channel);
+                    }
+                }
+                tabs[i] = new ChatTabSnapshot { Name = records[i]?.Name, NameKey = records[i]?.NameKey, Channels = channels.ToArray() };
+            }
+            player.ChatTabs = _chat.CleanTabs(tabs);
+        }
+
+        /// <summary>Chat tabs for the account record; null while the player keeps the defaults.</summary>
+        public Persistence.ChatTabRecord[] ExportChatTabs(EntityId id)
+        {
+            ChatTabSnapshot[] tabs = GetPlayer(id)?.ChatTabs;
+            if (tabs == null)
+            {
+                return null;
+            }
+            var records = new Persistence.ChatTabRecord[tabs.Length];
+            for (int i = 0; i < tabs.Length; i++)
+            {
+                var channels = new string[tabs[i].Channels.Length];
+                for (int k = 0; k < channels.Length; k++)
+                {
+                    channels[k] = tabs[i].Channels[k].ToString();
+                }
+                records[i] = new Persistence.ChatTabRecord { Name = tabs[i].Name, NameKey = tabs[i].NameKey, Channels = channels };
+            }
+            return records;
+        }
+
+        /// <summary>Friends (module 14): persistence sets its Store so offline accounts can be asked.</summary>
         public FriendSystem Friends => _friends;
 
         /// <summary>Wallets (05, 7.14.2) for trade, tests and tools.</summary>

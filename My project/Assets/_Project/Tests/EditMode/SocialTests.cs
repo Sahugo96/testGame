@@ -2,6 +2,7 @@ using System.Linq;
 using Game.Network;
 using Game.Server.Items;
 using Game.Server.Players;
+using Game.Shared.Content;
 using Game.Shared.Core;
 using Game.Shared.Protocol;
 using NUnit.Framework;
@@ -75,21 +76,84 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Friends_AddRemove_OnlineState()
+        public void Friends_AreMutual_RequestAcceptDeclineRemove()
         {
             EntityId a = Player("Аня", Vec3.Zero);
-            Player("Боб", Vec3.Zero);
-            _h.Send(a, new FriendAddCommand { Name = "боб" });
+            EntityId b = Player("Боб", Vec3.Zero);
             _h.Send(a, new FriendAddCommand { Name = "Призрак" });
             Assert.That(_h.Rejections(a), Does.Contain(RejectReasons.ChatNoSuchPlayer), "unknown names are refused");
+            _h.Send(a, new FriendAddCommand { Name = "боб" });
             _h.Send(a, new FriendAddCommand { Name = "Боб" });
-            Assert.That(_h.Rejections(a), Does.Contain(RejectReasons.FriendAlready));
-            FriendSnapshot friend = _h.Player(a).Outbox.State.Friends.Single();
-            Assert.That(friend.Name, Is.EqualTo("Боб"));
-            Assert.That(friend.Online, Is.True);
+            Assert.That(_h.Rejections(a), Does.Contain(RejectReasons.FriendRequestPending));
+            FriendSnapshot request = _h.Player(a).Outbox.State.Friends.Single();
+            Assert.That((request.Name, request.State), Is.EqualTo(("Боб", FriendState.Outgoing)), "not a friend until accepted");
+            FriendSnapshot incoming = _h.Player(b).Outbox.State.Friends.Single();
+            Assert.That((incoming.Name, incoming.State), Is.EqualTo(("Аня", FriendState.Incoming)));
+            Assert.That(_h.Player(b).Outbox.Chat.Any(m => m.Channel == ChatChannel.System && m.TextKey == NotificationKeys.FriendRequestReceived && m.SenderName == "Аня"), Is.True);
+
+            _h.Send(b, new FriendRespondCommand { Name = "аня", Accept = true });
+            Assert.That(_h.Player(a).Outbox.State.Friends.Single().State, Is.EqualTo(FriendState.Friend));
+            Assert.That(_h.Player(b).Outbox.State.Friends.Single().State, Is.EqualTo(FriendState.Friend));
+            Assert.That(_h.Player(a).Outbox.State.Friends.Single().Online, Is.True);
+            _h.Send(b, new FriendAddCommand { Name = "Аня" });
+            Assert.That(_h.Rejections(b), Does.Contain(RejectReasons.FriendAlready));
 
             _h.Send(a, new FriendRemoveCommand { Name = "БОБ" });
             Assert.That(_h.Player(a).Outbox.State.Friends, Is.Empty);
+            Assert.That(_h.Player(b).Outbox.State.Friends, Is.Empty, "removed on both sides");
+
+            _h.Send(a, new FriendAddCommand { Name = "Боб" });
+            _h.Send(b, new FriendRespondCommand { Name = "Аня", Accept = false });
+            Assert.That(_h.Player(a).Outbox.State.Friends, Is.Empty, "a declined request disappears for both");
+            Assert.That(_h.Player(b).Outbox.State.Friends, Is.Empty);
+
+            _h.Send(a, new FriendAddCommand { Name = "Боб" });
+            _h.Send(b, new FriendAddCommand { Name = "Аня" });
+            Assert.That(_h.Player(a).Outbox.State.Friends.Single().State, Is.EqualTo(FriendState.Friend), "asking back accepts");
+            Assert.That(_h.Player(b).Outbox.State.Friends.Single().State, Is.EqualTo(FriendState.Friend));
+        }
+
+        [Test]
+        public void ChatTabs_DefaultsFromConfig_CustomTabsChecked()
+        {
+            EntityId a = Player("Аня", Vec3.Zero);
+            _h.Run(_h.Server.TickInterval);
+            ChatTabSnapshot[] defaults = _h.Player(a).Outbox.State.ChatTabs;
+            Assert.That(defaults.Select(t => t.NameKey), Is.EqualTo(new[] { "chat.tab.general", "chat.tab.private" }));
+            Assert.That(defaults[1].Channels, Is.EqualTo(new[] { ChatChannel.Whisper }));
+
+            var custom = new[]
+            {
+                defaults[0],
+                new ChatTabSnapshot { Name = "  Торг\u0007  ", Channels = new[] { ChatChannel.World, ChatChannel.Say } },
+            };
+            _h.Send(a, new SetChatTabsCommand { Tabs = custom });
+            ChatTabSnapshot[] tabs = _h.Player(a).Outbox.State.ChatTabs;
+            Assert.That(tabs[1].Name, Is.EqualTo("Торг"), "trimmed, no control characters");
+            Assert.That(tabs[1].Channels, Is.EqualTo(new[] { ChatChannel.World, ChatChannel.Say }));
+            var decoded = (PlayerStateSnapshot)ProtocolCodec.Decode(ProtocolCodec.Encode(_h.Player(a).Outbox.State));
+            Assert.That(decoded.ChatTabs[1].Name, Is.EqualTo("Торг"));
+
+            int max = _h.Content.Config.ChatTabsMax;
+            ChatTabSnapshot[][] bad =
+            {
+                new ChatTabSnapshot[0],
+                Enumerable.Range(0, max + 1).Select(i => new ChatTabSnapshot { Name = "t" + i, Channels = new[] { ChatChannel.World } }).ToArray(),
+                new[] { new ChatTabSnapshot { Name = "пусто", Channels = new ChatChannel[0] } },
+                new[] { new ChatTabSnapshot { NameKey = "ui.close", Channels = new[] { ChatChannel.World } } },
+                new[] { new ChatTabSnapshot { Name = "два", Channels = new[] { ChatChannel.World, ChatChannel.World } } },
+                new[] { new ChatTabSnapshot { Name = "x", Channels = new[] { (ChatChannel)99 } } },
+            };
+            foreach (ChatTabSnapshot[] tabsToSend in bad)
+            {
+                _h.ClearOutbox(a);
+                _h.Send(a, new SetChatTabsCommand { Tabs = tabsToSend });
+                Assert.That(_h.Rejections(a), Does.Contain(RejectReasons.ChatTabsInvalid));
+            }
+            Assert.That(_h.Player(a).Outbox.State.ChatTabs[1].Name, Is.EqualTo("Торг"), "a refused change keeps the old tabs");
+
+            _h.Send(a, new SetChatTabsCommand { Tabs = defaults });
+            Assert.That(_h.Player(a).ChatTabs, Is.Null, "the defaults are stored as defaults");
         }
 
         private (EntityId a, EntityId b) OpenTrade()
@@ -142,6 +206,37 @@ namespace Game.Tests
             _h.Server.Tick();
             Assert.That(_h.Player(a).Outbox.State.Trade.Phase, Is.EqualTo(TradePhase.None));
             Assert.That(_h.Player(b).Outbox.Notifications.Any(n => n.TextKey == NotificationKeys.TradeCancelled), Is.True);
+        }
+
+        [Test]
+        public void Trade_CancelsWhenAnyoneMoves_AndChangedOffersResetConfirmations()
+        {
+            var (a, b) = OpenTrade();
+            int shards = _h.BagIndexOf(a, "philosopher_stone_shard");
+            string shardId = _h.Player(a).Bag.Get(shards).SourceId;
+            _h.Send(a, new TradeOfferCommand { InstanceIds = new[] { shardId } });
+            _h.Send(b, new TradeConfirmCommand());
+            Assert.That(_h.Player(a).Outbox.State.Trade.TheirConfirmed, Is.True);
+
+            // The offered stack shrinks (split off one): the other side must confirm again.
+            BagSection resources = _h.Content.BagSections.First(section => section.Id == "resources");
+            int free = _h.Player(a).Bag.FindFreeSlot(resources.Start, resources.Size);
+            _h.Send(a, new MoveBagItemCommand { FromIndex = shards, ToIndex = free, Count = 1 });
+            Assert.That(_h.Player(a).Outbox.State.Trade.TheirConfirmed, Is.False);
+            Assert.That(_h.Player(b).Outbox.State.Trade.TheirItems.Single().Count, Is.EqualTo(19));
+
+            // Decision of the developer: a step by either side cancels the trade at once.
+            _h.World.Transforms.Get(b).Position = _h.World.Transforms.Get(b).Position + new Vec3(0.5f, 0f, 0f);
+            _h.Run(_h.Server.TickInterval);
+            Assert.That(_h.Player(a).Outbox.State.Trade.Phase, Is.EqualTo(TradePhase.None));
+            Assert.That(_h.Player(a).Outbox.Notifications.Any(n => n.TextKey == NotificationKeys.TradeCancelled), Is.True);
+
+            // While a request waits, the one who asked must stand still too.
+            _h.Send(a, new TradeRequestCommand { TargetId = b });
+            Assert.That(_h.Player(b).Outbox.State.Trade.Phase, Is.EqualTo(TradePhase.IncomingRequest));
+            _h.World.Transforms.Get(a).Position = _h.World.Transforms.Get(a).Position + new Vec3(0f, 0f, 0.5f);
+            _h.Run(_h.Server.TickInterval);
+            Assert.That(_h.Player(b).Outbox.State.Trade.Phase, Is.EqualTo(TradePhase.None));
         }
 
         [Test]

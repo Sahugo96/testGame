@@ -491,6 +491,96 @@ namespace Game.Server.Systems
         }
 
         /// <summary>The bag section an item goes to (by its category).</summary>
+        /// <summary>
+        /// Moves, merges, swaps or splits a bag stack (MoveBagItemCommand). An item never leaves its own section. A split makes
+        /// a new instance here on the server (principle 10) and is audited, as is a merge; a plain move or swap is not an
+        /// ownership change.
+        /// </summary>
+        public void MoveBagItem(PlayerCharacter player, MoveBagItemCommand command)
+        {
+            Inventory bag = player.Bag;
+            ItemInstance from = bag.Get(command.FromIndex);
+            if (from == null || command.FromIndex == command.ToIndex || command.ToIndex < 0 || command.ToIndex >= bag.Size || command.Count < 0)
+            {
+                CombatEvents.Reject(player, RejectReasons.InventoryMoveInvalid);
+                return;
+            }
+            ItemDefinition definition = _ctx.Content.Items[from.DefinitionId];
+            if (!InSection(SectionOf(definition), command.ToIndex))
+            {
+                CombatEvents.Reject(player, RejectReasons.InventoryWrongSection);
+                return;
+            }
+            int count = command.Count == 0 || command.Count >= from.Count ? from.Count : command.Count;
+            bool whole = count == from.Count;
+            ItemInstance target = bag.Get(command.ToIndex);
+            if (target == null)
+            {
+                if (whole)
+                {
+                    bag.Set(command.ToIndex, from);
+                    bag.Set(command.FromIndex, null);
+                    return;
+                }
+                var piece = new ItemInstance
+                {
+                    InstanceId = System.Guid.NewGuid(),
+                    DefinitionId = from.DefinitionId,
+                    Count = count,
+                    UpgradeLevel = from.UpgradeLevel,
+                    BoundTo = from.BoundTo,
+                    CreatedAt = _ctx.Time,
+                };
+                from.Count -= count;
+                bag.Set(command.ToIndex, piece);
+                AuditPair(AuditActions.StackSplit, player, piece, count, from);
+                return;
+            }
+            if (CanMerge(from, target, definition))
+            {
+                int moved = System.Math.Min(count, definition.MaxStack - target.Count);
+                if (moved <= 0)
+                {
+                    CombatEvents.Reject(player, RejectReasons.InventoryMoveInvalid);
+                    return;
+                }
+                target.Count += moved;
+                from.Count -= moved;
+                if (from.Count == 0)
+                {
+                    bag.Set(command.FromIndex, null);
+                }
+                AuditPair(AuditActions.StackMerge, player, from, moved, target);
+                return;
+            }
+            if (!whole || !InSection(SectionOf(_ctx.Content.Items[target.DefinitionId]), command.FromIndex))
+            {
+                CombatEvents.Reject(player, RejectReasons.InventoryMoveInvalid);
+                return;
+            }
+            bag.Set(command.ToIndex, from);
+            bag.Set(command.FromIndex, target);
+        }
+
+        private static bool InSection(BagSection section, int index) => index >= section.Start && index < section.Start + section.Size;
+
+        /// <summary>Same stackable item with the same binding and level: the two stacks are interchangeable.</summary>
+        private static bool CanMerge(ItemInstance a, ItemInstance b, ItemDefinition definition) =>
+            definition.MaxStack > 1 && a.DefinitionId == b.DefinitionId && a.BoundTo == b.BoundTo && a.UpgradeLevel == b.UpgradeLevel;
+
+        /// <summary>Audit of a split or merge: the instance that changed, how many, and the other instance in Reason.</summary>
+        private void AuditPair(string action, PlayerCharacter player, ItemInstance item, int count, ItemInstance other) =>
+            _ctx.Audit.Write(new AuditEntry
+            {
+                Time = _ctx.Time,
+                Action = action,
+                ActorId = player.CharacterId,
+                InstanceId = item.SourceId,
+                DefinitionId = item.DefinitionId,
+                Count = count,
+                Reason = other.SourceId,
+            });
+
         public BagSection SectionOf(ItemDefinition definition) =>
             _ctx.Content.BagSections[_ctx.Content.SectionIndexFor(definition.Category)];
 

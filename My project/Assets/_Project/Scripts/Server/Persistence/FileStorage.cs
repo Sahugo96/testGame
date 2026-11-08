@@ -78,12 +78,14 @@ namespace Game.Server.Persistence
             }
         }
 
-        public bool NameExists(string name)
+        public bool NameExists(string name) => LoginOfName(name) != null;
+
+        public string LoginOfName(string name)
         {
             lock (_namesLock)
             {
                 LoadNames();
-                return _names.ContainsKey((name ?? string.Empty).Trim().ToLowerInvariant());
+                return _names.TryGetValue((name ?? string.Empty).Trim().ToLowerInvariant(), out string login) ? login : null;
             }
         }
 

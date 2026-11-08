@@ -15,7 +15,9 @@ namespace Game.Client.UI.Windows
     /// <summary>
     /// Backpack with sections as tabs (developer request v11): equipment, consumables, loot, resources, quest items —
     /// from bag_sections.json. Each section has its own capacity; the server puts items into the section of their category.
-    /// Click equips equipment or uses a consumable; tooltip shows details.
+    /// Click equips equipment or uses a consumable; tooltip shows details. Dragging a stack onto another cell of the tab
+    /// moves it (merges into the same item, swaps with another); with Shift held half the stack is split off, with Ctrl one
+    /// (decision of the developer). The server checks the move.
     /// </summary>
     public sealed class BackpackWindow : HudWindow
     {
@@ -25,6 +27,7 @@ namespace Game.Client.UI.Windows
         private readonly List<SlotView> _slots = new List<SlotView>();
         private readonly List<Text> _tabLabels = new List<Text>();
         private int _section;
+        private int _dragFrom = -1;
         private readonly Text _currencies;
 
         public BackpackWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip,
@@ -70,6 +73,7 @@ namespace Game.Client.UI.Windows
                 var slot = new SlotView($"Bag{i}", gridRect, ctx.Font, HudLayout.BagSlotSize);
                 int local = i;
                 slot.Bind(() => ShowTooltip(local), Tooltip.Hide, button => OnClick(local, button));
+                slot.BindDrag(() => BeginDrag(local), EndDrag, () => Drop(local));
                 _slots.Add(slot);
             }
         }
@@ -149,6 +153,43 @@ namespace Game.Client.UI.Windows
             }
             slot = state.Bag[section.Start + local];
             return slot.DefinitionId != null;
+        }
+
+        private void BeginDrag(int local)
+        {
+            if (!TryGetSlot(local, out ItemSlotSnapshot slot))
+            {
+                return;
+            }
+            _dragFrom = slot.Index;
+            ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
+            Tooltip.Show(Ctx.Text.Format(UiKeys.DragStack, TooltipText.ItemName(Ctx, item, slot.UpgradeLevel), slot.Count));
+        }
+
+        private void EndDrag()
+        {
+            _dragFrom = -1;
+            Tooltip.Hide();
+        }
+
+        /// <summary>Shift = half the stack, Ctrl = one, nothing = the whole stack (Count 0).</summary>
+        private void Drop(int local)
+        {
+            PlayerStateSnapshot state = Ctx.State.Player;
+            BagSection section = Ctx.Content.BagSections[_section];
+            if (_dragFrom < 0 || state == null || local >= section.Size || Ctx.Commands == null)
+            {
+                return;
+            }
+            int to = section.Start + local;
+            if (to == _dragFrom)
+            {
+                return;
+            }
+            int count = state.Bag[_dragFrom].Count;
+            int part = Ctx.Modifiers.Current == SkillModifier.Shift ? count / 2 : Ctx.Modifiers.Current == SkillModifier.Ctrl ? 1 : 0;
+            // A stack of one cannot be split: then the whole stack moves.
+            Ctx.Commands.MoveBagItem(_dragFrom, to, part > 0 && part < count ? part : 0);
         }
 
         private void ShowTooltip(int local)

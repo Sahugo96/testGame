@@ -14,7 +14,7 @@ namespace Game.Server.Persistence
     /// server gives a session token that can replace the password until it expires. Characters are saved on leaving,
     /// every AutosaveSeconds and on shutdown; the state survives a server restart.
     /// </summary>
-    public sealed class CharacterPersistence
+    public sealed class CharacterPersistence : Systems.IFriendStore
     {
         /// <summary>The local player of single player and host mode: no password.</summary>
         public const string LocalLogin = "local";
@@ -39,7 +39,7 @@ namespace Game.Server.Persistence
             _characters = characters;
             _config = server.Context.Content.Config;
             _server.AccountSettingsChanged += SaveAccountSettings;
-            _server.Friends.NameExists = _characters.NameExists;
+            _server.Friends.Store = this;
         }
 
         public int Online => _online.Count;
@@ -103,7 +103,8 @@ namespace Game.Server.Persistence
             _online[id] = (login, classId);
             AccountRecord account = _accounts.LoadAccount(login);
             _server.GetPlayer(id).AutoLoot = account == null || !account.ManualLoot;
-            _server.GetPlayer(id).Friends.AddRange(account?.Friends ?? new string[0]);
+            ReadFriends(account, _server.GetPlayer(id).Friends);
+            _server.LoadChatTabs(id, account?.ChatTabs);
             newToken = trusted ? null : IssueToken(login);
             return id;
         }
@@ -141,8 +142,50 @@ namespace Game.Server.Persistence
             }
             AccountRecord account = _accounts.LoadAccount(owner.login) ?? new AccountRecord { SchemaVersion = 1, Login = owner.login };
             account.ManualLoot = !_server.GetPlayer(id).AutoLoot;
-            account.Friends = _server.GetPlayer(id).Friends.ToArray();
+            WriteFriends(account, _server.GetPlayer(id).Friends);
+            account.ChatTabs = _server.ExportChatTabs(id);
             _accounts.SaveAccount(account);
+        }
+
+        string Systems.IFriendStore.AccountOf(string characterName) => _characters.LoginOfName(characterName);
+
+        string Systems.IFriendStore.AccountOf(EntityId player) => _online.TryGetValue(player, out var owner) ? owner.login : null;
+
+        Players.FriendLists Systems.IFriendStore.Load(string account, out EntityId online)
+        {
+            foreach (KeyValuePair<EntityId, (string login, string classId)> pair in _online)
+            {
+                if (pair.Value.login == account)
+                {
+                    online = pair.Key;
+                    return _server.GetPlayer(pair.Key).Friends;
+                }
+            }
+            online = EntityId.None;
+            var lists = new Players.FriendLists();
+            ReadFriends(_accounts.LoadAccount(account), lists);
+            return lists;
+        }
+
+        void Systems.IFriendStore.Save(string account, Players.FriendLists lists)
+        {
+            AccountRecord record = _accounts.LoadAccount(account) ?? new AccountRecord { SchemaVersion = 1, Login = account };
+            WriteFriends(record, lists);
+            _accounts.SaveAccount(record);
+        }
+
+        private static void ReadFriends(AccountRecord account, Players.FriendLists lists)
+        {
+            lists.Friends.AddRange(account?.Friends ?? new string[0]);
+            lists.Incoming.AddRange(account?.FriendRequestsIn ?? new string[0]);
+            lists.Outgoing.AddRange(account?.FriendRequestsOut ?? new string[0]);
+        }
+
+        private static void WriteFriends(AccountRecord account, Players.FriendLists lists)
+        {
+            account.Friends = lists.Friends.ToArray();
+            account.FriendRequestsIn = lists.Incoming.ToArray();
+            account.FriendRequestsOut = lists.Outgoing.ToArray();
         }
 
         public void SaveAll()

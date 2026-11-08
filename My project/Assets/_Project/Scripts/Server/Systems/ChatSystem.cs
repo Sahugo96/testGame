@@ -27,7 +27,7 @@ namespace Game.Server.Systems
 
         public void Send(PlayerCharacter player, SendChatCommand command)
         {
-            string text = Clean(command.Text);
+            string text = Clean(command.Text, _ctx.Content.Config.ChatMaxLength);
             if (text.Length == 0)
             {
                 return;
@@ -100,6 +100,102 @@ namespace Game.Server.Systems
             ToGroup(group, new ChatMessage { Channel = ChatChannel.System, TextKey = textKey, SenderName = name });
         }
 
+        /// <summary>A system line to one player: {1} = name (friend requests and the like).</summary>
+        public void SystemToPlayer(PlayerCharacter player, string textKey, string name) =>
+            player.Outbox.Chat.Add(new ChatMessage { Channel = ChatChannel.System, TextKey = textKey, SenderName = name });
+
+        /// <summary>The account's chat tabs changed (persistence saves the account).</summary>
+        public event Action<PlayerCharacter> TabsChanged;
+
+        /// <summary>The player's tabs, or the defaults from config.</summary>
+        public ChatTabSnapshot[] Tabs(PlayerCharacter player) => player.ChatTabs ?? _ctx.Content.DefaultChatTabs;
+
+        /// <summary>
+        /// Replaces the account's chat tabs: 1..ChatTabsMax tabs, each with its own name (cleaned, up to ChatTabNameMax) or a
+        /// default tab's NameKey, and one or more distinct channels. Tabs equal to the defaults are stored as "defaults".
+        /// </summary>
+        public void SetTabs(PlayerCharacter player, ChatTabSnapshot[] tabs)
+        {
+            ChatTabSnapshot[] clean = CleanTabs(tabs);
+            if (clean == null)
+            {
+                CombatEvents.Reject(player, RejectReasons.ChatTabsInvalid);
+                return;
+            }
+            player.ChatTabs = SameTabs(clean, _ctx.Content.DefaultChatTabs) ? null : clean;
+            TabsChanged?.Invoke(player);
+        }
+
+        /// <summary>Checked copy of tabs from a client or a save; null if anything is wrong.</summary>
+        public ChatTabSnapshot[] CleanTabs(ChatTabSnapshot[] tabs)
+        {
+            if (tabs == null || tabs.Length == 0 || tabs.Length > _ctx.Content.Config.ChatTabsMax)
+            {
+                return null;
+            }
+            var result = new ChatTabSnapshot[tabs.Length];
+            for (int i = 0; i < tabs.Length; i++)
+            {
+                ChatTabSnapshot tab = tabs[i];
+                if (tab == null || tab.Channels == null || tab.Channels.Length == 0)
+                {
+                    return null;
+                }
+                string name = Clean(tab.Name, _ctx.Content.Config.ChatTabNameMax);
+                bool knownKey = !string.IsNullOrEmpty(tab.NameKey) && IsDefaultKey(tab.NameKey);
+                if (name.Length == 0 && !knownKey)
+                {
+                    return null;
+                }
+                var channels = new List<ChatChannel>();
+                foreach (ChatChannel channel in tab.Channels)
+                {
+                    if (!Enum.IsDefined(typeof(ChatChannel), channel) || channels.Contains(channel))
+                    {
+                        return null;
+                    }
+                    channels.Add(channel);
+                }
+                result[i] = new ChatTabSnapshot { Name = name.Length > 0 ? name : null, NameKey = name.Length > 0 ? null : tab.NameKey, Channels = channels.ToArray() };
+            }
+            return result;
+        }
+
+        private bool IsDefaultKey(string key)
+        {
+            foreach (ChatTabSnapshot tab in _ctx.Content.DefaultChatTabs)
+            {
+                if (tab.NameKey == key)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool SameTabs(ChatTabSnapshot[] a, ChatTabSnapshot[] b)
+        {
+            if (a.Length != b.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i].Name != null || a[i].NameKey != b[i].NameKey || a[i].Channels.Length != b[i].Channels.Length)
+                {
+                    return false;
+                }
+                for (int k = 0; k < a[i].Channels.Length; k++)
+                {
+                    if (a[i].Channels[k] != b[i].Channels[k])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         public void OnPlayerRemoved(EntityId id) => _lastSent.Remove(id);
 
         /// <summary>Finds an online character by name, ignoring case.</summary>
@@ -130,8 +226,8 @@ namespace Game.Server.Systems
 
         private string NameOf(EntityId id) => _ctx.World.Identities.Has(id) ? _ctx.World.Identities.Get(id).DisplayName ?? string.Empty : string.Empty;
 
-        /// <summary>No control characters, trimmed, at most ChatMaxLength characters.</summary>
-        private string Clean(string text)
+        /// <summary>No control characters, trimmed, at most <paramref name="max"/> characters.</summary>
+        private static string Clean(string text, int max)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -146,7 +242,6 @@ namespace Game.Server.Systems
                 }
             }
             string clean = sb.ToString().Trim();
-            int max = _ctx.Content.Config.ChatMaxLength;
             return clean.Length > max ? clean.Substring(0, max) : clean;
         }
     }

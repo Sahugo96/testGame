@@ -54,9 +54,20 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: RaidMaxSize ≥ GroupMaxSize and a multiple of RaidSubgroupSize");
             }
-            if (cfg.ChatMaxLength <= 0 || cfg.ChatMinIntervalSeconds < 0f || cfg.FriendsMax <= 0 || cfg.TradeRange <= 0f || cfg.TradeRequestSeconds <= 0f || cfg.TradeMaxItems <= 0)
+            if (cfg.ChatMaxLength <= 0 || cfg.ChatMinIntervalSeconds < 0f || cfg.FriendsMax <= 0 || cfg.TradeRange <= 0f || cfg.TradeRequestSeconds <= 0f || cfg.TradeMaxItems <= 0 || cfg.TradeMoveTolerance <= 0f)
             {
-                errors.Add("config: ChatMaxLength > 0 and ChatMinIntervalSeconds ≥ 0");
+                errors.Add("config: chat, friends and trade limits must be positive (ChatMinIntervalSeconds ≥ 0)");
+            }
+            if (cfg.ChatTabsMax <= 0 || cfg.ChatTabNameMax <= 0 || db.DefaultChatTabs.Length == 0 || db.DefaultChatTabs.Length > cfg.ChatTabsMax)
+            {
+                errors.Add("config: ChatTabsMax > 0, ChatTabNameMax > 0, 1..ChatTabsMax ChatDefaultTabs");
+            }
+            foreach (Game.Shared.Protocol.ChatTabSnapshot tab in db.DefaultChatTabs)
+            {
+                if (string.IsNullOrEmpty(tab.NameKey) || tab.Channels.Length == 0)
+                {
+                    errors.Add("config.ChatDefaultTabs: every tab needs a NameKey and at least one channel");
+                }
             }
             if (cfg.ThreatPerDamage <= 0f || cfg.HealThreatFactor < 0f)
             {

@@ -42,6 +42,7 @@ namespace Game.Shared.Protocol
         public DuelSnapshot Duel;
         public GroupSnapshot Group = new GroupSnapshot();
         public FriendSnapshot[] Friends;
+        public ChatTabSnapshot[] ChatTabs;
         public TradeSnapshot Trade = new TradeSnapshot();
     }
 }

@@ -26,6 +26,11 @@ namespace Game.Client
 
         public void RequestClassSwitch(string classId) => ClassSwitchRequested?.Invoke(classId);
 
+        /// <summary>Raised by widgets and windows that open another window (chat tab settings); HudRoot opens it.</summary>
+        public event Action<string> WindowRequested;
+
+        public void RequestWindow(string windowId) => WindowRequested?.Invoke(windowId);
+
         /// <summary>Raised by the friends window: open the chat on the whisper channel to this character.</summary>
         public event Action<string> WhisperRequested;
 

@@ -51,6 +51,15 @@ namespace Game.Client.UI.Widgets
             _hover.Clicked = onClick;
         }
 
+        /// <summary>Makes the slot draggable and a drop target.</summary>
+        public void BindDrag(Action began, Action ended, Action dropped)
+        {
+            DragTrigger drag = Background.gameObject.GetComponent<DragTrigger>() ?? Background.gameObject.AddComponent<DragTrigger>();
+            drag.Began = began;
+            drag.Ended = ended;
+            drag.Dropped = dropped;
+        }
+
         public void SetCaption(string caption, Color color)
         {
             _caption.text = caption;

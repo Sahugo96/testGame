@@ -41,6 +41,42 @@ namespace Game.Tests
         }
 
         [Test]
+        public void FriendRequest_ReachesAnOfflineAccount_AndFriendshipIsSaved()
+        {
+            var h = new ServerHarness();
+            FileStorage storage = Storage();
+            CharacterPersistence persistence = Persistence(h, storage);
+            EntityId bob = persistence.Enter("bob", "secret1", null, "Боб", "warrior", false, out string error, out _);
+            Assert.That(error, Is.Null);
+            persistence.Leave(bob);
+
+            EntityId ann = persistence.Enter("ann", "secret1", null, "Аня", "mage", false, out error, out _);
+            h.Send(ann, new FriendAddCommand { Name = "боб" });
+            Assert.That(h.Player(ann).Outbox.State.Friends.Single().State, Is.EqualTo(FriendState.Outgoing), "Боб is offline: the request waits in his account");
+
+            bob = persistence.Enter("bob", "secret1", null, null, "warrior", false, out error, out _);
+            h.Run(h.Server.TickInterval);
+            FriendSnapshot request = h.Player(bob).Outbox.State.Friends.Single();
+            Assert.That((request.Name, request.State, request.Online), Is.EqualTo(("Аня", FriendState.Incoming, true)));
+            h.Send(bob, new FriendRespondCommand { Name = "Аня", Accept = true });
+            Assert.That(h.Player(ann).Outbox.State.Friends.Single().State, Is.EqualTo(FriendState.Friend));
+            persistence.SaveAll();
+
+            var restarted = new ServerHarness();
+            CharacterPersistence again = Persistence(restarted, Storage());
+            EntityId back = again.Enter("ann", "secret1", null, null, "mage", false, out error, out _);
+            restarted.Run(restarted.Server.TickInterval);
+            FriendSnapshot friend = restarted.Player(back).Outbox.State.Friends.Single();
+            Assert.That((friend.Name, friend.State, friend.Online), Is.EqualTo(("Боб", FriendState.Friend, false)));
+
+            // A friend's other character is the same account: no second friendship with it.
+            EntityId bobMage = again.Enter("bob", "secret1", null, "БобМаг", "mage", false, out error, out _);
+            restarted.Send(back, new FriendAddCommand { Name = "БобМаг" });
+            Assert.That(restarted.Rejections(back), Does.Contain(RejectReasons.FriendAlready));
+            Assert.That(bobMage.IsValid, Is.True);
+        }
+
+        [Test]
         public void Character_SurvivesServerRestart()
         {
             var h = new ServerHarness();

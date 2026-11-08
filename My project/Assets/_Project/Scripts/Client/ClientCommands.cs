@@ -53,6 +53,12 @@ namespace Game.Client
 
         public void RemoveFriend(string name) => _connection.Send(new FriendRemoveCommand { Name = name });
 
+        public void RespondFriend(string name, bool accept) => _connection.Send(new FriendRespondCommand { Name = name, Accept = accept });
+
+        public void MoveBagItem(int fromIndex, int toIndex, int count) => _connection.Send(new MoveBagItemCommand { FromIndex = fromIndex, ToIndex = toIndex, Count = count });
+
+        public void SetChatTabs(ChatTabSnapshot[] tabs) => _connection.Send(new SetChatTabsCommand { Tabs = tabs });
+
         public void ConvertToRaid() => _connection.Send(new GroupConvertToRaidCommand());
 
         public void MoveToSubgroup(EntityId member, int subgroup) => _connection.Send(new GroupMoveCommand { MemberId = member, Subgroup = subgroup });

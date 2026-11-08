@@ -9,9 +9,11 @@ using UnityEngine.UI;
 namespace Game.Client.UI.Widgets
 {
     /// <summary>
-    /// Chat panel bottom-left (module 14): the last lines of every channel, a channel button (Say → World → Group →
-    /// Whisper), a recipient field for whispers and the text field. Enter (Input Action) focuses the field and sends;
-    /// the server filters, limits and delivers. Player text is shown without rich text.
+    /// Chat panel bottom-left (module 14): tabs from the account settings (decision of the developer: "General" and
+    /// "Private" by default, own tabs show the channels chosen for them; a tab with new lines is highlighted), the last
+    /// lines of the selected tab, a channel button (Say → World → Group → Whisper), a recipient field for whispers and the
+    /// text field. Enter (Input Action) focuses the field and sends; the server filters, limits and delivers. Player text
+    /// is shown without rich text.
     /// </summary>
     public sealed class ChatWidget
     {
@@ -21,6 +23,9 @@ namespace Game.Client.UI.Widgets
         private const float TargetWidth = 120f;
         private const int VisibleLines = 9;
         private const int TargetNameLimit = 32;
+        private const float TabWidth = 92f;
+        private const float TabHeight = 26f;
+        private const float SettingsWidth = 72f;
         private static readonly ChatChannel[] Channels = { ChatChannel.Say, ChatChannel.World, ChatChannel.Group, ChatChannel.Whisper };
 
         private readonly ClientContext _ctx;
@@ -33,6 +38,11 @@ namespace Game.Client.UI.Widgets
         private Func<bool> _submitPressed;
         private int _channel;
         private int _submittedFrame = -1;
+        private readonly Button[] _tabButtons;
+        private readonly Text[] _tabLabels;
+        private readonly bool[] _unread;
+        private ChatTabSnapshot[] _tabs = new ChatTabSnapshot[0];
+        private int _tab;
 
         public ChatWidget(RectTransform zone, ClientContext ctx)
         {
@@ -61,9 +71,37 @@ namespace Game.Client.UI.Widgets
             _inputRect = (RectTransform)_input.transform;
             _input.onEndEdit.AddListener(OnEndEdit);
 
+            int maxTabs = ctx.Content.Config.ChatTabsMax;
+            _tabButtons = new Button[maxTabs];
+            _tabLabels = new Text[maxTabs];
+            _unread = new bool[maxTabs];
+            for (int i = 0; i < maxTabs; i++)
+            {
+                int index = i;
+                _tabButtons[i] = UiFactory.Button($"Tab_{i}", zone, ctx.Font, string.Empty, () => SelectTab(index));
+                UiFactory.Place((RectTransform)_tabButtons[i].transform, Vector2.zero, Vector2.zero,
+                    new Vector2(i * (TabWidth + HudLayout.Gap), OffsetY + Size.y + HudLayout.Gap), new Vector2(TabWidth, TabHeight));
+                _tabLabels[i] = _tabButtons[i].GetComponentInChildren<Text>();
+                _tabLabels[i].fontSize = HudLayout.FontSmall;
+                _tabButtons[i].gameObject.SetActive(false);
+            }
+            Button settings = UiFactory.Button("TabSettings", zone, ctx.Font, ctx.Text.Get(UiKeys.ChatTabsSettings), () => ctx.RequestWindow(Windows.WindowFactory.ChatTabs));
+            UiFactory.Place((RectTransform)settings.transform, Vector2.zero, Vector2.zero,
+                new Vector2(Size.x - SettingsWidth, OffsetY + Size.y + HudLayout.Gap), new Vector2(SettingsWidth, TabHeight));
+            settings.GetComponentInChildren<Text>().fontSize = HudLayout.FontSmall;
+
             ctx.State.Chat += OnChat;
             SetChannel(0);
-            Redraw();
+            ApplyTabs(ctx.Content.DefaultChatTabs);
+        }
+
+        /// <summary>The account's tabs come with the player state (changed in the chat tabs window).</summary>
+        public void Refresh(PlayerStateSnapshot state)
+        {
+            if (state?.ChatTabs != null && !Same(state.ChatTabs, _tabs))
+            {
+                ApplyTabs(state.ChatTabs);
+            }
         }
 
         /// <summary>The Enter action (Input Actions only); used to tell "sent with Enter" from "clicked elsewhere".</summary>
@@ -148,19 +186,119 @@ namespace Game.Client.UI.Widgets
 
         private string ChannelName(ChatChannel channel) => _ctx.Text.Get(UiKeys.ChatChannelPrefix + channel.ToString().ToLowerInvariant());
 
-        private void OnChat(ChatMessage message) => Redraw();
+        private void OnChat(ChatMessage message)
+        {
+            for (int i = 0; i < _tabs.Length; i++)
+            {
+                if (i != _tab && Shows(_tabs[i], message.Channel))
+                {
+                    _unread[i] = true;
+                }
+            }
+            UpdateTabLabels();
+            Redraw();
+        }
 
+        private void ApplyTabs(ChatTabSnapshot[] tabs)
+        {
+            _tabs = tabs ?? new ChatTabSnapshot[0];
+            _tab = Mathf.Clamp(_tab, 0, Math.Max(0, _tabs.Length - 1));
+            for (int i = 0; i < _tabButtons.Length; i++)
+            {
+                _tabButtons[i].gameObject.SetActive(i < _tabs.Length);
+                _unread[i] = false;
+            }
+            UpdateTabLabels();
+            Redraw();
+        }
+
+        /// <summary>Shows the tab and, if it cannot show the channel being written to, switches to the first channel it shows.</summary>
+        private void SelectTab(int index)
+        {
+            if (index >= _tabs.Length)
+            {
+                return;
+            }
+            _tab = index;
+            _unread[index] = false;
+            if (!Shows(_tabs[index], Channels[_channel]))
+            {
+                foreach (ChatChannel channel in _tabs[index].Channels)
+                {
+                    int sendable = Array.IndexOf(Channels, channel);
+                    if (sendable >= 0)
+                    {
+                        SetChannel(sendable);
+                        break;
+                    }
+                }
+            }
+            UpdateTabLabels();
+            Redraw();
+        }
+
+        private void UpdateTabLabels()
+        {
+            for (int i = 0; i < _tabs.Length && i < _tabLabels.Length; i++)
+            {
+                _tabLabels[i].text = TabName(_tabs[i]);
+                _tabLabels[i].color = i == _tab ? HudPalette.Cast : _unread[i] ? HudPalette.Warning : HudPalette.Text;
+            }
+        }
+
+        private string TabName(ChatTabSnapshot tab) => string.IsNullOrEmpty(tab.Name) ? _ctx.Text.Get(tab.NameKey) : tab.Name;
+
+        private static bool Shows(ChatTabSnapshot tab, ChatChannel channel) => tab != null && Array.IndexOf(tab.Channels, channel) >= 0;
+
+        private static bool Same(ChatTabSnapshot[] a, ChatTabSnapshot[] b)
+        {
+            if (a.Length != b.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i].Name != b[i].Name || a[i].NameKey != b[i].NameKey || a[i].Channels.Length != b[i].Channels.Length)
+                {
+                    return false;
+                }
+                for (int k = 0; k < a[i].Channels.Length; k++)
+                {
+                    if (a[i].Channels[k] != b[i].Channels[k])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>The last VisibleLines lines of the selected tab's channels, oldest first.</summary>
         private void Redraw()
         {
             List<ChatMessage> log = _ctx.State.ChatLog;
-            _sb.Clear();
-            for (int i = Math.Max(0, log.Count - VisibleLines); i < log.Count; i++)
+            ChatTabSnapshot tab = _tab < _tabs.Length ? _tabs[_tab] : null;
+            int first = log.Count;
+            for (int shown = 0; first > 0 && shown < VisibleLines;)
             {
-                _sb.Append(Format(log[i]));
-                if (i < log.Count - 1)
+                first--;
+                if (tab == null || Shows(tab, log[first].Channel))
+                {
+                    shown++;
+                }
+            }
+            _sb.Clear();
+            for (int i = first; i < log.Count; i++)
+            {
+                if (tab != null && !Shows(tab, log[i].Channel))
+                {
+                    continue;
+                }
+                if (_sb.Length > 0)
                 {
                     _sb.Append('\n');
                 }
+                _sb.Append(Format(log[i]));
             }
             _log.text = _sb.ToString();
         }

@@ -20,6 +20,17 @@ namespace Game.Shared.Content
             {
                 db.HostileFactions.Add((relation.A, relation.B));
             }
+            var tabs = new List<Game.Shared.Protocol.ChatTabSnapshot>();
+            foreach (ChatTabDto dto in files.Config.ChatDefaultTabs ?? new ChatTabDto[0])
+            {
+                var channels = new List<Game.Shared.Protocol.ChatChannel>();
+                foreach (string channel in dto.Channels ?? new string[0])
+                {
+                    channels.Add(EnumParser.Parse<Game.Shared.Protocol.ChatChannel>(channel, $"config.ChatDefaultTabs '{dto.NameKey}'", errors));
+                }
+                tabs.Add(new Game.Shared.Protocol.ChatTabSnapshot { NameKey = dto.NameKey, Channels = channels.ToArray() });
+            }
+            db.DefaultChatTabs = tabs.ToArray();
             foreach (SkillDto dto in files.Skills?.Skills ?? new SkillDto[0])
             {
                 AddUnique(db.Skills, dto.Id, BuildSkill(dto, errors), "skills", errors);

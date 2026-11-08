@@ -9,14 +9,15 @@ using UnityEngine.UI;
 namespace Game.Client.UI.Windows
 {
     /// <summary>
-    /// Friends (module 14): add a character by name, the list with online state, whisper and remove. The list lives on
-    /// the server in the account settings; the server checks that the name exists and the list limit.
+    /// Friends (module 14; mutual by decision of the developer): send a request by character name; incoming requests on top
+    /// with accept / decline, then friends with online state, whisper and remove, then my requests with "withdraw". The
+    /// lists live on the server in the account settings; the server checks names, limits and both sides.
     /// </summary>
     public sealed class FriendsWindow : HudWindow
     {
         private static readonly Vector2 Size = new Vector2(520f, 600f);
         private const int RowsPerPage = 10;
-        private const float AddWidth = 120f;
+        private const float AddWidth = 170f;
         private const float StateWidth = 100f;
         private const float ActionWidth = 100f;
         private const int NameLimit = 32;
@@ -26,8 +27,11 @@ namespace Game.Client.UI.Windows
         private readonly RectTransform[] _rows = new RectTransform[RowsPerPage];
         private readonly Text[] _names = new Text[RowsPerPage];
         private readonly Text[] _states = new Text[RowsPerPage];
-        private readonly Button[] _whisper = new Button[RowsPerPage];
+        private readonly Button[] _primary = new Button[RowsPerPage];
+        private readonly Text[] _primaryLabels = new Text[RowsPerPage];
+        private readonly Text[] _secondaryLabels = new Text[RowsPerPage];
         private readonly string[] _rowNames = new string[RowsPerPage];
+        private readonly FriendSnapshot[] _rowEntries = new FriendSnapshot[RowsPerPage];
         private readonly PagerWidget _pager;
 
         public FriendsWindow(HudWindowDto definition, RectTransform parent, Canvas canvas, ClientContext ctx, Tooltip tooltip,
@@ -57,8 +61,9 @@ namespace Game.Client.UI.Windows
                 _states[i] = UiFactory.Label("State", row, ctx.Font, HudLayout.FontSmall, TextAnchor.MiddleLeft, HudPalette.TextDim);
                 UiFactory.Place(_states[i].rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
                     new Vector2(-(ActionWidth + HudLayout.Gap) * 2f, 0f), new Vector2(StateWidth, HudLayout.MenuButtonHeight));
-                _whisper[i] = RowButton(row, UiKeys.FriendsWhisper, 1, () => Ctx.RequestWhisper(_rowNames[index]));
-                RowButton(row, UiKeys.FriendsRemove, 0, () => Ctx.Commands?.RemoveFriend(_rowNames[index]));
+                _primary[i] = RowButton(row, UiKeys.FriendsWhisper, 1, () => Primary(index));
+                _primaryLabels[i] = _primary[i].GetComponentInChildren<Text>();
+                _secondaryLabels[i] = RowButton(row, UiKeys.FriendsRemove, 0, () => Secondary(index)).GetComponentInChildren<Text>();
                 _rows[i] = row;
                 y -= HudLayout.MenuButtonHeight + HudLayout.Gap;
             }
@@ -74,7 +79,12 @@ namespace Game.Client.UI.Windows
         public override void Refresh(PlayerStateSnapshot state)
         {
             FriendSnapshot[] friends = state.Friends ?? new FriendSnapshot[0];
-            _count.text = Ctx.Text.Format(UiKeys.FriendsCount, friends.Length, Ctx.Content.Config.FriendsMax);
+            int accepted = 0;
+            foreach (FriendSnapshot entry in friends)
+            {
+                accepted += entry.State == FriendState.Friend ? 1 : 0;
+            }
+            _count.text = Ctx.Text.Format(UiKeys.FriendsCount, accepted, Ctx.Content.Config.FriendsMax);
             int first = _pager.Apply(friends.Length, RowsPerPage);
             for (int i = 0; i < RowsPerPage; i++)
             {
@@ -87,10 +97,55 @@ namespace Game.Client.UI.Windows
                 }
                 FriendSnapshot friend = friends[index];
                 _rowNames[i] = friend.Name;
+                _rowEntries[i] = friend;
                 _names[i].text = friend.Name;
-                _states[i].text = Ctx.Text.Get(friend.Online ? UiKeys.FriendsOnline : UiKeys.FriendsOffline);
-                _states[i].color = friend.Online ? HudPalette.Positive : HudPalette.TextDim;
-                _whisper[i].interactable = friend.Online;
+                switch (friend.State)
+                {
+                    case FriendState.Incoming:
+                        _states[i].text = Ctx.Text.Get(UiKeys.FriendsIncoming);
+                        _states[i].color = HudPalette.Warning;
+                        _primaryLabels[i].text = Ctx.Text.Get(UiKeys.FriendsAccept);
+                        _secondaryLabels[i].text = Ctx.Text.Get(UiKeys.FriendsDecline);
+                        break;
+                    case FriendState.Outgoing:
+                        _states[i].text = Ctx.Text.Get(UiKeys.FriendsOutgoing);
+                        _states[i].color = HudPalette.TextDim;
+                        _secondaryLabels[i].text = Ctx.Text.Get(UiKeys.FriendsWithdraw);
+                        break;
+                    default:
+                        _states[i].text = Ctx.Text.Get(friend.Online ? UiKeys.FriendsOnline : UiKeys.FriendsOffline);
+                        _states[i].color = friend.Online ? HudPalette.Positive : HudPalette.TextDim;
+                        _primaryLabels[i].text = Ctx.Text.Get(UiKeys.FriendsWhisper);
+                        _secondaryLabels[i].text = Ctx.Text.Get(UiKeys.FriendsRemove);
+                        break;
+                }
+                _primary[i].gameObject.SetActive(friend.State != FriendState.Outgoing);
+                _primary[i].interactable = friend.State == FriendState.Incoming || friend.Online;
+            }
+        }
+
+        /// <summary>Right-hand pair of buttons: whisper / accept (primary) and remove / decline / withdraw (secondary).</summary>
+        private void Primary(int row)
+        {
+            if (_rowEntries[row].State == FriendState.Incoming)
+            {
+                Ctx.Commands?.RespondFriend(_rowNames[row], true);
+            }
+            else
+            {
+                Ctx.RequestWhisper(_rowNames[row]);
+            }
+        }
+
+        private void Secondary(int row)
+        {
+            if (_rowEntries[row].State == FriendState.Incoming)
+            {
+                Ctx.Commands?.RespondFriend(_rowNames[row], false);
+            }
+            else
+            {
+                Ctx.Commands?.RemoveFriend(_rowNames[row]);
             }
         }
 

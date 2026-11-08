@@ -31,8 +31,10 @@ namespace Game.Server.Players
         public bool AutoLoot = true;
         /// <summary>Wallet { Balances: { CurrencyId -> long } } (05, 7.14.2); changed only through WalletSystem.Transact.</summary>
         public readonly Dictionary<string, long> Wallet = new Dictionary<string, long>();
-        /// <summary>Friends' character names (module 14); an account setting, saved with the account.</summary>
-        public readonly List<string> Friends = new List<string>();
+        /// <summary>Friends and friend requests (module 14); an account setting, saved with the account.</summary>
+        public readonly FriendLists Friends = new FriendLists();
+        /// <summary>Chat tabs of the account (decision of the developer); null = the defaults from config.</summary>
+        public ChatTabSnapshot[] ChatTabs;
         public MoveCommand LastMove;
         public readonly PlayerOutbox Outbox = new PlayerOutbox();
         public readonly Queue<IGameCommand> PendingCommands = new Queue<IGameCommand>();

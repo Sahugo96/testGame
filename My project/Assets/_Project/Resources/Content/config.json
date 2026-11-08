@@ -102,9 +102,16 @@
   "ChatMaxLength": 200,
   "ChatMinIntervalSeconds": 0.5,
   "FriendsMax": 50,
+  "ChatDefaultTabs": [
+    { "NameKey": "chat.tab.general", "Channels": [ "Say", "World", "Group", "Whisper", "System" ] },
+    { "NameKey": "chat.tab.private", "Channels": [ "Whisper" ] }
+  ],
+  "ChatTabsMax": 6,
+  "ChatTabNameMax": 16,
   "RaidMaxSize": 50,
   "RaidSubgroupSize": 5,
   "TradeRange": 10,
   "TradeRequestSeconds": 30,
-  "TradeMaxItems": 12
+  "TradeMaxItems": 12,
+  "TradeMoveTolerance": 0.05
 }

@@ -15,6 +15,13 @@ namespace Game.Client.UI
 
         public void OnPointerExit(PointerEventData eventData) => Exited?.Invoke();
 
-        public void OnPointerClick(PointerEventData eventData) => Clicked?.Invoke(eventData.button);
+        /// <summary>A release that ends a drag is not a click (otherwise dropping a stack would also equip or use it).</summary>
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!eventData.dragging)
+            {
+                Clicked?.Invoke(eventData.button);
+            }
+        }
     }
 }

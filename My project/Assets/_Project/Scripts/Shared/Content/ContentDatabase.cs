@@ -18,6 +18,8 @@ namespace Game.Shared.Content
         public readonly List<HudWindowDto> HudWindows = new List<HudWindowDto>();
         public readonly HashSet<(string, string)> HostileFactions = new HashSet<(string, string)>();
         public readonly List<BagSection> BagSections = new List<BagSection>();
+        /// <summary>Default chat tabs from config, parsed (decision of the developer: "General" and "Private").</summary>
+        public Game.Shared.Protocol.ChatTabSnapshot[] DefaultChatTabs = new Game.Shared.Protocol.ChatTabSnapshot[0];
         public readonly Dictionary<string, UpgradeRuleDto> UpgradeRules = new Dictionary<string, UpgradeRuleDto>();
         /// <summary>Recipes by id (05, 7.4).</summary>
         public readonly Dictionary<string, RecipeDto> Recipes = new Dictionary<string, RecipeDto>();

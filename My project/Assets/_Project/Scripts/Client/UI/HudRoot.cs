@@ -111,6 +111,7 @@ namespace Game.Client.UI
             ctx.State.Rejected += _message.Show;
             ctx.State.Notification += _message.Show;
             ctx.WhisperRequested += Chat.StartWhisper;
+            ctx.WindowRequested += Windows.Open;
         }
 
         /// <summary>Persistent info line bottom-left (e.g. "hosting on port ..."); empty string hides it.</summary>
@@ -166,6 +167,7 @@ namespace Game.Client.UI
             _ctx.State.Rejected -= _message.Show;
             _ctx.State.Notification -= _message.Show;
             _ctx.WhisperRequested -= Chat.StartWhisper;
+            _ctx.WindowRequested -= Windows.Open;
             Chat.Destroy();
             _minimap.Destroy();
         }
@@ -201,6 +203,7 @@ namespace Game.Client.UI
             _groupFrames.Refresh(state);
             _groupPrompt.Refresh(state);
             SyncTradeWindow(state);
+            Chat.Refresh(state);
             SkillBar.Refresh(state);
             _consumables.Refresh(state);
             Windows.Refresh(state);

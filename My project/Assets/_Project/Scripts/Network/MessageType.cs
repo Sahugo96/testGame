@@ -46,5 +46,8 @@ namespace Game.Network
         TradeOffer = 52,
         TradeConfirm = 53,
         TradeCancel = 54,
+        MoveBagItem = 55,
+        FriendRespond = 56,
+        SetChatTabs = 57,
     }
 }

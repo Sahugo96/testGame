@@ -1718,7 +1718,7 @@
   },
   {
    "Key": "ui.friends_add",
-   "Value": "Добавить"
+   "Value": "Отправить заявку"
   },
   {
    "Key": "ui.friends_name",
@@ -1919,6 +1919,122 @@
   {
    "Key": "notify.trade_no_room",
    "Value": "Обмен не состоялся: нет места в сумке"
+  },
+  {
+   "Key": "window.chattabs",
+   "Value": "Вкладки чата"
+  },
+  {
+   "Key": "chat.tab.general",
+   "Value": "Общий"
+  },
+  {
+   "Key": "chat.tab.private",
+   "Value": "Личное"
+  },
+  {
+   "Key": "chat.tabs_settings",
+   "Value": "Вкладки"
+  },
+  {
+   "Key": "ui.chat_tabs_settings",
+   "Value": "Вкладки чата"
+  },
+  {
+   "Key": "ui.chat_tab_name",
+   "Value": "Название вкладки"
+  },
+  {
+   "Key": "ui.chat_tab_channels",
+   "Value": "Что показывать"
+  },
+  {
+   "Key": "ui.chat_tab_add",
+   "Value": "Новая вкладка"
+  },
+  {
+   "Key": "ui.chat_tab_delete",
+   "Value": "Удалить вкладку"
+  },
+  {
+   "Key": "ui.chat_tab_defaults",
+   "Value": "По умолчанию"
+  },
+  {
+   "Key": "ui.chat_tab_save",
+   "Value": "Сохранить"
+  },
+  {
+   "Key": "ui.chat_tab_new_name",
+   "Value": "Вкладка {0}"
+  },
+  {
+   "Key": "ui.check_on",
+   "Value": "[x] {0}"
+  },
+  {
+   "Key": "ui.check_off",
+   "Value": "[  ] {0}"
+  },
+  {
+   "Key": "ui.friends_incoming",
+   "Value": "хочет дружить"
+  },
+  {
+   "Key": "ui.friends_outgoing",
+   "Value": "заявка отправлена"
+  },
+  {
+   "Key": "ui.friends_accept",
+   "Value": "Принять"
+  },
+  {
+   "Key": "ui.friends_decline",
+   "Value": "Отклонить"
+  },
+  {
+   "Key": "ui.friends_withdraw",
+   "Value": "Отозвать"
+  },
+  {
+   "Key": "ui.trade_stand_still",
+   "Value": "Не двигайтесь: шаг отменяет обмен"
+  },
+  {
+   "Key": "ui.drag_stack",
+   "Value": "{0} ×{1}"
+  },
+  {
+   "Key": "error.inventory_move_invalid",
+   "Value": "Сюда нельзя положить"
+  },
+  {
+   "Key": "error.inventory_wrong_section",
+   "Value": "Этот предмет хранится в другом отсеке"
+  },
+  {
+   "Key": "error.friend_request_not_found",
+   "Value": "Заявки от этого персонажа нет"
+  },
+  {
+   "Key": "error.friend_request_pending",
+   "Value": "Заявка уже отправлена"
+  },
+  {
+   "Key": "error.friend_target_full",
+   "Value": "У этого игрока нет места в друзьях"
+  },
+  {
+   "Key": "error.chat_tabs_invalid",
+   "Value": "Вкладки не сохранены: нужно название и хотя бы один канал"
+  },
+  {
+   "Key": "notify.friend_request",
+   "Value": "{1} хочет добавить вас в друзья (окно «Друзья»)"
+  },
+  {
+   "Key": "notify.friend_accepted",
+   "Value": "{1} теперь ваш друг"
   }
  ]
 }

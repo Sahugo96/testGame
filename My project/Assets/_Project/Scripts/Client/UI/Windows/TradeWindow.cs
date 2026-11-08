@@ -80,6 +80,9 @@ namespace Game.Client.UI.Windows
             AddButton("Cancel", UiKeys.TradeCancel, ButtonWidth + HudLayout.Gap, y, () => Ctx.Commands?.CancelTrade());
             y -= HudLayout.MenuButtonHeight + HudLayout.Gap * 3f;
 
+            Text stand = Label("StandStill", ButtonWidth * 2f + HudLayout.Gap * 3f, y + HudLayout.MenuButtonHeight + HudLayout.Gap * 3f, width - ButtonWidth * 2f - HudLayout.Gap * 3f, HudPalette.Warning);
+            stand.text = ctx.Text.Get(UiKeys.TradeStandStill);
+            stand.fontSize = HudLayout.FontSmall;
             Text hint = Label("BagHint", 0f, y, width, HudPalette.TextDim);
             hint.text = ctx.Text.Get(UiKeys.TradeBagHint);
             y -= HudLayout.RowHeight + HudLayout.Gap;

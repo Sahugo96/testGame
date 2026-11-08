@@ -37,6 +37,10 @@ namespace Game.Client.UI.Windows
             autoLayout.minHeight = HudLayout.MenuButtonHeight;
             autoLayout.preferredHeight = HudLayout.MenuButtonHeight;
             _autoLootLabel = _autoLoot.GetComponentInChildren<Text>();
+            Button tabs = UiFactory.Button("ChatTabs", list, ctx.Font, ctx.Text.Get(UiKeys.ChatTabsSettingsLong), () => Ctx.RequestWindow(WindowFactory.ChatTabs));
+            LayoutElement tabsLayout = tabs.gameObject.AddComponent<LayoutElement>();
+            tabsLayout.minHeight = HudLayout.MenuButtonHeight;
+            tabsLayout.preferredHeight = HudLayout.MenuButtonHeight;
             Button leave = UiFactory.Button("Leave", list, ctx.Font, ctx.Text.Get(UiKeys.LeaveGame), () => Ctx.RequestLeave());
             LayoutElement leaveLayout = leave.gameObject.AddComponent<LayoutElement>();
             leaveLayout.minHeight = HudLayout.MenuButtonHeight;

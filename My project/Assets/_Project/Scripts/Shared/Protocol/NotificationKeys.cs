@@ -40,6 +40,9 @@ namespace Game.Shared.Protocol
         public const string TradeCancelled = "notify.trade_cancelled";
         public const string TradeFailed = "notify.trade_failed";
         public const string TradeNoRoom = "notify.trade_no_room";
+        /// <summary>Chat system lines with {1} = character name.</summary>
+        public const string FriendRequestReceived = "notify.friend_request";
+        public const string FriendAccepted = "notify.friend_accepted";
         public const string LootVoteStarted = "notify.loot_vote_started";
         public const string LootVotePassed = "notify.loot_vote_passed";
         public const string LootVoteFailed = "notify.loot_vote_failed";

@@ -81,6 +81,10 @@ namespace Game.Shared.Content.Dto
         public int ChatMaxLength;
         public float ChatMinIntervalSeconds;
         public int FriendsMax;
+        /// <summary>Chat tabs (decision of the developer): the account's tabs start as these; a player may have up to ChatTabsMax.</summary>
+        public ChatTabDto[] ChatDefaultTabs;
+        public int ChatTabsMax;
+        public int ChatTabNameMax;
         /// <summary>Raid (06 7.8, question 6): size and subgroup size.</summary>
         public int RaidMaxSize;
         public int RaidSubgroupSize;
@@ -89,6 +93,8 @@ namespace Game.Shared.Content.Dto
         public float TradeRequestSeconds;
         /// <summary>Most different items one side may put into a trade (module 14).</summary>
         public int TradeMaxItems;
+        /// <summary>How far (m) a trader may drift before the trade is cancelled as "moved" (float noise guard).</summary>
+        public float TradeMoveTolerance;
         public float MainHandSwapCooldownSeconds;
         public float MainHandSwapRiskWindowSeconds;
         public float MainHandSwapPenaltySeconds;

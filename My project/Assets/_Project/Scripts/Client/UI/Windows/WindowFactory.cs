@@ -19,6 +19,7 @@ namespace Game.Client.UI.Windows
         public const string CombatLog = "combatlog";
         public const string Friends = "friends";
         public const string Trade = "trade";
+        public const string ChatTabs = "chattabs";
 
         /// <summary>Window opened by clicking a station of the given type (StationTypes), or null.</summary>
         public static string ForStation(string stationType)
@@ -57,6 +58,8 @@ namespace Game.Client.UI.Windows
                     return new GroupWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Friends:
                     return new FriendsWindow(definition, layer, canvas, ctx, tooltip, focus, close);
+                case ChatTabs:
+                    return new ChatTabsWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Trade:
                     return new TradeWindow(definition, layer, canvas, ctx, tooltip, focus, close);
                 case Settings:

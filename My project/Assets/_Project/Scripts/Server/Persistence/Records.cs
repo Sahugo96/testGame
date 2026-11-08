@@ -17,8 +17,21 @@ namespace Game.Server.Persistence
         public string CreatedAt;
         /// <summary>Account setting (question 77): manual pickup. Stored inverted so older accounts (field missing = false) keep auto-pickup.</summary>
         public bool ManualLoot;
-        /// <summary>Friends list (module 14): character names.</summary>
+        /// <summary>Friends (module 14): character names; requests in both directions (friendship is mutual).</summary>
         public string[] Friends;
+        public string[] FriendRequestsIn;
+        public string[] FriendRequestsOut;
+        /// <summary>Chat tabs (decision of the developer); none saved = the defaults from config.</summary>
+        public ChatTabRecord[] ChatTabs;
+    }
+
+    /// <summary>A chat tab: its own name or the default's NameKey, and the channels it shows (ChatChannel names).</summary>
+    [Serializable]
+    public class ChatTabRecord
+    {
+        public string Name;
+        public string NameKey;
+        public string[] Channels;
     }
 
     [Serializable]

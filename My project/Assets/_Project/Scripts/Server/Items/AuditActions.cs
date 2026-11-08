@@ -20,5 +20,7 @@ namespace Game.Server.Items
         public const string SocketDestroy = "socket_destroy";
         /// <summary>An item changed hands in a trade (Reason = receiver).</summary>
         public const string TradeGive = "trade_give";
+        public const string StackSplit = "stack_split";
+        public const string StackMerge = "stack_merge";
     }
 }

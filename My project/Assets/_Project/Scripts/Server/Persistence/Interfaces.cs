@@ -24,6 +24,9 @@ namespace Game.Server.Persistence
 
         /// <summary>Whether a character with this name exists in the world (any account).</summary>
         bool NameExists(string name);
+
+        /// <summary>Account login that owns a character name (any case), or null.</summary>
+        string LoginOfName(string name);
     }
 
     /// <summary>One instance per unique definition (04, 7.11): TryReserve is atomic across threads (and later across servers).</summary>

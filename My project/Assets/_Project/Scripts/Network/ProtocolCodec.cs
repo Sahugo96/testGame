@@ -167,6 +167,21 @@ namespace Game.Network
                     w.Write((byte)MessageType.FriendRemove);
                     Str(w, m.Name);
                     break;
+                case FriendRespondCommand m:
+                    w.Write((byte)MessageType.FriendRespond);
+                    Str(w, m.Name);
+                    w.Write(m.Accept);
+                    break;
+                case MoveBagItemCommand m:
+                    w.Write((byte)MessageType.MoveBagItem);
+                    w.Write(m.FromIndex);
+                    w.Write(m.ToIndex);
+                    w.Write(m.Count);
+                    break;
+                case SetChatTabsCommand m:
+                    w.Write((byte)MessageType.SetChatTabs);
+                    WriteChatTabs(w, m.Tabs);
+                    break;
                 case GroupConvertToRaidCommand _:
                     w.Write((byte)MessageType.GroupConvertToRaid);
                     break;
@@ -323,6 +338,12 @@ namespace Game.Network
                     return new FriendAddCommand { Name = Str(r) };
                 case MessageType.FriendRemove:
                     return new FriendRemoveCommand { Name = Str(r) };
+                case MessageType.FriendRespond:
+                    return new FriendRespondCommand { Name = Str(r), Accept = r.ReadBoolean() };
+                case MessageType.MoveBagItem:
+                    return new MoveBagItemCommand { FromIndex = r.ReadInt32(), ToIndex = r.ReadInt32(), Count = r.ReadInt32() };
+                case MessageType.SetChatTabs:
+                    return new SetChatTabsCommand { Tabs = ReadChatTabs(r) };
                 case MessageType.GroupConvertToRaid:
                     return new GroupConvertToRaidCommand();
                 case MessageType.GroupMove:
@@ -568,7 +589,9 @@ namespace Game.Network
             {
                 Str(w, f.Name);
                 w.Write(f.Online);
+                w.Write((byte)f.State);
             }
+            WriteChatTabs(w, m.ChatTabs);
             WriteTrade(w, m.Trade ?? new TradeSnapshot());
         }
 
@@ -648,6 +671,40 @@ namespace Game.Network
                 throw new InvalidDataException("bad array length");
             }
             return count;
+        }
+
+        private static void WriteChatTabs(BinaryWriter w, ChatTabSnapshot[] tabs)
+        {
+            tabs = tabs ?? new ChatTabSnapshot[0];
+            w.Write(tabs.Length);
+            foreach (ChatTabSnapshot tab in tabs)
+            {
+                Str(w, tab?.Name);
+                Str(w, tab?.NameKey);
+                ChatChannel[] channels = tab?.Channels ?? new ChatChannel[0];
+                w.Write(channels.Length);
+                foreach (ChatChannel channel in channels)
+                {
+                    w.Write((byte)channel);
+                }
+            }
+        }
+
+        /// <summary>Also read from client commands, so the counts are bounded (see Count).</summary>
+        private static ChatTabSnapshot[] ReadChatTabs(BinaryReader r)
+        {
+            var tabs = new ChatTabSnapshot[Count(r)];
+            for (int i = 0; i < tabs.Length; i++)
+            {
+                var tab = new ChatTabSnapshot { Name = Str(r), NameKey = Str(r) };
+                tab.Channels = new ChatChannel[Count(r)];
+                for (int k = 0; k < tab.Channels.Length; k++)
+                {
+                    tab.Channels[k] = (ChatChannel)r.ReadByte();
+                }
+                tabs[i] = tab;
+            }
+            return tabs;
         }
 
         private static int[] ReadSubgroups(BinaryReader r)
@@ -854,8 +911,9 @@ namespace Game.Network
             m.Friends = new FriendSnapshot[r.ReadInt32()];
             for (int i = 0; i < m.Friends.Length; i++)
             {
-                m.Friends[i] = new FriendSnapshot { Name = Str(r), Online = r.ReadBoolean() };
+                m.Friends[i] = new FriendSnapshot { Name = Str(r), Online = r.ReadBoolean(), State = (FriendState)r.ReadByte() };
             }
+            m.ChatTabs = ReadChatTabs(r);
             m.Trade = ReadTrade(r);
             return m;
         }

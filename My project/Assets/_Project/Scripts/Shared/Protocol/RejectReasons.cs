@@ -69,5 +69,11 @@ namespace Game.Shared.Protocol
         public const string LootVoteSameMode = "error.loot_vote_same_mode";
         public const string LootVoteNoQuorum = "error.loot_vote_no_quorum";
         public const string LootVoteNotFound = "error.loot_vote_not_found";
+        public const string InventoryMoveInvalid = "error.inventory_move_invalid";
+        public const string InventoryWrongSection = "error.inventory_wrong_section";
+        public const string FriendRequestNotFound = "error.friend_request_not_found";
+        public const string FriendRequestPending = "error.friend_request_pending";
+        public const string FriendTargetFull = "error.friend_target_full";
+        public const string ChatTabsInvalid = "error.chat_tabs_invalid";
     }
 }
