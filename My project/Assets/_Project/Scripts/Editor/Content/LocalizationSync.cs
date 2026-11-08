@@ -85,6 +85,9 @@ namespace Game.EditorTools.Content
             StringTableCollection collection = LocalizationEditorSettings.GetStringTableCollection(UnityLocalizationService.TableName)
                 ?? LocalizationEditorSettings.CreateStringTableCollection(UnityLocalizationService.TableName, TablesFolder, new List<Locale> { russian });
             AssetDatabase.SaveAssets();
+#if GAME_ADDRESSABLES
+            AddressablesNaming.UseShortNames();
+#endif
             return collection.GetTable(LocalizationFactory.JsonLanguage) as StringTable;
         }
 

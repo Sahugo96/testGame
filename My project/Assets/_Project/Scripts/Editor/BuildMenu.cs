@@ -68,6 +68,7 @@ namespace Game.EditorTools
             {
                 return true;
             }
+            Content.AddressablesNaming.UseShortNames();
             UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out var result);
             if (!string.IsNullOrEmpty(result.Error))
             {
