@@ -26,7 +26,7 @@ namespace Game.EditorTools
         [MenuItem(MenuPath)]
         public static void BuildWindows()
         {
-            if (!WorldMaterialAsset.Ensure())
+            if (!WorldMaterialAsset.Ensure() || !BuildAddressables())
             {
                 return;
             }
@@ -55,6 +55,27 @@ namespace Game.EditorTools
             Debug.Log($"[Build] Done: {Path.GetFullPath(OutputFolder)} ({report.summary.totalSize / (1024 * 1024)} MB). "
                 + "Zip the whole folder and send it.");
             EditorUtility.RevealInFinder(Path.Combine(OutputFolder, ExecutableName));
+        }
+
+        /// <summary>
+        /// Unity Localization keeps its string tables in Addressables (module 4): their content is built before the player,
+        /// so the build never ships without texts even if "Build Addressables on Player Build" is off.
+        /// </summary>
+        private static bool BuildAddressables()
+        {
+#if GAME_ADDRESSABLES
+            if (UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings == null)
+            {
+                return true;
+            }
+            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out var result);
+            if (!string.IsNullOrEmpty(result.Error))
+            {
+                Debug.LogError($"[Build] Addressables (localization tables) failed: {result.Error}");
+                return false;
+            }
+#endif
+            return true;
         }
 
         [MenuItem(OpenFolderMenuPath)]

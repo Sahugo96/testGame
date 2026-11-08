@@ -234,37 +234,115 @@ git pull origin claude/vertical-slice
 - «данные игры отличаются от данных сервера» — сборки собраны из разного контента (карточек, JSON): собери заново и отправь другу.
 - Пришли мне: текст ошибки из меню, какой вариант соединения, и у хоста — файл `server.log` (отдельный сервер) или `%USERPROFILE%\AppData\LocalLow\DefaultCompany\My project\Player.log` (обычный запуск).
 
-## 10. Переход на Unity: первая проверка по шагам
+## 10. Переход на Unity: пошагово (от открытия до игры с другом)
 
-До сих пор код проверялся только тестами и компилятором вне Unity. Здесь — порядок, в котором проверять игру в Unity, чтобы ошибки находились по одной и было понятно, что прислать.
+> Делай строго по порядку. На первом шаге, который не получился, **остановись** и пришли то, что сказано в этом шаге (или в 10.13). Каждый шаг заканчивается строкой «Должно быть» — по ней видно, что шаг прошёл.
 
-### 10.1. Открыть и закоммитить `.meta`-файлы (один раз)
+### 10.1. Один раз: что должно стоять на компьютере
 
-1. Забери код (раздел 1) и открой проект (раздел 2). Дождись окончания импорта.
-2. Unity создаст `.meta` для всех новых файлов в `Assets/_Project` и файл материала `Assets/_Project/Resources/Materials/WorldLit.mat` (в Console строка `[Build] Created …WorldLit.mat`). Материал нужен сборке: без него все фигуры в собранной игре ярко-розовые.
-3. **Закоммить и отправь** их: `.meta` хранят идентификаторы файлов, без них сцены и префабы, которые мы начнём делать в Unity, потеряют ссылки на скрипты у другого человека или после новой загрузки.
+1. **Unity Hub** и редактор **6000.3.19f1** (Hub → *Installs*). У редактора модуль **Windows Build Support (Mono)** (шестерёнка → *Add modules*) — для сборки игры.
+2. **Git** (или GitHub Desktop) и репозиторий в `D:\UnityGameDev\testGame` на ветке `claude/vertical-slice` (раздел 1).
+3. Интернет при первом открытии: Unity скачивает пакеты.
+
+### 10.2. Забрать свежий код
+
+1. **Закрой Unity** полностью (если открыта в Safe Mode — тоже).
+2. Терминал в папке репозитория:
+   ```bash
+   git status
+   ```
+   Если Unity успела поменять файлы (часто `My project/Packages/packages-lock.json`, `My project/ProjectSettings/*`), верни их — я поменял пакеты, свежая версия важнее:
+   ```bash
+   git checkout -- "My project/Packages" "My project/ProjectSettings"
+   ```
+   Свои незакоммиченные изменения (если есть) — отложи: `git stash -u`.
+3. Забери код:
    ```bash
    git pull origin claude/vertical-slice
    ```
-   ```bash
-   git add "My project/Assets"
-   ```
-   ```bash
-   git commit -m "Unity: meta files and the world material"
-   ```
-   ```bash
-   git push origin claude/vertical-slice
-   ```
-   Изменения в `My project/ProjectSettings` и `My project/Packages/packages-lock.json` тоже можно закоммитить, если Unity их поменяла при открытии (это нормально для первого открытия).
 
-### 10.2. Компиляция и тесты
+*Должно быть:* `git log -1` показывает последний коммит из чата.
 
-1. Console (`Ctrl+Shift+C`): нажми *Clear*. Красных ошибок быть не должно. Если есть — дальше не иди, пришли первую.
-2. *Window → General → Test Runner* → **EditMode** → *Run All*. Должно быть зелёным всё (это те же тесты, что `sim-tests`, но в Unity — с настоящим `JsonUtility`). Красные — пришли имя теста и текст из нижней панели.
+### 10.3. Открыть проект
 
-### 10.3. Одиночная игра — что проверить (Play в `SampleScene`)
+1. Unity Hub → *Projects* → `My project` (версия **6000.3.19f1**) → открыть.
+2. Первое открытие идёт долго (5–15 минут): скачиваются пакеты **Localization** и **Addressables**, импортируются скрипты и JSON, создаются `.meta`-файлы. Не трогай редактор, пока внизу справа крутится индикатор.
+3. **Если появилось окно «Enter Safe Mode?»** — нажми **Enter Safe Mode** (это безопасно), открой *Window → General → Console* и пришли **первые 3–5 красных строк целиком**. По пути в строке видно, где проблема:
+   - `Library/PackageCache/com.unity.…` — ошибка в пакете (поправлю версии в `Packages/manifest.json`);
+   - `Assets/_Project/Scripts/…` — ошибка в моём коде (поправлю файл);
+   - «An error occurred while resolving packages» — пакет не скачался (пришли текст; проверь интернет).
 
-Иди по списку сверху вниз; на первом пункте, который не работает, остановись и пришли, что видишь.
+   Пока ждёшь ответа, можно работать без Localization: закрой Unity, удали в `My project/Packages/manifest.json` строку `"com.unity.localization": "1.5.14",` и открой проект снова — код с Localization включается только при установленном пакете, тексты будут из `ru.json`.
+
+*Должно быть:* редактор открылся без окна Safe Mode.
+
+### 10.4. Проверить пакеты
+
+*Window → Package Manager* → слева сверху *In Project*. В списке:
+
+| Пакет | Версия |
+|---|---|
+| Localization | 1.5.14 |
+| Addressables | 2.8.0 |
+| Input System | 1.19.0 |
+| Universal RP | 17.3.0 |
+| Test Framework | 1.6.0 |
+
+Если Unity предлагает обновить или понизить какой-то из них — **не соглашайся**, напиши мне версию, которую она предлагает.
+
+*Должно быть:* все пакеты из таблицы есть, у них нет жёлтого/красного значка ошибки.
+
+### 10.5. Console без ошибок
+
+1. *Window → General → Console* (`Ctrl+Shift+C`) → *Clear*.
+2. Красных строк нет. Жёлтые можно не смотреть.
+3. В Console при первом открытии будут строки (это нормально):
+   - `[Build] Created Assets/_Project/Resources/Materials/WorldLit.mat …` — материал для собранной игры;
+   - `[Content] …` — редактор создал карточки контента из JSON (папка `Assets/_Project/Content/base`) и переписал JSON в формат Unity;
+   - `[Localization] Not set up yet` может не быть — это следующий шаг.
+
+*Должно быть:* в окне *Project* есть папки `Assets/_Project/Content/base/items`, `…/mobs`, `…/skills` и т.д. с карточками.
+
+### 10.6. Настроить тексты (Unity Localization) — один раз
+
+1. Меню **Game → Localization → Set up (settings, Russian locale, table Game)**.
+2. Если Unity спросит про Addressables (создать настройки, группы) — соглашайся.
+3. Открой *Window → Asset Management → Localization Tables* → таблица **Game**: колонка *Russian (ru)* заполнена.
+
+*Должно быть:* в Console `[Localization] ru.json and the table 'Game' are in sync (N keys)`; появилась папка `Assets/_Project/Localization` (и, возможно, `Assets/AddressableAssetsData`).
+
+### 10.7. Проверить контент
+
+1. Меню **Game → Content → Check content**.
+2. Открой карточку `Assets/_Project/Content/base/mobs/wolf` — в инспекторе поле *Data* с параметрами волка.
+
+*Должно быть:* в Console `[Content] Content is valid: base`.
+
+### 10.8. Тесты в Unity
+
+*Window → General → Test Runner* → вкладка **EditMode** → *Run All* (пару минут).
+
+*Должно быть:* все тесты зелёные. Красные — пришли имя теста и текст из нижней панели Test Runner.
+
+### 10.9. Закоммитить то, что создала Unity
+
+Всё это нужно в git: `.meta` хранят идентификаторы файлов, карточки и таблица текстов — данные игры.
+```bash
+git add -A "My project/Assets" "My project/Packages" "My project/ProjectSettings"
+```
+```bash
+git commit -m "Unity: meta files, content cards, localization assets"
+```
+```bash
+git push origin claude/vertical-slice
+```
+Если `push` отказал (в ветке есть мои новые коммиты) — сначала `git pull origin claude/vertical-slice`, потом снова `push`.
+
+*Должно быть:* `git status` — «nothing to commit».
+
+### 10.10. Одиночная игра — что проверить (Play в `SampleScene`)
+
+Открой `Assets/Scenes/SampleScene`, нажми **Play**, кликни внутри окна *Game*. Иди по списку сверху вниз; на первом пункте, который не работает, остановись и пришли, что видишь.
 
 | № | Что сделать | Что должно быть |
 |---|---|---|
@@ -281,39 +359,34 @@ git pull origin claude/vertical-slice
 | 11 | `O` → «Интерфейс» → масштаб 125% → «Применить» | весь интерфейс крупнее |
 | 12 | Выйди из Play, снова Play → «Одиночная игра» | персонаж на том же месте, с теми же вещами и уровнем, клавиша `Q` сохранилась |
 | 13 | Выйди из Play и выполни `git status` | `ProjectSettings/QualitySettings.asset` и `Assets/Settings/*_RPAsset.asset` **не** изменены |
+| 14 | В карточке `Content/base/mobs/cube` поменяй `MaxHealth` на `5` → подожди 2 с → Play → ударь куб | куб не умирает с одного удара; потом верни `1` |
+| 15 | *Localization Tables* → `Game` → поменяй текст `ui.leave` → Play → `O` | на кнопке выхода — твой текст; потом верни как было |
 
-### 10.4. Сборка и игра по сети
+### 10.11. Сборка и игра по сети
 
-1. **Game → Build Windows (client + server)** (раздел 9.1). В Console — `[Build] Done`.
-2. Запусти `MyGame.exe` → «Одиночная игра»: фигуры цветные (не розовые), разрешение и режим окна в `O` → «Графика» меняются и спрашивают подтверждение.
+1. **Game → Build Windows (client + server)** (раздел 9.1). В Console — `[Build] Done`. Перед сборкой редактор сам сверит карточки и JSON и соберёт таблицы текстов (Addressables); при ошибках контента сборка остановится и покажет их.
+2. Запусти `MyGame.exe` → «Одиночная игра»: фигуры цветные (не розовые), надписи по-русски (не `#ui.…`), разрешение и режим окна в `O` → «Графика» меняются и спрашивают подтверждение.
 3. Сеть на одном компьютере (раздел 9.5): два окна, хост и «Подключиться» на `127.0.0.1`. Оба видят друг друга; проверь обмен (раздел 9.3) и что после него у обоих правильные вещи.
 4. Отдельный сервер: `StartServer.bat`, подключись, сделай что-нибудь, `StopServer.bat` — в `server.log` строка `Stop requested: saving everyone and quitting`; после нового запуска прогресс на месте.
-5. С другом — `docs/PLAY_WITH_FRIEND.md`.
+5. С другом — `docs/PLAY_WITH_FRIEND.md` (у друга должна быть та же сборка: сервер сверяет данные игры).
 
-### 10.5. Что прислать
+### 10.12. Дальше каждый раз после моих обновлений
+
+1. Закрой Unity → `git pull origin claude/vertical-slice` → открой проект.
+2. Console без красных строк; при моих правках JSON редактор сам перенесёт их в карточки (`[Content] …`).
+3. Закоммить, что изменила Unity (шаг 10.9), пересобери игру (шаг 10.11), если играете вдвоём.
+
+### 10.13. Что прислать
 
 - Ошибку компиляции или исключение: **первую** красную строку Console целиком (с файлом и номером строки) и, если есть, стек под ней (кликни по ошибке — внизу Console).
-- Не тот результат в таблице 10.3: номер пункта, что видишь (скриншот окна Game) и Console.
+- Не тот результат в таблице 10.10: номер пункта, что видишь (скриншот окна Game) и Console.
 - Проблема только в сборке: `%USERPROFILE%\AppData\LocalLow\DefaultCompany\My project\Player.log` (у отдельного сервера — `server.log` рядом с `MyGame.exe`).
 
 ## 11. Контент и тексты в Unity (модуль 4)
 
 ### 11.1. Первое открытие после модуля 4
 
-1. Забери код и открой проект. Unity сама скачает пакет **Localization** (он вписан в `Packages/manifest.json`) — это займёт пару минут. Если в Console ошибка про `com.unity.localization` — открой *Window → Package Manager → + → Add package by name* → `com.unity.localization` → *Add*, и пришли мне текст ошибки.
-2. Редактор сам сделает **карточки** контента: папка `Assets/_Project/Content/base/…` — по одной карточке на предмет, моба, навык, класс и т.д. (это займёт полминуты). При первой синхронизации JSON в `Resources/Content/base` перепишутся в формат Unity — это нормально, один раз.
-3. Меню **Game → Localization → Set up (settings, Russian locale, table Game)** — один раз: создаёт настройки Localization, русскую локаль и таблицу строк `Game` в `Assets/_Project/Localization` и заполняет её из `ru.json`. Если Unity спросит про Addressables — соглашайся (Localization хранит таблицы через них).
-4. Меню **Game → Content → Check content**: в Console `[Content] Content is valid: base`.
-5. Закоммить и отправь всё новое: папки `Assets/_Project/Content`, `Assets/_Project/Localization`, `Assets/AddressableAssetsData` (если появилась), изменённые JSON, `Packages/*`.
-   ```bash
-   git add -A "My project/Assets" "My project/Packages"
-   ```
-   ```bash
-   git commit -m "Unity: content cards and localization assets"
-   ```
-   ```bash
-   git push origin claude/vertical-slice
-   ```
+Шаги 10.3–10.9: пакеты, карточки, настройка Localization, проверка, коммит.
 
 ### 11.2. Как править контент
 

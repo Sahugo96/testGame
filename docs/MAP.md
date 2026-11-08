@@ -197,7 +197,7 @@
 
 - **Ветки:** `claude/hopeful-babbage-qws7t3` — документы; `claude/vertical-slice` — документы + **код среза** (см. §8). `main` отстаёт (без документов набора).
 - **Unity-проект: `My project/`** (имя с пробелом — в командах кавычки). Unity **6000.3.19f1**, шаблон 3D URP, `activeInputHandler: 1` (только Input System).
-- Пакеты (`Packages/manifest.json`): URP 17.3, Input System 1.19, uGUI 2.0, AI Navigation 2.0, Test Framework 1.6, Timeline, **Localization 1.5.14** (с v29; тянет Addressables как зависимость). **Нет:** Mirror, Cinemachine; Addressables для своего контента не используется.
+- Пакеты (`Packages/manifest.json`): URP 17.3, Input System 1.19, uGUI 2.0, AI Navigation 2.0, Test Framework 1.6, Timeline, **Localization 1.5.14** и **Addressables 2.8.0** (с v29; Addressables закреплён явно — Localization просит старую линию 1.25; таблицы текстов собираются перед сборкой игры, `BuildMenu.BuildAddressables`). **Нет:** Mirror, Cinemachine; Addressables для своего контента не используется.
 - `.gitignore` (ветка среза): игнорируются `Library`, `Temp`, `obj`, `Build(s)`, `Logs`, `UserSettings` проекта и `sim-tests/bin|obj`.
 - Корневой `Assets/_Project/Scripts/.gitkeep` — пустая заготовка вне Unity-проекта (удалить при случае).
 

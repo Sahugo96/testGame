@@ -359,18 +359,27 @@ namespace Game.EditorTools.Content
             {
                 switch (stream.GetEventType(i))
                 {
+                    // By the asset's path (GUID), not by instance id: the int instance-id APIs are being retired in Unity 6.3+.
                     case ObjectChangeKind.ChangeAssetObjectProperties:
                         stream.GetChangeAssetObjectPropertiesEvent(i, out ChangeAssetObjectPropertiesEventArgs change);
-                        if (EditorUtility.InstanceIDToObject(change.instanceId) is ContentCard)
-                        {
-                            Schedule();
-                        }
+                        ScheduleIfCard(AssetDatabase.GUIDToAssetPath(change.guid));
                         break;
                     case ObjectChangeKind.CreateAssetObject:
+                        stream.GetCreateAssetObjectEvent(i, out CreateAssetObjectEventArgs created);
+                        ScheduleIfCard(AssetDatabase.GUIDToAssetPath(created.guid));
+                        break;
                     case ObjectChangeKind.DestroyAssetObject:
                         Schedule();
                         break;
                 }
+            }
+        }
+
+        private static void ScheduleIfCard(string path)
+        {
+            if (!string.IsNullOrEmpty(path) && path.StartsWith(CardsRoot + "/", StringComparison.Ordinal))
+            {
+                Schedule();
             }
         }
 
