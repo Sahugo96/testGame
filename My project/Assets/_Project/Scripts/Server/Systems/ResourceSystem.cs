@@ -143,7 +143,7 @@ namespace Game.Server.Systems
                     TargetId = target,
                     SkillId = skillId,
                     Kind = CombatEventKind.ResourceRestore,
-                    Amount = (int)Math.Round(restored),
+                    Amount = (int)Math.Round((double)(float)restored), // narrowed first: same result in Mono and .NET
                 });
             }
             return restored;

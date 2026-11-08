@@ -36,14 +36,20 @@ namespace Game.Shared.Rules
             float defense = Math.Max(0f, Math.Min(targetDefense, defenseCap));
             float raw = baseAmount * efficiency * (1f + damageBonus) * crit.Multiplier;
             float afterDefense = raw * (1f - defense);
-            int rounded = (int)Math.Round(afterDefense, MidpointRounding.AwayFromZero);
-            return Math.Max(minDamage, rounded);
+            return Math.Max(minDamage, RoundAmount(afterDefense));
         }
 
         /// <summary>Heal: same order without defense and shields (question 46).</summary>
         public static int CalculateHeal(float baseAmount, float efficiency, CritRoll crit)
         {
-            return (int)Math.Round(baseAmount * efficiency * crit.Multiplier, MidpointRounding.AwayFromZero);
+            return RoundAmount(baseAmount * efficiency * crit.Multiplier);
         }
+
+        /// <summary>
+        /// Rounds an amount half away from zero after narrowing it to float precision: a runtime may keep float math in
+        /// higher precision (Mono in the Unity editor does), so 67.5 could become 67.4999… and round differently than on
+        /// another runtime. The explicit (float) cast makes the result the same everywhere.
+        /// </summary>
+        public static int RoundAmount(float amount) => (int)Math.Round((double)(float)amount, MidpointRounding.AwayFromZero);
     }
 }
