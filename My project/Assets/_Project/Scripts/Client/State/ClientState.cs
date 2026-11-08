@@ -39,6 +39,13 @@ namespace Game.Client.State
 
         public readonly List<ChatMessage> ChatLog = new List<ChatMessage>();
 
+        /// <summary>Latest answers for the market windows (module 20); MarketData is raised when any of them arrives.</summary>
+        public ShopViewMessage LastShop;
+        public MarketPageMessage LastMarketPage;
+        public MailboxMessage LastMailbox;
+        public UpgradeOrdersMessage LastOrders;
+        public event Action MarketData;
+
         public void Bind(IServerConnection connection)
         {
             _connection = connection;
@@ -48,6 +55,7 @@ namespace Game.Client.State
             connection.RejectedReceived += OnRejected;
             connection.NotificationReceived += OnNotification;
             connection.ChatReceived += OnChat;
+            connection.ReplyReceived += OnReply;
         }
 
         public void Unbind(IServerConnection connection)
@@ -60,6 +68,11 @@ namespace Game.Client.State
             connection.RejectedReceived -= OnRejected;
             connection.NotificationReceived -= OnNotification;
             connection.ChatReceived -= OnChat;
+            connection.ReplyReceived -= OnReply;
+            LastShop = null;
+            LastMarketPage = null;
+            LastMailbox = null;
+            LastOrders = null;
             _entities.Clear();
             World = null;
             Player = null;
@@ -105,6 +118,26 @@ namespace Game.Client.State
         private void OnRejected(CommandRejectedMessage message) => Rejected?.Invoke(message.ReasonKey);
 
         private void OnNotification(NotificationMessage message) => Notification?.Invoke(message);
+
+        private void OnReply(object reply)
+        {
+            switch (reply)
+            {
+                case ShopViewMessage shop:
+                    LastShop = shop;
+                    break;
+                case MarketPageMessage page:
+                    LastMarketPage = page;
+                    break;
+                case MailboxMessage mailbox:
+                    LastMailbox = mailbox;
+                    break;
+                case UpgradeOrdersMessage orders:
+                    LastOrders = orders;
+                    break;
+            }
+            MarketData?.Invoke();
+        }
 
         private void OnChat(ChatMessage message)
         {

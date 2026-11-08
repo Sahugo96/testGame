@@ -40,6 +40,7 @@ namespace Game.Client.Net
         public event Action<CommandRejectedMessage> RejectedReceived;
         public event Action<NotificationMessage> NotificationReceived;
         public event Action<ChatMessage> ChatReceived;
+        public event Action<object> ReplyReceived;
 
         public void Send(IGameCommand command) => _session.Send(command);
 
@@ -64,6 +65,12 @@ namespace Game.Client.Net
                         break;
                     case ChatMessage chat:
                         ChatReceived?.Invoke(chat);
+                        break;
+                    case ShopViewMessage _:
+                    case MarketPageMessage _:
+                    case MailboxMessage _:
+                    case UpgradeOrdersMessage _:
+                        ReplyReceived?.Invoke(message);
                         break;
                     case NotificationMessage notification:
                         NotificationReceived?.Invoke(notification);

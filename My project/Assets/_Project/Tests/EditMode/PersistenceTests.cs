@@ -41,6 +41,41 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Market_ShopAndSaleMail_SurviveServerRestart()
+        {
+            var h = new ServerHarness();
+            CharacterPersistence persistence = Persistence(h, Storage());
+            EntityId seller = persistence.Enter("ann", "secret1", null, "Аня", "warrior", false, out string error, out _);
+            Assert.That(error, Is.Null);
+            EntityId spot = h.FindStation(StationTypes.ShopSpot);
+            h.PlaceNear(seller, spot, 1f);
+            h.Send(seller, new OpenShopCommand { SpotId = spot, TierId = "small", Name = "Лавка" });
+            EntityId merchant = h.Player(seller).Outbox.State.Market.MyMerchantId;
+            h.PlaceNear(seller, merchant, 1f);
+            ItemInstance shards = h.Player(seller).Bag.Get(h.BagIndexOf(seller, "philosopher_stone_shard"));
+            h.Send(seller, new ListLotCommand { ItemInstanceId = shards.SourceId, PricePerUnit = 7 });
+            persistence.Leave(seller);
+
+            // A new server process over the same folder: the merchant is back on the spot with the lot (same GUID).
+            var restarted = new ServerHarness();
+            CharacterPersistence again = Persistence(restarted, Storage());
+            EntityId buyer = again.Enter("bob", "secret1", null, "Боб", "mage", false, out error, out _);
+            restarted.PlaceNear(buyer, restarted.FindStation(StationTypes.Market), 1f);
+            restarted.Send(buyer, new MarketSearchCommand { Rarity = -1 });
+            LotSnapshot lot = restarted.Player(buyer).Outbox.Replies.OfType<MarketPageMessage>().Last().Lots.Single();
+            Assert.That((lot.Item.InstanceId, lot.PricePerUnit, lot.ShopName), Is.EqualTo((shards.SourceId, 7L, "Лавка")));
+            Assert.That(restarted.World.Exists(lot.MerchantId), Is.True);
+
+            // Bought while the seller is offline: income waits in the seller's saved mailbox.
+            restarted.Send(buyer, new BuyLotCommand { LotId = lot.LotId, Count = 2, PriceVersion = lot.PriceVersion, RequestId = "q" });
+            restarted.Player(buyer).Outbox.Rejections.Clear();
+            EntityId back = again.Enter("ann", "secret1", null, null, "warrior", false, out error, out _);
+            restarted.Run(restarted.Server.TickInterval);
+            Assert.That(restarted.Player(back).Outbox.State.Market.UnreadMail, Is.EqualTo(1));
+            Assert.That(restarted.Player(back).Outbox.State.Market.MyMerchantId, Is.EqualTo(lot.MerchantId), "still my shop");
+        }
+
+        [Test]
         public void FriendRequest_ReachesAnOfflineAccount_AndFriendshipIsSaved()
         {
             var h = new ServerHarness();

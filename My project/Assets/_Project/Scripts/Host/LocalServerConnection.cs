@@ -38,6 +38,7 @@ namespace Game.Host
         public event Action<CommandRejectedMessage> RejectedReceived;
         public event Action<NotificationMessage> NotificationReceived;
         public event Action<ChatMessage> ChatReceived;
+        public event Action<object> ReplyReceived;
 
         /// <summary>Called before each server tick (the network host polls its connections here).</summary>
         public Action BeforeTick;
@@ -90,6 +91,11 @@ namespace Game.Host
                 ChatReceived?.Invoke(message);
             }
             outbox.Chat.Clear();
+            foreach (object reply in outbox.Replies)
+            {
+                ReplyReceived?.Invoke(reply);
+            }
+            outbox.Replies.Clear();
             if (outbox.World != null)
             {
                 WorldReceived?.Invoke(outbox.World);

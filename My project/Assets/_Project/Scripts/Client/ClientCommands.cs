@@ -59,6 +59,44 @@ namespace Game.Client
 
         public void SetChatTabs(ChatTabSnapshot[] tabs) => _connection.Send(new SetChatTabsCommand { Tabs = tabs });
 
+        public void OpenShop(EntityId spot, string tierId, string name) => _connection.Send(new OpenShopCommand { SpotId = spot, TierId = tierId, Name = name });
+
+        public void CloseShop() => _connection.Send(new CloseShopCommand());
+
+        public void ListLot(string itemInstanceId, long pricePerUnit) => _connection.Send(new ListLotCommand { ItemInstanceId = itemInstanceId, PricePerUnit = pricePerUnit });
+
+        public void UnlistLot(long lotId) => _connection.Send(new UnlistLotCommand { LotId = lotId });
+
+        public void SetLotPrice(long lotId, long pricePerUnit) => _connection.Send(new SetLotPriceCommand { LotId = lotId, PricePerUnit = pricePerUnit });
+
+        /// <summary>Each click is a new request id: the server ignores a repeat of the same one (idempotency).</summary>
+        public void BuyLot(long lotId, int count, int priceVersion) =>
+            _connection.Send(new BuyLotCommand { LotId = lotId, Count = count, PriceVersion = priceVersion, RequestId = System.Guid.NewGuid().ToString("N") });
+
+        public void ViewShop(EntityId merchant) => _connection.Send(new ViewShopCommand { MerchantId = merchant });
+
+        public void SearchMarket(MarketSearchCommand search) => _connection.Send(search);
+
+        public void ViewMailbox() => _connection.Send(new ViewMailboxCommand());
+
+        public void SendMail(string recipient, string subject, string body, string[] instanceIds, long gold) =>
+            _connection.Send(new SendMailCommand { Recipient = recipient, Subject = subject, Body = body, InstanceIds = instanceIds, Gold = gold, RequestId = System.Guid.NewGuid().ToString("N") });
+
+        public void ClaimMail(long mailId) => _connection.Send(new ClaimMailCommand { MailId = mailId });
+
+        public void ReadMail(long mailId) => _connection.Send(new ReadMailCommand { MailId = mailId });
+
+        public void DeleteMail(long mailId) => _connection.Send(new DeleteMailCommand { MailId = mailId });
+
+        public void CreateUpgradeOrder(string itemInstanceId, long payment, string smithName, EntityId station) =>
+            _connection.Send(new CreateUpgradeOrderCommand { ItemInstanceId = itemInstanceId, Payment = payment, SmithName = smithName, StationId = station });
+
+        public void CancelUpgradeOrder(int orderId) => _connection.Send(new CancelUpgradeOrderCommand { OrderId = orderId });
+
+        public void FulfillUpgradeOrder(int orderId, EntityId station) => _connection.Send(new FulfillUpgradeOrderCommand { OrderId = orderId, StationId = station });
+
+        public void ViewUpgradeOrders() => _connection.Send(new ViewUpgradeOrdersCommand());
+
         public void ConvertToRaid() => _connection.Send(new GroupConvertToRaidCommand());
 
         public void MoveToSubgroup(EntityId member, int subgroup) => _connection.Send(new GroupMoveCommand { MemberId = member, Subgroup = subgroup });

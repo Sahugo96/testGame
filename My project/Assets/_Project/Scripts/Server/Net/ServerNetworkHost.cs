@@ -271,6 +271,11 @@ namespace Game.Server.Net
                     peer.Connection.Send(message);
                 }
                 outbox.Chat.Clear();
+                foreach (object reply in outbox.Replies)
+                {
+                    peer.Connection.Send(reply);
+                }
+                outbox.Replies.Clear();
                 if (sendWorld && outbox.World != null)
                 {
                     peer.Connection.SendEncoded(ProtocolCodec.EncodeWorld(outbox.World, peer.KnownEntities));

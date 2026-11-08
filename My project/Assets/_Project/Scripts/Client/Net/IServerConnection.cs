@@ -34,5 +34,8 @@ namespace Game.Client.Net
 
         /// <summary>Chat lines (module 14).</summary>
         event Action<ChatMessage> ChatReceived;
+
+        /// <summary>Answers to window requests (module 20): ShopViewMessage, MarketPageMessage, MailboxMessage, UpgradeOrdersMessage.</summary>
+        event Action<object> ReplyReceived;
     }
 }
