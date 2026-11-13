@@ -21,8 +21,10 @@ namespace Game.Server.Net
             public NetConnection Connection;
             public EntityId Player;
             public bool Joined;
-            /// <summary>Entities whose static fields this peer already has (interest management, module 3).</summary>
-            public readonly HashSet<EntityId> KnownEntities = new HashSet<EntityId>();
+            /// <summary>The last world snapshot sent to this peer, by entity: unchanged parts are not sent again (module 3).</summary>
+            public readonly Dictionary<EntityId, EntitySnapshot> SentEntities = new Dictionary<EntityId, EntitySnapshot>();
+            /// <summary>The last private state sent (encoded): an identical one is not sent again.</summary>
+            public byte[] SentState;
         }
 
         private const string DefaultNamePrefix = "Player";
@@ -221,6 +223,9 @@ namespace Game.Server.Net
                 peer.Player = _server.AddPlayer(hello.ClassId, CleanName(hello.PlayerName));
             }
             peer.Joined = true;
+            PlayerOutbox joined = _server.GetPlayer(peer.Player).Outbox;
+            joined.WorldEveryTicks = Math.Max(1, _config.NetworkWorldEveryTicks);
+            joined.StateEveryTicks = Math.Max(1, _config.NetworkStateEveryTicks);
             peer.Connection.Send(new WelcomeMessage
             {
                 PlayerId = peer.Player,
@@ -244,6 +249,22 @@ namespace Game.Server.Net
                 return DefaultNamePrefix + (++_guestNumber);
             }
             return name.Length > _config.MaxPlayerNameLength ? name.Substring(0, _config.MaxPlayerNameLength) : name;
+        }
+
+        private static bool SameBytes(byte[] a, byte[] b)
+        {
+            if (b == null || a.Length != b.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i])
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void OnTicked()
@@ -290,11 +311,17 @@ namespace Game.Server.Net
                 outbox.Replies.Clear();
                 if (sendWorld && outbox.World != null)
                 {
-                    peer.Connection.SendEncoded(ProtocolCodec.EncodeWorld(outbox.World, peer.KnownEntities));
+                    peer.Connection.SendEncoded(ProtocolCodec.EncodeWorld(outbox.World, peer.SentEntities));
                 }
                 if (sendState && outbox.State != null)
                 {
-                    peer.Connection.Send(outbox.State);
+                    // The private state is large (bag, equipment, skills) and mostly idle: resend only when something changed.
+                    byte[] state = ProtocolCodec.Encode(outbox.State);
+                    if (!SameBytes(state, peer.SentState))
+                    {
+                        peer.SentState = state;
+                        peer.Connection.SendEncoded(state);
+                    }
                 }
             }
         }

@@ -22,7 +22,7 @@ namespace Game.Client.UI.Widgets
         private readonly EntityViewManager _views;
         private readonly RectTransform _root;
         private readonly Dictionary<EntityId, Plate> _plates = new Dictionary<EntityId, Plate>();
-        private readonly List<EntityId> _stale = new List<EntityId>();
+        private readonly HashSet<EntityId> _stale = new HashSet<EntityId>();
 
         public NameplateWidget(RectTransform root, ClientContext ctx, EntityViewManager views)
         {
@@ -38,7 +38,7 @@ namespace Game.Client.UI.Widgets
         public void Tick()
         {
             _stale.Clear();
-            _stale.AddRange(_plates.Keys);
+            _stale.UnionWith(_plates.Keys);
             foreach (EntitySnapshot entity in _ctx.State.Entities)
             {
                 if (entity.Id == _ctx.State.LocalPlayerId || entity.IsDead || !_views.TryGetView(entity.Id, out EntityView view))

@@ -23,5 +23,11 @@ namespace Game.Shared.Protocol
         public StatusSnapshot[] Statuses;
         /// <summary>Who the entity is attacking: a player's target, a mob's top threat ("target of target").</summary>
         public EntityId TargetOfId;
+
+        /// <summary>
+        /// Wire only: the server left out position, health, statuses and target because they are the same as in the last
+        /// snapshot it sent to this client. NetworkClientSession fills them in from that snapshot and clears the flag.
+        /// </summary>
+        public bool DynamicOmitted;
     }
 }

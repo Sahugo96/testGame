@@ -30,13 +30,18 @@ namespace Game.Network
         /// for entities the peer does not know yet; `known` is updated (entities that left the view are forgotten, so they
         /// come back in full). The client side fills the missing fields from its cache (RemoteServerConnection).
         /// </summary>
-        public static byte[] EncodeWorld(WorldSnapshot world, HashSet<EntityId> known)
+        /// <summary>
+        /// World snapshot for one client. <paramref name="sent"/> is what that client already has (the last snapshot sent to
+        /// it, by entity): static fields go once per entity, and an entity whose position, health, statuses and target did
+        /// not change is written as its id only. Null = everything in full.
+        /// </summary>
+        public static byte[] EncodeWorld(WorldSnapshot world, Dictionary<EntityId, EntitySnapshot> sent)
         {
             using (var stream = new MemoryStream())
             using (var w = new BinaryWriter(stream, Encoding.UTF8))
             {
                 w.Write((byte)MessageType.World);
-                WriteWorld(w, world, known);
+                WriteWorld(w, world, sent);
                 w.Flush();
                 return stream.ToArray();
             }
@@ -666,49 +671,87 @@ namespace Game.Network
             }
         }
 
-        private static void WriteWorld(BinaryWriter w, WorldSnapshot m, HashSet<EntityId> known)
+        private const byte EntityHasStatic = 1;
+        private const byte EntityHasDynamic = 2;
+
+        private static void WriteWorld(BinaryWriter w, WorldSnapshot m, Dictionary<EntityId, EntitySnapshot> sent)
         {
             w.Write(m.Tick);
             w.Write(m.ServerTime);
             w.Write(m.Entities.Length);
-            HashSet<EntityId> seen = known == null ? null : new HashSet<EntityId>();
+            Dictionary<EntityId, EntitySnapshot> now = sent == null ? null : new Dictionary<EntityId, EntitySnapshot>(m.Entities.Length);
             foreach (EntitySnapshot e in m.Entities)
             {
+                EntitySnapshot before = default;
+                bool known = sent != null && sent.TryGetValue(e.Id, out before);
+                bool dynamic = !known || !SameDynamic(e, before);
                 Id(w, e.Id);
                 w.Write((byte)e.Kind);
-                bool full = known == null || !known.Contains(e.Id);
-                w.Write(full);
-                if (full)
+                w.Write((byte)((known ? 0 : EntityHasStatic) | (dynamic ? EntityHasDynamic : 0)));
+                if (!known)
                 {
                     Str(w, e.DefinitionId);
                     Str(w, e.NameKey);
                     Str(w, e.DisplayName);
                     Str(w, e.Faction);
                 }
-                seen?.Add(e.Id);
-                w.Write(e.Position.X);
-                w.Write(e.Position.Y);
-                w.Write(e.Position.Z);
-                w.Write(e.Yaw);
-                w.Write(e.Health);
-                w.Write(e.MaxHealth);
-                w.Write(e.IsDead);
-                w.Write(e.IsCasting);
-                StatusSnapshot[] statuses = e.Statuses ?? new StatusSnapshot[0];
-                w.Write(statuses.Length);
-                foreach (StatusSnapshot s in statuses)
+                if (dynamic)
                 {
-                    Str(w, s.StatusId);
-                    w.Write(s.Stacks);
-                    w.Write(s.Remaining);
+                    w.Write(e.Position.X);
+                    w.Write(e.Position.Y);
+                    w.Write(e.Position.Z);
+                    w.Write(e.Yaw);
+                    w.Write(e.Health);
+                    w.Write(e.MaxHealth);
+                    w.Write(e.IsDead);
+                    w.Write(e.IsCasting);
+                    StatusSnapshot[] statuses = e.Statuses ?? new StatusSnapshot[0];
+                    w.Write(statuses.Length);
+                    foreach (StatusSnapshot s in statuses)
+                    {
+                        Str(w, s.StatusId);
+                        w.Write(s.Stacks);
+                        w.Write(s.Remaining);
+                    }
+                    Id(w, e.TargetOfId);
                 }
-                Id(w, e.TargetOfId);
+                if (now != null)
+                {
+                    now[e.Id] = e;
+                }
             }
-            if (known != null)
+            if (sent != null)
             {
-                known.IntersectWith(seen);
-                known.UnionWith(seen);
+                // Exactly what the client has now: an entity that left its view is sent in full when it comes back.
+                sent.Clear();
+                foreach (KeyValuePair<EntityId, EntitySnapshot> pair in now)
+                {
+                    sent[pair.Key] = pair.Value;
+                }
             }
+        }
+
+        private static bool SameDynamic(EntitySnapshot a, EntitySnapshot b)
+        {
+            if (a.Position.X != b.Position.X || a.Position.Y != b.Position.Y || a.Position.Z != b.Position.Z || a.Yaw != b.Yaw
+                || a.Health != b.Health || a.MaxHealth != b.MaxHealth || a.IsDead != b.IsDead || a.IsCasting != b.IsCasting
+                || a.TargetOfId != b.TargetOfId)
+            {
+                return false;
+            }
+            int count = a.Statuses?.Length ?? 0;
+            if (count != (b.Statuses?.Length ?? 0))
+            {
+                return false;
+            }
+            for (int i = 0; i < count; i++)
+            {
+                if (a.Statuses[i].StatusId != b.Statuses[i].StatusId || a.Statuses[i].Stacks != b.Statuses[i].Stacks || a.Statuses[i].Remaining != b.Statuses[i].Remaining)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static WorldSnapshot ReadWorld(BinaryReader r)
@@ -718,35 +761,35 @@ namespace Game.Network
             for (int i = 0; i < m.Entities.Length; i++)
             {
                 var e = new EntitySnapshot { Id = Id(r), Kind = (EntityKind)r.ReadByte() };
-                if (r.ReadBoolean())
+                byte flags = r.ReadByte();
+                if ((flags & EntityHasStatic) != 0)
                 {
                     e.DefinitionId = Str(r);
                     e.NameKey = Str(r);
                     e.DisplayName = Str(r);
                     e.Faction = Str(r);
                 }
-                m.Entities[i] = new EntitySnapshot
+                if ((flags & EntityHasDynamic) != 0)
                 {
-                    Id = e.Id,
-                    Kind = e.Kind,
-                    DefinitionId = e.DefinitionId,
-                    NameKey = e.NameKey,
-                    DisplayName = e.DisplayName,
-                    Faction = e.Faction,
-                    Position = new Vec3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle()),
-                    Yaw = r.ReadSingle(),
-                    Health = r.ReadSingle(),
-                    MaxHealth = r.ReadSingle(),
-                    IsDead = r.ReadBoolean(),
-                    IsCasting = r.ReadBoolean(),
-                };
-                var statuses = new StatusSnapshot[r.ReadInt32()];
-                for (int k = 0; k < statuses.Length; k++)
-                {
-                    statuses[k] = new StatusSnapshot { StatusId = Str(r), Stacks = r.ReadInt32(), Remaining = r.ReadSingle() };
+                    e.Position = new Vec3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle());
+                    e.Yaw = r.ReadSingle();
+                    e.Health = r.ReadSingle();
+                    e.MaxHealth = r.ReadSingle();
+                    e.IsDead = r.ReadBoolean();
+                    e.IsCasting = r.ReadBoolean();
+                    var statuses = new StatusSnapshot[r.ReadInt32()];
+                    for (int k = 0; k < statuses.Length; k++)
+                    {
+                        statuses[k] = new StatusSnapshot { StatusId = Str(r), Stacks = r.ReadInt32(), Remaining = r.ReadSingle() };
+                    }
+                    e.Statuses = statuses;
+                    e.TargetOfId = Id(r);
                 }
-                m.Entities[i].Statuses = statuses;
-                m.Entities[i].TargetOfId = Id(r);
+                else
+                {
+                    e.DynamicOmitted = true;
+                }
+                m.Entities[i] = e;
             }
             return m;
         }

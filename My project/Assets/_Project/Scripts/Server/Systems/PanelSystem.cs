@@ -166,7 +166,7 @@ namespace Game.Server.Systems
                     skippedArmour++;
                     continue;
                 }
-                int bagIndex = BagIndexOf(player, entry.InstanceId);
+                int bagIndex = player.Bag.IndexOfInstance(entry.InstanceId);
                 if (bagIndex < 0)
                 {
                     missing++;
@@ -255,19 +255,6 @@ namespace Game.Server.Systems
                 }
             }
             return false;
-        }
-
-        private static int BagIndexOf(PlayerCharacter player, string instanceId)
-        {
-            for (int i = 0; i < player.Bag.Size; i++)
-            {
-                ItemInstance item = player.Bag.Get(i);
-                if (item != null && item.SourceId == instanceId)
-                {
-                    return i;
-                }
-            }
-            return -1;
         }
     }
 }

@@ -582,18 +582,7 @@ namespace Game.Server.Systems
             });
 
         /// <summary>A bag item by instance id (not equipment), or null.</summary>
-        public ItemInstance FindInBag(PlayerCharacter player, string instanceId)
-        {
-            for (int i = 0; i < player.Bag.Size; i++)
-            {
-                ItemInstance item = player.Bag.Get(i);
-                if (item != null && item.SourceId == instanceId)
-                {
-                    return item;
-                }
-            }
-            return null;
-        }
+        public ItemInstance FindInBag(PlayerCharacter player, string instanceId) => player.Bag.Get(player.Bag.IndexOfInstance(instanceId));
 
         /// <summary>Takes an instance out of the bag (it keeps its GUID, ownership moves elsewhere: lot, mail, escrow).</summary>
         public void RemoveFromBag(PlayerCharacter player, ItemInstance item) => player.Bag.Set(player.Bag.IndexOf(item), null);

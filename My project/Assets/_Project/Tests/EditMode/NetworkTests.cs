@@ -65,6 +65,38 @@ namespace Game.Tests
         }
 
         [Test]
+        public void UnchangedData_IsNotResent_ButTheClientStillSeesItAll()
+        {
+            var h = new ServerHarness();
+            using (var host = new ServerNetworkHost(h.Server, 0))
+            using (NetworkClientSession alice = NetworkClientSession.Connect("127.0.0.1", host.Port, "Alice", "mage"))
+            {
+                WorldSnapshot world = null;
+                int states = 0;
+                Pump(h, host, () =>
+                {
+                    while (alice.TryReceive(out object message))
+                    {
+                        world = message as WorldSnapshot ?? world;
+                        states += message is PlayerStateSnapshot ? 1 : 0;
+                    }
+                    return world != null && world.Tick >= 60;
+                });
+                // Many snapshots later a mob that never moved still has its name, place and health on the client.
+                EntitySnapshot mob = world.Entities.First(e => e.Kind == EntityKind.Mob);
+                Assert.That(mob.DefinitionId, Is.Not.Null);
+                Assert.That(mob.MaxHealth, Is.GreaterThan(0f));
+                Assert.That(mob.Position, Is.EqualTo(h.World.Transforms.Get(mob.Id).Position));
+                Assert.That(world.Entities.Any(e => e.DynamicOmitted), Is.False, "the session completes every entity");
+                // An idle player's private state does not change: it is sent once, not every third tick.
+                Assert.That(states, Is.LessThan(5));
+                long before = host.BytesSent;
+                Pump(h, host, () => { while (alice.TryReceive(out _)) { } return h.Server.CurrentTick >= 120; });
+                Assert.That(host.BytesSent - before, Is.LessThan(30 * 400), "an idle world costs a few bytes per entity, not a full snapshot");
+            }
+        }
+
+        [Test]
         public void Disconnect_RemovesPlayer_AndWrongClassIsRefused()
         {
             var h = new ServerHarness();

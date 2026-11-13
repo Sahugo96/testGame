@@ -16,6 +16,23 @@ namespace Game.Server.Items
 
         public void Set(int index, ItemInstance item) => _slots[index] = item;
 
+        /// <summary>Slot of the instance with this id (ItemInstance.SourceId), or -1. The one place that searches the bag by id.</summary>
+        public int IndexOfInstance(string instanceId)
+        {
+            if (string.IsNullOrEmpty(instanceId))
+            {
+                return -1;
+            }
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                if (_slots[i] != null && _slots[i].SourceId == instanceId)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public int FindFreeSlot(int start, int count)
         {
             for (int i = start; i < start + count && i < _slots.Length; i++)

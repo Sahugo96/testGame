@@ -251,6 +251,6 @@ namespace Game.Server.Systems
             return online != null ? NameOf(online) : name;
         }
 
-        private string NameOf(PlayerCharacter player) => _ctx.World.Identities.Get(player.EntityId).DisplayName ?? string.Empty;
+        private string NameOf(PlayerCharacter player) => _ctx.NameOf(player);
     }
 }

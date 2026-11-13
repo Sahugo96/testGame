@@ -32,7 +32,7 @@ namespace Game.Tests
                 Assert.That(errors, Is.Empty, string.Join("\n", errors));
             }
             Content = content;
-            Server = new GameServer(Content, Random, Audit);
+            Server = new GameServer(Content, Random, Audit) { RethrowCommandErrors = true };
         }
 
         public ServerWorld World => Server.Context.World;

@@ -56,6 +56,7 @@ namespace Game.Server
         private readonly InterestSystem _interest;
         private readonly System.Diagnostics.Stopwatch _tickClock = new System.Diagnostics.Stopwatch();
         private int _tick;
+        private int _entitiesSent;
         private int _nextCharacterNumber = 1;
 
         public GameServer(ContentDatabase content, IRandom random, IAuditLog audit)
@@ -125,6 +126,9 @@ namespace Game.Server
         }
 
         public ServerContext Context => _ctx;
+
+        /// <summary>Tests set this: an exception in a command handler fails the test instead of being logged.</summary>
+        public bool RethrowCommandErrors;
 
         public float TickInterval => 1f / _ctx.Content.Config.TickRate;
 
@@ -355,6 +359,7 @@ namespace Game.Server
                 Bag = new Inventory(_ctx.Content.BagSize),
             };
             _ctx.Players.Add(id, player);
+            _ctx.AddPlayerName(player);
             return player;
         }
 
@@ -386,6 +391,8 @@ namespace Game.Server
             _trade.OnPlayerGone(id);
             _chat.OnPlayerRemoved(id);
             _shops.OnPlayerRemoved(id);
+            _mail.OnPlayerRemoved(id);
+            _ctx.RemovePlayerName(_ctx.Players[id]);
             _ctx.Players.Remove(id);
             foreach (PlayerCharacter other in _ctx.Players.Values)
             {
@@ -419,7 +426,16 @@ namespace Game.Server
             {
                 while (player.PendingCommands.Count > 0)
                 {
-                    Handle(player, player.PendingCommands.Dequeue());
+                    IGameCommand command = player.PendingCommands.Dequeue();
+                    try
+                    {
+                        Handle(player, command);
+                    }
+                    catch (Exception exception) when (!RethrowCommandErrors)
+                    {
+                        // One broken command must not stop the tick for everyone: log it and go on.
+                        Log.Error(LogTags.Server, $"Command {command.GetType().Name} of {player.CharacterId} failed: {exception}");
+                    }
                 }
             }
             _movement.Update(dt);
@@ -452,9 +468,21 @@ namespace Game.Server
                 worldSnapshot.Entities[i].TargetOfId = owner != null ? owner.TargetId : _threat.TopThreat(id);
             }
             _interest.Rebuild(worldSnapshot);
+            int worldsBuilt = 0;
             foreach (PlayerCharacter player in _ctx.Players.Values)
             {
-                player.Outbox.World = _interest.BuildFor(player, worldSnapshot);
+                // Snapshots are built only on the ticks their transport takes them (PlayerOutbox.*EveryTicks).
+                if (_tick % player.Outbox.WorldEveryTicks == 0)
+                {
+                    player.Outbox.World = _interest.BuildFor(player, worldSnapshot);
+                    worldsBuilt++;
+                }
+                _settings.Flush(player);
+                _panels.Flush(player);
+                if (_tick % player.Outbox.StateEveryTicks != 0)
+                {
+                    continue;
+                }
                 player.Outbox.State = _snapshots.BuildPlayer(player);
                 player.Outbox.State.Duel = _duels.Snapshot(player.EntityId);
                 player.Outbox.State.CraftRecipeId = player.Craft.Active ? player.Craft.RecipeId : null;
@@ -472,8 +500,6 @@ namespace Game.Server
                 };
                 _mail.Fill(player, market);
                 player.Outbox.State.Market = market;
-                _settings.Flush(player);
-                _panels.Flush(player);
             }
             if (_market.Dirty || _ctx.Committed.Count > 0)
             {
@@ -492,7 +518,12 @@ namespace Game.Server
                 Committed?.Invoke(touched, marketChanged);
             }
             _tickClock.Stop();
-            Metrics.RecordTick(_tickClock.Elapsed.TotalMilliseconds, _ctx.Players.Count, worldSnapshot.Entities.Length, _interest.LastTickEntitiesSent);
+            if (worldsBuilt > 0)
+            {
+                // Scaled to all players: on a tick where only some worlds were built the metric still means "per player".
+                _entitiesSent = (int)((long)_interest.LastTickEntitiesSent * _ctx.Players.Count / worldsBuilt);
+            }
+            Metrics.RecordTick(_tickClock.Elapsed.TotalMilliseconds, _ctx.Players.Count, worldSnapshot.Entities.Length, _entitiesSent);
             Ticked?.Invoke();
         }
 

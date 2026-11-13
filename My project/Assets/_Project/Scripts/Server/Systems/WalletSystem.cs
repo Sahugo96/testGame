@@ -84,9 +84,19 @@ namespace Game.Server.Systems
             return WalletResult.Ok;
         }
 
-        /// <summary>Shortcut for a single credit (rewards); returns false if it would break the cap.</summary>
-        public bool Credit(PlayerCharacter player, string currencyId, long amount, string key, string reason) =>
-            amount <= 0 || Transact(null, new[] { new WalletEntry { Player = player, CurrencyId = currencyId, Amount = amount } }, key, reason) != WalletResult.OverCap;
+        /// <summary>
+        /// Shortcut for a single credit (rewards, refunds): true only if the money is in the wallet now (or was already
+        /// credited under this key). Callers send the money by mail instead when this is false.
+        /// </summary>
+        public bool Credit(PlayerCharacter player, string currencyId, long amount, string key, string reason)
+        {
+            if (amount <= 0)
+            {
+                return true;
+            }
+            WalletResult result = Transact(null, new[] { new WalletEntry { Player = player, CurrencyId = currencyId, Amount = amount } }, key, reason);
+            return result == WalletResult.Ok || result == WalletResult.Duplicate;
+        }
 
         private bool Check(WalletEntry entry, long delta, out WalletResult error)
         {

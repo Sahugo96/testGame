@@ -362,16 +362,8 @@ namespace Game.Server.Systems
 
         private static ItemInstance BagItem(PlayerCharacter player, string instanceId, out int index)
         {
-            for (index = 0; index < player.Bag.Size; index++)
-            {
-                ItemInstance item = player.Bag.Get(index);
-                if (item != null && item.SourceId == instanceId)
-                {
-                    return item;
-                }
-            }
-            index = -1;
-            return null;
+            index = player.Bag.IndexOfInstance(instanceId);
+            return player.Bag.Get(index);
         }
 
         private ItemSlotSnapshot[] Items(PlayerCharacter owner, TradeOffer offer)

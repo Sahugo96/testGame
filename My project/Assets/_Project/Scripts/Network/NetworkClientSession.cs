@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using Game.Shared.Core;
 using Game.Shared.Protocol;
@@ -58,12 +59,56 @@ namespace Game.Network
 
         public void Send(IGameCommand command) => _connection.Send(command);
 
-        /// <summary>Next message from the server; Welcome is also remembered here.</summary>
+        /// <summary>
+        /// Fills in what the server left out (ProtocolCodec.EncodeWorld): static fields of entities seen before and the
+        /// dynamic part of entities that did not change since the previous snapshot.
+        /// </summary>
+        private void Complete(WorldSnapshot world)
+        {
+            var now = new Dictionary<EntityId, EntitySnapshot>(world.Entities.Length);
+            for (int i = 0; i < world.Entities.Length; i++)
+            {
+                ref EntitySnapshot entity = ref world.Entities[i];
+                if (_entities.TryGetValue(entity.Id, out EntitySnapshot before))
+                {
+                    if (entity.DefinitionId == null)
+                    {
+                        entity.DefinitionId = before.DefinitionId;
+                        entity.NameKey = before.NameKey;
+                        entity.DisplayName = before.DisplayName;
+                        entity.Faction = before.Faction;
+                    }
+                    if (entity.DynamicOmitted)
+                    {
+                        entity.Position = before.Position;
+                        entity.Yaw = before.Yaw;
+                        entity.Health = before.Health;
+                        entity.MaxHealth = before.MaxHealth;
+                        entity.IsDead = before.IsDead;
+                        entity.IsCasting = before.IsCasting;
+                        entity.Statuses = before.Statuses;
+                        entity.TargetOfId = before.TargetOfId;
+                    }
+                }
+                entity.DynamicOmitted = false;
+                now[entity.Id] = entity;
+            }
+            _entities = now;
+        }
+
+        /// <summary>The last world snapshot by entity: the server sends an entity's unchanged parts only once.</summary>
+        private Dictionary<EntityId, EntitySnapshot> _entities = new Dictionary<EntityId, EntitySnapshot>();
+
+        /// <summary>Next message from the server; Welcome is also remembered here; world snapshots arrive complete.</summary>
         public bool TryReceive(out object message)
         {
             if (!_connection.TryReceive(out message))
             {
                 return false;
+            }
+            if (message is WorldSnapshot world)
+            {
+                Complete(world);
             }
             if (message is WelcomeMessage welcome)
             {

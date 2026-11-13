@@ -83,13 +83,21 @@ namespace Game.Tests
             EntityId a = h.AddPlayer("mage");
             h.Server.Tick();
             WorldSnapshot world = h.Player(a).Outbox.World;
-            var known = new System.Collections.Generic.HashSet<EntityId>();
-            byte[] first = Game.Network.ProtocolCodec.EncodeWorld(world, known);
-            byte[] second = Game.Network.ProtocolCodec.EncodeWorld(world, known);
-            Assert.That(second.Length, Is.LessThan(first.Length));
+            var sent = new System.Collections.Generic.Dictionary<EntityId, EntitySnapshot>();
+            byte[] first = Game.Network.ProtocolCodec.EncodeWorld(world, sent);
+            byte[] second = Game.Network.ProtocolCodec.EncodeWorld(world, sent);
+            Assert.That(second.Length, Is.LessThan(first.Length / 4), "nothing changed: ids only");
             var compact = (WorldSnapshot)Game.Network.ProtocolCodec.Decode(second);
-            Assert.That(compact.Entities.All(e => e.DefinitionId == null), Is.True, "static fields were already sent");
-            Assert.That(known.Count, Is.EqualTo(world.Entities.Length));
+            Assert.That(compact.Entities.All(e => e.DefinitionId == null && e.DynamicOmitted), Is.True, "static and unchanged dynamic parts were already sent");
+            Assert.That(sent.Count, Is.EqualTo(world.Entities.Length));
+
+            // One entity moves: only it carries its dynamic part again.
+            EntitySnapshot moved = world.Entities[0];
+            moved.Position = moved.Position + new Vec3(1f, 0f, 0f);
+            world.Entities[0] = moved;
+            var third = (WorldSnapshot)Game.Network.ProtocolCodec.Decode(Game.Network.ProtocolCodec.EncodeWorld(world, sent));
+            Assert.That(third.Entities.Count(e => !e.DynamicOmitted), Is.EqualTo(1));
+            Assert.That(third.Entities.First(e => !e.DynamicOmitted).Position.X, Is.EqualTo(moved.Position.X));
         }
 
         private static void ServerMetricsCheck(ServerHarness h)

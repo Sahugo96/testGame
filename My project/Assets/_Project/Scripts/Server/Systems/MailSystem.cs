@@ -229,12 +229,12 @@ namespace Game.Server.Systems
                 CombatEvents.Reject(player, RejectReasons.NotNearStation);
                 return;
             }
-            string key = NameOf(player).ToLowerInvariant();
+            string name = NameOf(player);
             long now = _ctx.Now;
             var letters = new List<MailSnapshot>();
             foreach (MailData mail in _market.Mail.Values)
             {
-                if (mail.Recipient.ToLowerInvariant() != key)
+                if (!string.Equals(mail.Recipient, name, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -257,18 +257,42 @@ namespace Game.Server.Systems
         /// <summary>Unread letters and the mailbox version for the player snapshot.</summary>
         public void Fill(PlayerCharacter player, MarketStateSnapshot snapshot)
         {
-            string key = NameOf(player).ToLowerInvariant();
-            int unread = 0;
-            foreach (MailData mail in _market.Mail.Values)
+            // Called for every player's state: the letters are counted again only when this mailbox changed (its version).
+            if (!_unread.TryGetValue(player.EntityId, out UnreadCache cache))
             {
-                if (!mail.Read && mail.Recipient.ToLowerInvariant() == key)
+                cache = new UnreadCache { Name = NameOf(player), Version = -1 };
+                cache.Key = cache.Name.ToLowerInvariant();
+            }
+            _market.MailVersions.TryGetValue(cache.Key, out int version);
+            if (version != cache.Version)
+            {
+                cache.Version = version;
+                cache.Count = 0;
+                foreach (MailData mail in _market.Mail.Values)
                 {
-                    unread++;
+                    if (!mail.Read && string.Equals(mail.Recipient, cache.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cache.Count++;
+                    }
                 }
             }
-            snapshot.UnreadMail = unread;
-            _market.MailVersions.TryGetValue(key, out snapshot.MailVersion);
+            _unread[player.EntityId] = cache;
+            snapshot.UnreadMail = cache.Count;
+            snapshot.MailVersion = version;
         }
+
+        public void OnPlayerRemoved(EntityId id) => _unread.Remove(id);
+
+        /// <summary>Unread letters of an online player, valid for one version of the mailbox.</summary>
+        private struct UnreadCache
+        {
+            public string Name;
+            public string Key;
+            public int Version;
+            public int Count;
+        }
+
+        private readonly Dictionary<EntityId, UnreadCache> _unread = new Dictionary<EntityId, UnreadCache>();
 
         /// <summary>Player letters past their time go back to the sender with what is still attached.</summary>
         public void Update()
@@ -333,7 +357,7 @@ namespace Game.Server.Systems
 
         private bool NearMailbox(PlayerCharacter player) => _stations.IsNearAny(player, StationTypes.Mailbox);
 
-        private string NameOf(PlayerCharacter player) => _ctx.World.Identities.Get(player.EntityId).DisplayName ?? string.Empty;
+        private string NameOf(PlayerCharacter player) => _ctx.NameOf(player);
 
         private static void Notify(PlayerCharacter player, string key, int number, string itemNameKey, bool positive) =>
             player.Outbox.Notifications.Add(new NotificationMessage { TextKey = key, Number = number, ItemNameKey = itemNameKey, IsPositive = positive });

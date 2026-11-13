@@ -199,22 +199,7 @@ namespace Game.Server.Systems
         public void OnPlayerRemoved(EntityId id) => _lastSent.Remove(id);
 
         /// <summary>Finds an online character by name, ignoring case.</summary>
-        public PlayerCharacter FindByName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return null;
-            }
-            string wanted = name.Trim();
-            foreach (PlayerCharacter player in _ctx.Players.Values)
-            {
-                if (string.Equals(NameOf(player.EntityId), wanted, StringComparison.OrdinalIgnoreCase))
-                {
-                    return player;
-                }
-            }
-            return null;
-        }
+        public PlayerCharacter FindByName(string name) => _ctx.FindPlayerByName(name);
 
         private void ToGroup(GroupData group, ChatMessage message)
         {
@@ -224,7 +209,7 @@ namespace Game.Server.Systems
             }
         }
 
-        private string NameOf(EntityId id) => _ctx.World.Identities.Has(id) ? _ctx.World.Identities.Get(id).DisplayName ?? string.Empty : string.Empty;
+        private string NameOf(EntityId id) => _ctx.NameOf(id);
 
         /// <summary>No control characters, trimmed, at most <paramref name="max"/> characters.</summary>
         private static string Clean(string text, int max)

@@ -230,7 +230,7 @@ namespace Game.Server.Systems
             _market.Changed(player);
         }
 
-        private string NameOf(PlayerCharacter player) => _ctx.World.Identities.Get(player.EntityId).DisplayName ?? string.Empty;
+        private string NameOf(PlayerCharacter player) => _ctx.NameOf(player);
 
         private static void Notify(PlayerCharacter player, string key, int number) =>
             player.Outbox.Notifications.Add(new NotificationMessage { TextKey = key, Number = number, IsPositive = true });
