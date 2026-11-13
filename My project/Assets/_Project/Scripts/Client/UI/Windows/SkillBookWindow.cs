@@ -35,6 +35,10 @@ namespace Game.Client.UI.Windows
                 int index = _rows.Count;
                 hover.Entered = () => ShowTooltip(index);
                 hover.Exited = Tooltip.Hide;
+                // Module 18: drag a skill onto the skill panel.
+                DragTrigger drag = row.gameObject.AddComponent<DragTrigger>();
+                drag.Began = () => BeginDrag(index);
+                drag.Ended = EndDrag;
                 _rows.Add(row);
             }
             for (int i = 0; i < _rows.Count; i++)
@@ -54,6 +58,24 @@ namespace Game.Client.UI.Windows
                         (skill.Efficiency * PercentFactor).ToString("0", CultureInfo.InvariantCulture))
                     + (variants.Length > 0 ? "  [" + variants.Trim() + "]" : string.Empty);
             }
+        }
+
+        private void BeginDrag(int index)
+        {
+            PlayerStateSnapshot state = Ctx.State.Player;
+            if (state == null || index >= state.Skills.Length)
+            {
+                return;
+            }
+            string skillId = state.Skills[index].SkillId;
+            Ctx.Drag.Begin(DragKind.Skill, skillId, -1);
+            Tooltip.Show(Ctx.Text.Format(UiKeys.DragSkill, Ctx.Text.Get(Ctx.Content.Skills[skillId].NameKey)));
+        }
+
+        private void EndDrag()
+        {
+            Ctx.Drag.End();
+            Tooltip.Hide();
         }
 
         private void ShowTooltip(int index)

@@ -65,5 +65,9 @@ namespace Game.Shared.Protocol
         public const string LootOnGround = "notify.loot_on_ground";
         /// <summary>{0} = gold received.</summary>
         public const string GoldGained = "notify.gold_gained";
+        /// <summary>Module 18: {0} = loadout number; {0} = items of the loadout no longer in the bag; {0} = armour pieces left for after combat.</summary>
+        public const string LoadoutSaved = "notify.loadout_saved";
+        public const string LoadoutPartial = "notify.loadout_partial";
+        public const string LoadoutArmourInCombat = "notify.loadout_armour_in_combat";
     }
 }

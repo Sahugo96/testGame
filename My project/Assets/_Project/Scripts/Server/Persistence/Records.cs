@@ -84,6 +84,10 @@ namespace Game.Server.Persistence
         public StatusRecord[] Statuses;
         /// <summary>Wallet balances (05, 7.14.2), schema v2.</summary>
         public CurrencyRecord[] Currencies;
+        /// <summary>Quick panels (module 18): skill ids and consumable item ids per slot ("" = empty), loadouts. Empty = defaults.</summary>
+        public string[] SkillBar;
+        public string[] ConsumableBar;
+        public LoadoutRecord[] Loadouts;
         public string SavedAt;
     }
 
@@ -177,5 +181,19 @@ namespace Game.Server.Persistence
         public string InstanceId;
         public string OwnerId;
         public string Since;
+    }
+
+    [Serializable]
+    public class LoadoutRecord
+    {
+        public LoadoutItemRecord[] Items;
+    }
+
+    [Serializable]
+    public class LoadoutItemRecord
+    {
+        public string SlotId;
+        public string InstanceId;
+        public string DefinitionId;
     }
 }

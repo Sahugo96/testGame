@@ -56,6 +56,7 @@ namespace Game.Client.UI.Widgets
                     }
                     int captured = index;
                     slot.Bind(() => OnEnter(captured), OnExit, button => OnClick(captured, button));
+                    slot.BindDrag(() => BeginDrag(captured), () => EndDrag(captured), () => Drop(captured));
                     _slots.Add(slot);
                 }
             }
@@ -68,7 +69,7 @@ namespace Game.Client.UI.Widgets
 
         public string SkillAt(int index) => index >= 0 && index < _skillBySlot.Length ? _skillBySlot[index] : null;
 
-        /// <summary>Puts the class skills into the first row (until drag & drop from the skill book, module 18).</summary>
+        /// <summary>Puts the class skills into the first row: only until the server's layout arrives (module 18).</summary>
         public void AssignClassSkills(ClassDefinition cls)
         {
             Array.Clear(_skillBySlot, 0, _skillBySlot.Length);
@@ -76,6 +77,23 @@ namespace Game.Client.UI.Widgets
             {
                 _skillBySlot[i] = cls.Skills[i].SkillId;
             }
+            ShowSkills();
+        }
+
+        /// <summary>The character's layout from the server (module 18, 02 7.7 А); unknown skills are shown as empty slots.</summary>
+        public void ApplyPanels(PanelsMessage panels)
+        {
+            Array.Clear(_skillBySlot, 0, _skillBySlot.Length);
+            for (int i = 0; i < panels.SkillBar.Length && i < _skillBySlot.Length; i++)
+            {
+                string skillId = panels.SkillBar[i];
+                _skillBySlot[i] = !string.IsNullOrEmpty(skillId) && _ctx.Content.Skills.ContainsKey(skillId) ? skillId : null;
+            }
+            ShowSkills();
+        }
+
+        private void ShowSkills()
+        {
             for (int i = 0; i < _slots.Count; i++)
             {
                 string skillId = _skillBySlot[i];
@@ -197,6 +215,52 @@ namespace Game.Client.UI.Widgets
         {
             _hovered = -1;
             _tooltip.Hide();
+        }
+
+        // ---- Drag and drop (module 18): from the skill book onto a slot, between slots (swap), out of the panel (clear) ----
+
+        private void BeginDrag(int index)
+        {
+            string skillId = _skillBySlot[index];
+            if (skillId != null)
+            {
+                _ctx.Drag.Begin(DragKind.SkillSlot, skillId, index);
+                _tooltip.Show(_ctx.Text.Format(UiKeys.DragSkill, _ctx.Text.Get(_ctx.Content.Skills[skillId].NameKey)));
+            }
+        }
+
+        private void EndDrag(int index)
+        {
+            if (_ctx.Drag.Kind == DragKind.SkillSlot && _ctx.Drag.Index == index && !_ctx.Drag.Dropped)
+            {
+                _ctx.Commands?.SetSkillSlot(index, null);
+            }
+            _ctx.Drag.End();
+            _tooltip.Hide();
+        }
+
+        private void Drop(int index)
+        {
+            DragDropService drag = _ctx.Drag;
+            if (_ctx.Commands == null)
+            {
+                return;
+            }
+            if (drag.Kind == DragKind.Skill)
+            {
+                _ctx.Commands.SetSkillSlot(index, drag.Id);
+                drag.MarkDropped();
+            }
+            else if (drag.Kind == DragKind.SkillSlot)
+            {
+                drag.MarkDropped();
+                if (drag.Index != index)
+                {
+                    string here = _skillBySlot[index];
+                    _ctx.Commands.SetSkillSlot(index, drag.Id);
+                    _ctx.Commands.SetSkillSlot(drag.Index, here);
+                }
+            }
         }
 
         private void OnClick(int index, PointerEventData.InputButton button)

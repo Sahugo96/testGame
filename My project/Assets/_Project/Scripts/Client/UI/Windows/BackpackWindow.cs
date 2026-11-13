@@ -162,6 +162,7 @@ namespace Game.Client.UI.Windows
                 return;
             }
             _dragFrom = slot.Index;
+            Ctx.Drag.Begin(DragKind.Item, slot.DefinitionId, slot.Index);
             ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
             Tooltip.Show(Ctx.Text.Format(UiKeys.DragStack, TooltipText.ItemName(Ctx, item, slot.UpgradeLevel), slot.Count));
         }
@@ -169,6 +170,7 @@ namespace Game.Client.UI.Windows
         private void EndDrag()
         {
             _dragFrom = -1;
+            Ctx.Drag.End();
             Tooltip.Hide();
         }
 

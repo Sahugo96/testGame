@@ -37,6 +37,15 @@ namespace Game.Client
 
         public void UseConsumable(int bagIndex) => _connection.Send(new UseConsumableCommand { BagIndex = bagIndex });
 
+        /// <summary>Module 18: panel slots and equipment loadouts (null id clears a slot).</summary>
+        public void SetSkillSlot(int index, string skillId) => _connection.Send(new SetSkillSlotCommand { Index = index, SkillId = skillId });
+
+        public void SetConsumableSlot(int index, string itemId) => _connection.Send(new SetConsumableSlotCommand { Index = index, ItemId = itemId });
+
+        public void SaveLoadout(int index) => _connection.Send(new SaveLoadoutCommand { Index = index });
+
+        public void ApplyLoadout(int index) => _connection.Send(new ApplyLoadoutCommand { Index = index });
+
         public void UpgradeItem(string itemInstanceId, EntityId stationId) =>
             _connection.Send(new UpgradeItemCommand { ItemInstanceId = itemInstanceId, StationId = stationId });
 

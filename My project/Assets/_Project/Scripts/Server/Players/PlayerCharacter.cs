@@ -39,6 +39,8 @@ namespace Game.Server.Players
         public AccountSettingsSnapshot AccountSettings;
         /// <summary>The settings document is to be sent to the client (after login or a change).</summary>
         public bool SettingsToSend = true;
+        /// <summary>Skill and consumable panels and equipment loadouts (module 18), saved with the character.</summary>
+        public readonly PanelData Panels = new PanelData();
         public MoveCommand LastMove;
         public readonly PlayerOutbox Outbox = new PlayerOutbox();
         public readonly Queue<IGameCommand> PendingCommands = new Queue<IGameCommand>();

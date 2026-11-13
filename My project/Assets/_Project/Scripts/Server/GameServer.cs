@@ -42,6 +42,7 @@ namespace Game.Server
         private readonly ShopSystem _shops;
         private readonly UpgradeOrderSystem _orders;
         private readonly SettingsSystem _settings;
+        private readonly PanelSystem _panels;
         private float _marketCheckTimer;
         /// <summary>Shop, mail and order expiry is checked this often (real-time deadlines of hours and days).</summary>
         private const float MarketCheckSeconds = 1f;
@@ -101,6 +102,7 @@ namespace Game.Server
             _shops = new ShopSystem(_ctx, _market, _wallet, _inventory, _stations, _mail);
             _orders = new UpgradeOrderSystem(_ctx, _market, _wallet, _inventory, _upgrades, _mail, _friends);
             _settings = new SettingsSystem(_ctx);
+            _panels = new PanelSystem(_ctx, _inventory);
             _settings.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
             _groups.SystemMessage += (groupId, key) => _chat.SystemToGroup(groupId, key, null);
             _friends.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
@@ -167,6 +169,7 @@ namespace Game.Server
             }
             _stats.Recalculate(player);
             _inventory.GiveStartingItems(player);
+            _panels.InitDefaults(player);
             _wallet.Credit(player, _ctx.Content.Config.GoldCurrencyId, _ctx.Content.Config.StartingGold, null, "start");
             FillResources(player.EntityId);
             Log.Info(LogTags.Server, $"Player {player.EntityId} joined as '{classId}'");
@@ -233,6 +236,7 @@ namespace Game.Server
             {
                 _statuses.Restore(player.EntityId, status.StatusId, status.Stacks, status.Remaining, status.Power, status.ShieldLeft);
             }
+            _panels.Load(player, record.SkillBar, record.ConsumableBar, ImportLoadouts(record.Loadouts));
             Log.Info(LogTags.Server, $"Player {player.EntityId} restored: '{record.DisplayName}' ({record.ClassId}, level {player.Level})");
             return player.EntityId;
         }
@@ -294,7 +298,37 @@ namespace Game.Server
                 PositionZ = position.Z,
                 Statuses = _statuses.Export(id),
                 Currencies = ExportWallet(player),
+                SkillBar = Array.ConvertAll(player.Panels.SkillBar, s => s ?? string.Empty),
+                ConsumableBar = Array.ConvertAll(player.Panels.ConsumableBar, s => s ?? string.Empty),
+                Loadouts = ExportLoadouts(player),
             };
+        }
+
+        private static Persistence.LoadoutRecord[] ExportLoadouts(PlayerCharacter player) =>
+            Array.ConvertAll(player.Panels.Loadouts, l => new Persistence.LoadoutRecord
+            {
+                Items = l.Items.ConvertAll(i => new Persistence.LoadoutItemRecord { SlotId = i.SlotId, InstanceId = i.InstanceId, DefinitionId = i.DefinitionId }).ToArray(),
+            });
+
+        private static LoadoutData[] ImportLoadouts(Persistence.LoadoutRecord[] records)
+        {
+            if (records == null)
+            {
+                return null;
+            }
+            var result = new LoadoutData[records.Length];
+            for (int i = 0; i < records.Length; i++)
+            {
+                result[i] = new LoadoutData();
+                foreach (Persistence.LoadoutItemRecord item in records[i]?.Items ?? new Persistence.LoadoutItemRecord[0])
+                {
+                    if (!string.IsNullOrEmpty(item?.SlotId) && !string.IsNullOrEmpty(item.InstanceId))
+                    {
+                        result[i].Items.Add(new LoadoutItemData { SlotId = item.SlotId, InstanceId = item.InstanceId, DefinitionId = item.DefinitionId });
+                    }
+                }
+            }
+            return result;
         }
 
         private PlayerCharacter CreatePlayer(string classId, string displayName, string characterId)
@@ -439,6 +473,7 @@ namespace Game.Server
                 _mail.Fill(player, market);
                 player.Outbox.State.Market = market;
                 _settings.Flush(player);
+                _panels.Flush(player);
             }
             if (_market.Dirty || _ctx.Committed.Count > 0)
             {
@@ -564,6 +599,18 @@ namespace Game.Server
                     break;
                 case SetAccountSettingsCommand settings:
                     _settings.Set(player, settings);
+                    break;
+                case SetSkillSlotCommand skillSlot:
+                    _panels.SetSkillSlot(player, skillSlot);
+                    break;
+                case SetConsumableSlotCommand consumableSlot:
+                    _panels.SetConsumableSlot(player, consumableSlot);
+                    break;
+                case SaveLoadoutCommand saveLoadout:
+                    _panels.SaveLoadout(player, saveLoadout);
+                    break;
+                case ApplyLoadoutCommand applyLoadout:
+                    _panels.ApplyLoadout(player, applyLoadout);
                     break;
                 case FriendRemoveCommand friendRemove:
                     _friends.Remove(player, friendRemove.Name);

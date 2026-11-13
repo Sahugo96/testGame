@@ -2009,6 +2009,38 @@
    "Value": "{0} ×{1}"
   },
   {
+   "Key": "ui.drag_to_panel",
+   "Value": "{0} — отпустите над ячейкой панели (вне панели — убрать из ячейки)"
+  },
+  {
+   "Key": "ui.loadouts",
+   "Value": "Комплекты экипировки"
+  },
+  {
+   "Key": "ui.loadout_name",
+   "Value": "Комплект {0}"
+  },
+  {
+   "Key": "ui.loadout_items",
+   "Value": "{0} предм."
+  },
+  {
+   "Key": "ui.loadout_empty",
+   "Value": "пусто"
+  },
+  {
+   "Key": "ui.loadout_apply",
+   "Value": "Надеть"
+  },
+  {
+   "Key": "ui.loadout_save",
+   "Value": "Сохранить"
+  },
+  {
+   "Key": "ui.loadout_hint",
+   "Value": "«Сохранить» — запомнить надетое сейчас; «Надеть» — надеть комплект (в бою меняется только оружие)"
+  },
+  {
    "Key": "error.inventory_move_invalid",
    "Value": "Сюда нельзя положить"
   },
@@ -2811,6 +2843,26 @@
   {
    "Key": "error.settings_invalid",
    "Value": "Настройки не приняты сервером"
+  },
+  {
+   "Key": "error.panel_slot_invalid",
+   "Value": "Это нельзя поместить в эту ячейку"
+  },
+  {
+   "Key": "error.loadout_empty",
+   "Value": "Комплект пуст — сначала сохраните в него экипировку"
+  },
+  {
+   "Key": "notify.loadout_saved",
+   "Value": "Экипировка сохранена в комплект {0}"
+  },
+  {
+   "Key": "notify.loadout_partial",
+   "Value": "Комплект надет частично: {0} предм. нет в сумке"
+  },
+  {
+   "Key": "notify.loadout_armour_in_combat",
+   "Value": "В бою меняется только оружие: броня ({0}) — после боя"
   }
  ]
 }

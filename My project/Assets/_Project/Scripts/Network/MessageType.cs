@@ -72,5 +72,10 @@ namespace Game.Network
         ViewUpgradeOrders = 74,
         SetAccountSettings = 75,
         AccountSettings = 76,
+        SetSkillSlot = 77,
+        SetConsumableSlot = 78,
+        SaveLoadout = 79,
+        ApplyLoadout = 80,
+        Panels = 81,
     }
 }

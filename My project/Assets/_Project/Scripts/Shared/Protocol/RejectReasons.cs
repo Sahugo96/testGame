@@ -97,5 +97,8 @@ namespace Game.Shared.Protocol
         public const string OrderTooMany = "error.order_too_many";
         public const string OrderNotForYou = "error.order_not_for_you";
         public const string SettingsInvalid = "error.settings_invalid";
+        /// <summary>Module 18: a panel slot index or content that cannot go there; an empty loadout.</summary>
+        public const string PanelSlotInvalid = "error.panel_slot_invalid";
+        public const string LoadoutEmpty = "error.loadout_empty";
     }
 }

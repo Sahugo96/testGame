@@ -49,6 +49,8 @@ namespace Game.Client.UI.Windows
         private readonly RectTransform _mainTab;
         private readonly RectTransform _extraTab;
         private readonly CharacterPreview _preview;
+        private readonly List<Text> _loadoutValues = new List<Text>();
+        private const float LoadoutButtonWidth = 92f;
         private string _layoutKey;
         private string _previewKey;
 
@@ -126,6 +128,7 @@ namespace Game.Client.UI.Windows
                 _extraValues.Add(Pair(extraList, StatFormat.Name(ctx.Text, stat)));
             }
             _values[UiKeys.ReserveRegen] = Pair(extraList, ctx.Text.Get(UiKeys.ReserveRegen));
+            BuildLoadouts(extraList);
             ShowTab(true);
         }
 
@@ -179,6 +182,65 @@ namespace Game.Client.UI.Windows
             Fill(state, Extra, _extraValues);
             float reserveRegen = StatValue(state, StatId.MainManaRegen) * Ctx.Content.Config.ReserveRegenOutOfCombatFactor;
             _values[UiKeys.ReserveRegen].text = reserveRegen.ToString("0.##", CultureInfo.InvariantCulture);
+            RefreshLoadouts();
+        }
+
+        // ---- Equipment loadouts (02, 7.7 В; module 18) ----
+
+        /// <summary>One row per loadout: its size, «Надеть» (put on) and «Сохранить» (remember what is worn now).</summary>
+        private void BuildLoadouts(RectTransform list)
+        {
+            Header(list, UiKeys.LoadoutsHeader);
+            for (int i = 0; i < Ctx.Content.Config.LoadoutCount; i++)
+            {
+                int index = i;
+                Text value = Pair(list, Ctx.Text.Format(UiKeys.LoadoutName, i + 1));
+                value.rectTransform.offsetMax = new Vector2(-2f * (LoadoutButtonWidth + HudLayout.Gap), 0f);
+                Transform row = value.transform.parent;
+                Button apply = UiFactory.Button("Apply", row, Ctx.Font, Ctx.Text.Get(UiKeys.LoadoutApply), () => Ctx.Commands?.ApplyLoadout(index));
+                UiFactory.Place((RectTransform)apply.transform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), Vector2.zero, new Vector2(LoadoutButtonWidth, PlusButtonSize));
+                Button save = UiFactory.Button("Save", row, Ctx.Font, Ctx.Text.Get(UiKeys.LoadoutSave), () => Ctx.Commands?.SaveLoadout(index));
+                UiFactory.Place((RectTransform)save.transform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-LoadoutButtonWidth - HudLayout.Gap, 0f),
+                    new Vector2(LoadoutButtonWidth, PlusButtonSize));
+                Text label = row.GetComponent<Text>();
+                label.raycastTarget = true;
+                HoverTrigger hover = row.gameObject.AddComponent<HoverTrigger>();
+                hover.Entered = () => ShowLoadoutTooltip(index);
+                hover.Exited = Tooltip.Hide;
+                _loadoutValues.Add(value);
+            }
+        }
+
+        private void RefreshLoadouts()
+        {
+            PanelsMessage panels = Ctx.State.Panels;
+            for (int i = 0; i < _loadoutValues.Count; i++)
+            {
+                int count = panels != null && i < panels.Loadouts.Length ? panels.Loadouts[i].Items.Length : 0;
+                _loadoutValues[i].text = count > 0 ? Ctx.Text.Format(UiKeys.LoadoutItems, count) : Ctx.Text.Get(UiKeys.LoadoutEmptyShort);
+                _loadoutValues[i].color = count > 0 ? HudPalette.Text : HudPalette.TextDim;
+            }
+        }
+
+        /// <summary>What the loadout holds (by name; an item no longer owned still shows by its kind).</summary>
+        private void ShowLoadoutTooltip(int index)
+        {
+            PanelsMessage panels = Ctx.State.Panels;
+            if (panels == null || index >= panels.Loadouts.Length || panels.Loadouts[index].Items.Length == 0)
+            {
+                Tooltip.Show(Ctx.Text.Get(UiKeys.LoadoutHint));
+                return;
+            }
+            var lines = new List<string> { Ctx.Text.Format(UiKeys.LoadoutName, index + 1) };
+            foreach (LoadoutItemSnapshot item in panels.Loadouts[index].Items)
+            {
+                if (item.DefinitionId != null && Ctx.Content.Items.TryGetValue(item.DefinitionId, out ItemDefinition definition))
+                {
+                    lines.Add("• " + Ctx.Text.Get(definition.NameKey));
+                }
+            }
+            lines.Add(Ctx.Text.Get(UiKeys.LoadoutHint));
+            Tooltip.Show(string.Join("\n", lines));
         }
 
         protected override void OnVisibilityChanged(bool open) => _preview.SetVisible(open);

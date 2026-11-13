@@ -100,6 +100,12 @@ namespace Game.Client.UI
             SkillBar = new SkillBarWidget(bottomCenter, ctx, _tooltip);
             float skillRowsHeight = ctx.Content.Config.SkillBarRows * (HudLayout.SkillSlotSize + HudLayout.Gap);
             _consumables = new ConsumableBarWidget(bottomCenter, ctx, _tooltip, skillRowsHeight + HudLayout.Gap);
+            // Module 18: the character's panels come from the server after login and after each change.
+            ctx.State.PanelsChanged += panels =>
+            {
+                SkillBar.ApplyPanels(panels);
+                _consumables.ApplyPanels(panels);
+            };
             Windows = new WindowManager(windowLayer, canvas, ctx, _tooltip);
             new IconMenuWidget(bottomCenter, ctx, _tooltip, MenuZones.SkillBarLeft, -SkillBar.RowWidth * 0.5f - HudLayout.Gap, Windows.Toggle);
             new MenuBarWidget(bottomLeft, ctx, MenuZones.BottomLeft, false, Windows.Toggle);
@@ -237,7 +243,10 @@ namespace Game.Client.UI
             if (state.ClassId != _classId && _ctx.Content.Classes.TryGetValue(state.ClassId, out ClassDefinition cls))
             {
                 _classId = state.ClassId;
-                SkillBar.AssignClassSkills(cls);
+                if (_ctx.State.Panels == null)
+                {
+                    SkillBar.AssignClassSkills(cls);
+                }
             }
             _playerFrame.Refresh(state);
             _experience.Refresh(state);

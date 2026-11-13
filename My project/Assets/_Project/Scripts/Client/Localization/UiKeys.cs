@@ -166,6 +166,15 @@ namespace Game.Client.Localization
         public const string CheckOff = "ui.check_off";
         public const string TradeStandStill = "ui.trade_stand_still";
         public const string DragStack = "ui.drag_stack";
+        /// <summary>Module 18: dragging onto a panel; equipment loadouts in the character window.</summary>
+        public const string DragSkill = "ui.drag_to_panel";
+        public const string LoadoutsHeader = "ui.loadouts";
+        public const string LoadoutName = "ui.loadout_name";
+        public const string LoadoutItems = "ui.loadout_items";
+        public const string LoadoutEmptyShort = "ui.loadout_empty";
+        public const string LoadoutApply = "ui.loadout_apply";
+        public const string LoadoutSave = "ui.loadout_save";
+        public const string LoadoutHint = "ui.loadout_hint";
         public const string CategoryPrefix = "category.";
         public const string MarketSortPrefix = "market.sort.";
         public const string MailBagHint = "ui.mail_bag_hint";

@@ -49,6 +49,11 @@ namespace Game.Client.State
         /// <summary>The account's settings as the server sent them (module 17): after login and after every change.</summary>
         public event Action<AccountSettingsSnapshot> AccountSettings;
 
+        /// <summary>The character's quick panels and loadouts (module 18): after login and after each change.</summary>
+        public PanelsMessage Panels { get; private set; }
+
+        public event Action<PanelsMessage> PanelsChanged;
+
         public void Bind(IServerConnection connection)
         {
             _connection = connection;
@@ -76,6 +81,7 @@ namespace Game.Client.State
             LastMarketPage = null;
             LastMailbox = null;
             LastOrders = null;
+            Panels = null;
             _entities.Clear();
             World = null;
             Player = null;
@@ -140,6 +146,10 @@ namespace Game.Client.State
                     break;
                 case AccountSettingsMessage settings:
                     AccountSettings?.Invoke(settings.Settings);
+                    return;
+                case PanelsMessage panels:
+                    Panels = panels;
+                    PanelsChanged?.Invoke(panels);
                     return;
             }
             MarketData?.Invoke();

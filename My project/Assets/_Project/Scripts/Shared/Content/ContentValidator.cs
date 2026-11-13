@@ -46,6 +46,10 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: AutosaveSeconds, PasswordIterations, MinPasswordLength, SessionTokenHours, BackupsToKeep must be > 0");
             }
+            if (cfg.SkillBarRows <= 0 || cfg.SkillBarSlotsPerRow <= 0 || cfg.ConsumableBarSlots <= 0 || cfg.LoadoutCount <= 0)
+            {
+                errors.Add("config: SkillBarRows, SkillBarSlotsPerRow, ConsumableBarSlots, LoadoutCount must be > 0");
+            }
             if (cfg.MaxCommandsPerTick <= 0 || cfg.HelloTimeoutSeconds <= 0f)
             {
                 errors.Add("config: MaxCommandsPerTick and HelloTimeoutSeconds must be > 0");

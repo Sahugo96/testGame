@@ -25,6 +25,7 @@
   "SkillBarRows": 3,
   "SkillBarSlotsPerRow": 12,
   "ConsumableBarSlots": 8,
+  "LoadoutCount": 5,
   "HostileFactions": [
     {
       "A": "Players",

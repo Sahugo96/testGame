@@ -135,6 +135,8 @@ namespace Game.Shared.Content.Dto
         public int SkillBarRows;
         public int SkillBarSlotsPerRow;
         public int ConsumableBarSlots;
+        /// <summary>Equipment loadouts per character (02, 7.7 В; ДЕФОЛТ 5).</summary>
+        public int LoadoutCount;
         public FactionRelationDto[] HostileFactions;
     }
 }

@@ -282,6 +282,30 @@ namespace Game.Network
                     w.Write((byte)MessageType.AccountSettings);
                     WriteSettings(w, m.Settings ?? new AccountSettingsSnapshot());
                     break;
+                case SetSkillSlotCommand m:
+                    w.Write((byte)MessageType.SetSkillSlot);
+                    w.Write(m.Index);
+                    Str(w, m.SkillId);
+                    break;
+                case SetConsumableSlotCommand m:
+                    w.Write((byte)MessageType.SetConsumableSlot);
+                    w.Write(m.Index);
+                    Str(w, m.ItemId);
+                    break;
+                case SaveLoadoutCommand m:
+                    w.Write((byte)MessageType.SaveLoadout);
+                    w.Write(m.Index);
+                    break;
+                case ApplyLoadoutCommand m:
+                    w.Write((byte)MessageType.ApplyLoadout);
+                    w.Write(m.Index);
+                    break;
+                case PanelsMessage m:
+                    w.Write((byte)MessageType.Panels);
+                    Strs(w, m.SkillBar);
+                    Strs(w, m.ConsumableBar);
+                    WriteLoadouts(w, m.Loadouts);
+                    break;
                 case ShopViewMessage m:
                     w.Write((byte)MessageType.ShopView);
                     Id(w, m.MerchantId);
@@ -546,6 +570,16 @@ namespace Game.Network
                     return new SetAccountSettingsCommand { Settings = ReadSettings(r) };
                 case MessageType.AccountSettings:
                     return new AccountSettingsMessage { Settings = ReadSettings(r) };
+                case MessageType.SetSkillSlot:
+                    return new SetSkillSlotCommand { Index = r.ReadInt32(), SkillId = Str(r) };
+                case MessageType.SetConsumableSlot:
+                    return new SetConsumableSlotCommand { Index = r.ReadInt32(), ItemId = Str(r) };
+                case MessageType.SaveLoadout:
+                    return new SaveLoadoutCommand { Index = r.ReadInt32() };
+                case MessageType.ApplyLoadout:
+                    return new ApplyLoadoutCommand { Index = r.ReadInt32() };
+                case MessageType.Panels:
+                    return new PanelsMessage { SkillBar = Strs(r), ConsumableBar = Strs(r), Loadouts = ReadLoadouts(r) };
                 case MessageType.ShopView:
                     return new ShopViewMessage { MerchantId = Id(r), Name = Str(r), OwnerName = Str(r), TierId = Str(r), IsMine = r.ReadBoolean(), SecondsLeft = r.ReadInt64(), Lots = ReadLots(r) };
                 case MessageType.MarketPage:
@@ -996,6 +1030,38 @@ namespace Game.Network
             s.Nameplates = r.ReadBoolean();
             s.NameplateHealth = r.ReadBoolean();
             return s;
+        }
+
+        private static void WriteLoadouts(BinaryWriter w, LoadoutSnapshot[] loadouts)
+        {
+            loadouts = loadouts ?? new LoadoutSnapshot[0];
+            w.Write(loadouts.Length);
+            foreach (LoadoutSnapshot loadout in loadouts)
+            {
+                LoadoutItemSnapshot[] items = loadout?.Items ?? new LoadoutItemSnapshot[0];
+                w.Write(items.Length);
+                foreach (LoadoutItemSnapshot item in items)
+                {
+                    Str(w, item.SlotId);
+                    Str(w, item.InstanceId);
+                    Str(w, item.DefinitionId);
+                }
+            }
+        }
+
+        private static LoadoutSnapshot[] ReadLoadouts(BinaryReader r)
+        {
+            var loadouts = new LoadoutSnapshot[Count(r)];
+            for (int i = 0; i < loadouts.Length; i++)
+            {
+                var items = new LoadoutItemSnapshot[Count(r)];
+                for (int k = 0; k < items.Length; k++)
+                {
+                    items[k] = new LoadoutItemSnapshot { SlotId = Str(r), InstanceId = Str(r), DefinitionId = Str(r) };
+                }
+                loadouts[i] = new LoadoutSnapshot { Items = items };
+            }
+            return loadouts;
         }
 
         /// <summary>String arrays a client sends (bounded by Count).</summary>
