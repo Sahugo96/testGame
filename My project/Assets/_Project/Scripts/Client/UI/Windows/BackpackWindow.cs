@@ -105,17 +105,7 @@ namespace Game.Client.UI.Windows
                     continue;
                 }
                 ItemSlotSnapshot bagSlot = state.Bag[section.Start + i];
-                if (bagSlot.DefinitionId == null)
-                {
-                    view.SetFilled(false);
-                    view.SetCaption(string.Empty, HudPalette.Text);
-                    view.SetCount(string.Empty);
-                    continue;
-                }
-                ItemDefinition item = Ctx.Content.Items[bagSlot.DefinitionId];
-                view.SetFilled(true);
-                view.SetCaption(TooltipText.ItemName(Ctx, item, bagSlot.UpgradeLevel), HudPalette.ForRarity(item.Rarity));
-                view.SetCount(bagSlot.Count > 1 ? bagSlot.Count.ToString() : string.Empty);
+                ItemSlots.Show(Ctx, view, bagSlot);
             }
         }
 

@@ -13,16 +13,11 @@ namespace Game.Client.World
     /// <summary>Creates, moves and removes entity visuals from world snapshots; maps colliders back to entity ids for clicks.</summary>
     public sealed class EntityViewManager : MonoBehaviour
     {
-        private const float TargetMarkerDiameter = 1.6f;
-        private const float TargetMarkerThickness = 0.02f;
+        private const float TargetMarkerMinDiameter = 1.5f;
+        /// <summary>The marker is this much wider than the figure it lies under.</summary>
+        private const float TargetMarkerMargin = 1.35f;
+        private const float TargetMarkerThickness = 0.01f;
         private const float TargetMarkerHeight = 0.03f;
-        private const string CubeShape = "Cube";
-        private const float CapsuleHalfHeight = 1f;
-        private static readonly Vector3 CubeScale = new Vector3(1f, 1f, 1f);
-        private const string CylinderShape = "Cylinder";
-        private static readonly Vector3 StationBoxScale = new Vector3(1.4f, 0.8f, 0.8f);
-        private static readonly Vector3 StationWheelScale = new Vector3(1.2f, 0.45f, 1.2f);
-        private static readonly Vector3 LootScale = new Vector3(0.45f, 0.45f, 0.45f);
 
         private readonly Dictionary<EntityId, EntityView> _views = new Dictionary<EntityId, EntityView>();
         private readonly Dictionary<Collider, EntityId> _byCollider = new Dictionary<Collider, EntityId>();
@@ -39,14 +34,9 @@ namespace Game.Client.World
             _interval = tickInterval;
             ctx.State.WorldChanged += OnWorldChanged;
             ctx.State.PlayerChanged += OnPlayerChanged;
-            GameObject marker = WorldPrimitives.Create(PrimitiveType.Cylinder);
-            marker.name = "TargetMarker";
-            Destroy(marker.GetComponent<Collider>());
-            marker.GetComponent<Renderer>().material.color = WorldPalette.TargetMarker;
-            marker.transform.SetParent(transform, false);
-            marker.transform.localScale = new Vector3(TargetMarkerDiameter, TargetMarkerThickness, TargetMarkerDiameter);
-            marker.SetActive(false);
-            _targetMarker = marker.transform;
+            _targetMarker = WorldPrimitives.Part("TargetMarker", transform, PrimitiveType.Cylinder, Vector3.zero,
+                new Vector3(TargetMarkerMinDiameter, TargetMarkerThickness, TargetMarkerMinDiameter), Vector3.zero, WorldPrimitives.Glow(WorldPalette.TargetMarker));
+            _targetMarker.gameObject.SetActive(false);
         }
 
         /// <summary>Seconds between snapshots: local host ticks every frame, remote servers less often.</summary>
@@ -58,6 +48,7 @@ namespace Game.Client.World
 
         public void Clear()
         {
+            ReleaseMarker();
             foreach (EntityView view in _views.Values)
             {
                 Destroy(view.gameObject);
@@ -65,6 +56,12 @@ namespace Game.Client.World
             _views.Clear();
             _byCollider.Clear();
             LocalPlayerTransform = null;
+        }
+
+        /// <summary>Takes the marker back from the figure it lies under (before that figure is destroyed) and hides it.</summary>
+        private void ReleaseMarker()
+        {
+            _targetMarker.SetParent(transform, false);
             _targetMarker.gameObject.SetActive(false);
         }
 
@@ -96,6 +93,10 @@ namespace Game.Client.World
             foreach (EntityId id in _stale)
             {
                 EntityView view = _views[id];
+                if (_targetMarker.parent == view.transform)
+                {
+                    ReleaseMarker();
+                }
                 _byCollider.Remove(view.Collider);
                 _views.Remove(id);
                 Destroy(view.gameObject);
@@ -105,26 +106,31 @@ namespace Game.Client.World
         private void OnPlayerChanged()
         {
             EntityId target = _ctx.State.Player.TargetId;
-            bool show = target.IsValid && _views.ContainsKey(target);
-            _targetMarker.gameObject.SetActive(show);
-            if (show)
+            if (!target.IsValid || !_views.TryGetValue(target, out EntityView view))
             {
-                Transform view = _views[target].transform;
-                _targetMarker.SetParent(transform, false);
-                _targetMarker.position = new Vector3(view.position.x, TargetMarkerHeight, view.position.z);
+                if (_targetMarker.gameObject.activeSelf)
+                {
+                    ReleaseMarker();
+                }
+                return;
+            }
+            if (_targetMarker.parent != view.transform || !_targetMarker.gameObject.activeSelf)
+            {
+                // The marker lies on the ground under the target and moves with it.
+                float diameter = Mathf.Max(TargetMarkerMinDiameter, view.Footprint * TargetMarkerMargin);
+                _targetMarker.SetParent(view.transform, false);
+                _targetMarker.localPosition = new Vector3(0f, view.GroundOffset + TargetMarkerHeight, 0f);
+                _targetMarker.localScale = new Vector3(diameter, TargetMarkerThickness, diameter);
+                _targetMarker.gameObject.SetActive(true);
             }
         }
 
         private EntityView Create(EntitySnapshot entity)
         {
-            Vector3 scale = ShapeFor(entity, out PrimitiveType shape);
-            GameObject go = WorldPrimitives.Create(shape);
-            go.name = $"{entity.Kind}_{entity.DefinitionId}_{entity.Id.Value}";
+            var go = new GameObject($"{entity.Kind}_{entity.DefinitionId}_{entity.Id.Value}");
             go.transform.SetParent(transform, false);
-            go.transform.localScale = scale;
             EntityView view = go.AddComponent<EntityView>();
-            float height = shape == PrimitiveType.Capsule ? CapsuleHalfHeight : scale.y * 0.5f;
-            view.Init(entity.Id, _interval, ColorFor(entity), WorldPalette.Dead, height);
+            view.Init(entity.Id, _interval, WorldFigures.Build(ShapeFor(entity), ColorFor(entity)), WorldPalette.Dead, FacingFor(entity));
             _views[entity.Id] = view;
             _byCollider[view.Collider] = entity.Id;
             if (entity.Id == _ctx.State.LocalPlayerId)
@@ -150,27 +156,58 @@ namespace Game.Client.World
 
         public bool IsStation(EntityId id) => _ctx.State.TryGetEntity(id, out EntitySnapshot entity) && entity.Kind == EntityKind.Npc;
 
-        private Vector3 ShapeFor(EntitySnapshot entity, out PrimitiveType shape)
+        /// <summary>
+        /// Temporary (DEFAULT): stations have no direction in the content, so they face the spawn square — otherwise
+        /// half of them would stand with their backs to the player. Everything else is turned by the server's yaw.
+        /// </summary>
+        private float FacingFor(EntitySnapshot entity)
         {
-            if (entity.Kind == EntityKind.Loot)
+            if (entity.Kind != EntityKind.Npc)
             {
-                shape = PrimitiveType.Sphere;
-                return LootScale;
+                return 0f;
             }
-            if (entity.Kind == EntityKind.Npc)
+            float dx = _ctx.Content.World.PlayerSpawnX - entity.Position.X;
+            float dz = _ctx.Content.World.PlayerSpawnZ - entity.Position.Z;
+            return dx * dx + dz * dz > Mathf.Epsilon ? Mathf.Atan2(dx, dz) * Mathf.Rad2Deg - entity.Yaw : 0f;
+        }
+
+        /// <summary>The figure key (see <see cref="WorldFigures"/>): from the content for mobs and stations.</summary>
+        private string ShapeFor(EntitySnapshot entity)
+        {
+            switch (entity.Kind)
             {
-                StationDto station = FindStation(entity.DefinitionId);
-                bool wheel = station != null && station.VisualShape == CylinderShape;
-                shape = wheel ? PrimitiveType.Cylinder : PrimitiveType.Cube;
-                return wheel ? StationWheelScale : StationBoxScale;
+                case EntityKind.Loot:
+                    return WorldFigures.Loot;
+                case EntityKind.Npc:
+                    return FindStation(entity.DefinitionId)?.VisualShape;
+                case EntityKind.Mob:
+                    return _ctx.Content.Mobs.TryGetValue(entity.DefinitionId, out MobDto mob) ? mob.VisualShape : null;
+                case EntityKind.Player:
+                    return PlayerShape(entity.DefinitionId);
+                default:
+                    return null;
             }
-            if (entity.Kind == EntityKind.Mob && _ctx.Content.Mobs.TryGetValue(entity.DefinitionId, out MobDto mob) && mob.VisualShape == CubeShape)
+        }
+
+        /// <summary>
+        /// Temporary (DEFAULT): a class has no look of its own in the content yet, so the figure follows its primary
+        /// attribute — intelligence gives a robe and a staff, strength a helmet, a sword and a shield.
+        /// </summary>
+        private string PlayerShape(string classId)
+        {
+            if (classId == null || !_ctx.Content.Classes.TryGetValue(classId, out ClassDefinition cls))
             {
-                shape = PrimitiveType.Cube;
-                return CubeScale;
+                return WorldFigures.Humanoid;
             }
-            shape = PrimitiveType.Capsule;
-            return Vector3.one;
+            switch (cls.PrimaryAttribute)
+            {
+                case StatId.Intelligence:
+                    return WorldFigures.Caster;
+                case StatId.Strength:
+                    return WorldFigures.Fighter;
+                default:
+                    return WorldFigures.Humanoid;
+            }
         }
 
         private Color ColorFor(EntitySnapshot entity)

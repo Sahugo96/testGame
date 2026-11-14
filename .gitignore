@@ -142,3 +142,4 @@ crashlytics-build.properties
 # Load test tool (tools/LoadTest)
 /tools/LoadTest/bin/
 /tools/LoadTest/obj/
+/tools/IconGen/svg/

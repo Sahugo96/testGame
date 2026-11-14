@@ -23,10 +23,10 @@
 ### `docs/AI_INSTRUCTIONS.md` — процесс работы ИИ (v3)
 §1 Роль :10 · §2 Язык и код :16 · §3 Формат ответа :23 (3.1 начало модуля :25, 3.2 выдача кода :34, 3.3 варианты :43, **3.4 Чего не делать :50**) · §4 Работа по модулям :62 · §5 Что ИИ не может :78 · §6 Неопределённость :88 · **§7 Чек-лист :96** · **§8 Приоритет источников :109** · §9 Как улучшать :122 · §10 Журнал :131
 
-### `docs/00_INDEX.md` — индекс набора (версия набора 40)
+### `docs/00_INDEX.md` — индекс набора (версия набора 41)
 Как пользоваться :6 · Файлы набора :14 · **Карта «тема → файл» :27** · Глоссарий (термины маны, мастерство, связь) :46 · Как обновлять :60 · Журнал изменений набора :69
 
-### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v31)
+### `docs/01_DEV_PLAN.md` — проект, архитектура, план (v32)
 | § | Якорь | Строка |
 |---|-------|--------|
 | 1 | О проекте (жанр, масштаб 10/50/1000+, стиль) | :11 |
@@ -37,19 +37,19 @@
 | 6 | **Соглашения по коду 🔴🟠🟡🟢** (6.1 Игрок :135) | :99 |
 | 7.10 | Расширяемость контента (обработчики, ID, пакеты, мастера, `LegendaryDefinition`) | :143 |
 | 8 | **План модулей 0–21** (таблица :185, описания+критерии :210) | :181 |
-| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11, 1.13 — модуль 14, 1.13а — решения по вопросу 79, 1.14 — модуль 20, 1.15 — модуль 17, 1.16 — ревизия перед Unity, 1.17 — модуль 4, 1.18 — модуль 18, 1.19 — ревизия лишней работы)** | :258 |
-| 10 | Проблемы и долги (записи v9, v11–v30 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, 14, 17, 20, 4, 18, лута, остаток ревизии) | :295 |
-| 11 | Журнал решений (последние — v31; замеры модуля 3 — v19, ревизии — v31) | :327 |
-| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :388 |
-| 13 | **Заморожено :398 / Гибко :409 / Отложено + крючки (с модулями) :414** | :394 |
-| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76, 80–84 | :429 |
-| — | Рекомендации 1,5–10,17–19 | :450 |
+| 9 | **Реестр модулей: вертикальный срез (этапы 1, 1.1, 1.2, 1.3 — сеть, 1.4 — дуэли, 1.5 — группы, 1.6 — крафт, 1.7 — модуль 8, 1.8 — модуль 10, 1.9 — модуль 3, 1.10 — модуль 13, 1.11 — лут на земле, 1.12 — модуль 11, 1.13 — модуль 14, 1.13а — решения по вопросу 79, 1.14 — модуль 20, 1.15 — модуль 17, 1.16 — ревизия перед Unity, 1.17 — модуль 4, 1.18 — модуль 18, 1.19 — ревизия лишней работы, 1.20 — внешний вид)** | :258 |
+| 10 | Проблемы и долги (записи v9, v11–v32 — ограничения среза, сети, дуэлей, групп, крафта, модулей 8, 10, 3, 13, 11, 14, 17, 20, 4, 18, лута, остаток ревизии) | :296 |
+| 11 | Журнал решений (последние — v32; замеры модуля 3 — v19, ревизии — v31) | :329 |
+| 12 | Как обновлять → AI_INSTRUCTIONS §4 | :391 |
+| 13 | **Заморожено :401 / Гибко :412 / Отложено + крючки (с модулями) :417** | :397 |
+| — | Открытые вопросы 29, 39–44, 69, 70, 75, 76, 80–84 | :432 |
+| — | Рекомендации 1,5–10,17–19 | :453 |
 
-### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v8)
+### `docs/02_OVERLAY_UI.md` — оверлей, HUD, настройки (v9)
 - **7.13 Оверлей** :11 — идея :13, зоны экрана :15, меню механик :30, правила окон :35, `HudWindowDefinition` :46, каталог окон :63, горячие клавиши :81, реализация (компоненты) :83, **правила UI-кода :85**, персонализация :92
 - **7.7 Панели** :96 — общее :98, А навыки :104, Б расходники :111, В комплекты экипировки и смена оружия в бою :118, Г эмодзи :126
 - **7.6 Настройки** :134 — категории и где хранятся :136, правила (apply/rollback, rebinding, JSON `schemaVersion`) :150
-- Вопросы 10–13, 27, 28, 56, 86 :160 · Рекомендации 13, 14 :173
+- Вопросы 10–13, 27, 28, 56, 86–88 :160 · Рекомендации 13, 14 :175
 
 ### `docs/03_CLASSES_COMBAT.md` — ресурсы, навыки, классы, бой (v11)
 Термины: пул A — **основная** мана, пул B — **резервная**, **боевая** мана — третий запас магов («Третье сердце»). Идентификатор `CombatMana` в `CostEntry` = пул A (вопрос 60).
@@ -182,9 +182,9 @@
 | 68 | 06 | 69, 70 | 01 | 71, 72 | 06 |
 | 73 | 05 | 74 | 03 | 75, 76 | 01 |
 | 77 | 06 | 78 | 04 | 79 | 06 |
-| 80–84 | 01 | 85 | 05 | 86, 87 | 02 |
+| 80–84 | 01 | 85 | 05 | 86–88 | 02 |
 
-Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **87** (новый вопрос = 88). Номера не менять.
+Найти: `grep -n "^<№>\. " docs/0*.md`. Последний номер — **88** (новый вопрос = 89). Номера не менять.
 
 **Статус вопроса** виден в самой строке: `**РЕШЕНО (vN):** …` — решено разработчиком (ДЕФОЛТ снят); `**Отложено разработчиком:**` — вернуться позже, действует ДЕФОЛТ; без пометки — открыт, действует ДЕФОЛТ.
 Сводка: `grep -n 'РЕШЕНО\|Отложено разработчиком' docs/0*.md`.
@@ -245,6 +245,7 @@
 | Стартовое меню (одиночная / хост / подключение) | `Client/UI/StartMenuView.cs`; режимы и параметры командной строки — `Host/LaunchOptions.cs`, `Host/GameRoot.cs` |
 | Сборка Windows в один клик (меню Game) | `Editor/BuildMenu.cs` → `My project/Builds/Windows/` (+ `StartServer.bat`, `StopServer.bat` — остановка с сохранением через `server.stop`, `StartHost.bat`); материал фигур для сборки — `Editor/WorldMaterialAsset.cs` → `Resources/Materials/WorldLit.mat`, фигуры — `Client/World/WorldPrimitives.cs` |
 | **Экономия работы сервера и сети** (ревизия v31; правила — `CLAUDE.md`, «Памятка») | индекс имён и общий `NameOf` — `Server/ServerContext.cs`; поиск предмета в сумке — `Inventory.IndexOfInstance`; кэш идентификатора — `ItemInstance.SourceId`; снимки по тикам отправки — `PlayerOutbox.WorldEveryTicks` / `StateEveryTicks` (`GameServer.Tick`, выставляет `ServerNetworkHost`); только изменившееся — `ProtocolCodec.EncodeWorld` / `SameDynamic`, `NetworkClientSession.Complete`, `ServerNetworkHost.SentEntities` / `SentState`; изоляция ошибок команд — `GameServer.RethrowCommandErrors`; тест — `NetworkTests.UnchangedData_IsNotResent_ButTheClientStillSeesItAll`; замер — `tools/LoadTest` |
+| **Внешний вид** (этап 1.20, вопрос 88) | значки: генератор `tools/IconGen/` (`icons.py` → SVG, `render.js` → PNG, README там же) → `Resources/Icons/<items|skills|statuses|windows>/<Icon>.png`; клиент `Client/UI/IconLibrary.cs` (`ClientContext.Icons`), `Client/UI/Widgets/SlotView.cs` (`SetIcon`, `SetIconTint`), предмет в ячейке — `Client/UI/Widgets/ItemSlots.cs`, статусы — `StatusRowWidget`; цвета рамок — `HudPalette.FrameForRarity`. Мир: фигуры по ключу `VisualShape` — `Client/World/WorldFigures.cs` (реестр, лут), `WorldFigures.Creatures.cs`, `WorldFigures.Stations.cs`; `Figure.cs`, `FigureBuilder.cs`, `FigureMotion.cs`; вид сущности — `EntityView.cs`, выбор фигуры и маркер цели — `EntityViewManager.cs`; формы и общие материалы — `WorldPrimitives.cs` (`Part`, `Colored`, `Glow`, `Textured`), цвета — `WorldPalette.cs`; окружение — `WorldScenery.cs`; материалы `Resources/Materials/WorldLit.mat`, `WorldUnlit.mat` (создаёт `Editor/WorldMaterialAsset.cs`); тест `Tests/EditMode/IconFilesTests.cs` |
 | **Панели быстрого доступа** (модуль 18, вопрос 87) | данные `config.SkillBarRows`, `SkillBarSlotsPerRow`, `ConsumableBarSlots`, `LoadoutCount`; сервер `Server/Systems/PanelSystem.cs`, `Server/Players/PanelData.cs` (`PlayerCharacter.Panels`), хранение — `CharacterRecord.SkillBar` / `ConsumableBar` / `Loadouts`; протокол `Shared/Protocol/PanelMessages.cs` (`SetSkillSlotCommand`, `SetConsumableSlotCommand`, `SaveLoadoutCommand`, `ApplyLoadoutCommand`, `PanelsMessage`); клиент `Client/UI/DragDropService.cs` (`ClientContext.Drag`), `ClientState.Panels`, `SkillBarWidget`, `ConsumableBarWidget`, перетаскивание в `SkillBookWindow` и `BackpackWindow`, комплекты — `CharacterWindow`; тесты `Tests/EditMode/PanelTests.cs` |
 | **Ядро данных** (модуль 4, вопросы 80–84) | пакеты: `Resources/Content/packs.json`, `Resources/Content/<пакет>/pack.json` + файлы (основной — `base`), реестр ID — `Resources/Content/content_ids.json`, лимиты — `base/balance_limits.json`; код `Shared/Content/Packs/` (`ContentFileTable` — все типы файлов, `ContentPackLoader`, `IContentSource`, `FileContentSource`, `ContentHash`, `ContentSyncRule`), `Shared/Content/Ids/` (`ContentIdLedger`, `ContentDeprecation`), `Shared/Content/BalanceLimitsValidator.cs`, `Shared/Content/Csv/` (`CsvTable`, `CsvBalanceMapper`); игра — `Host/UnityContentLoader.cs`; хэш при входе — `HelloMessage.ContentHash`, `ServerNetworkHost.HandleHello`; редактор `Editor/Content/` (`Cards/*Card.cs`, `ContentSync`, `ContentSyncTarget`, `ContentBuildCheck`, `ContentWizardWindow`, `CsvBalanceWindow`, `ContentPackWindow`, `LocalizationSource`, `LocalizationSync`), карточки — `Assets/_Project/Content/<пакет>/`; тексты — `Client/Localization/UnityLocalizationService.cs`, `LocalizationFactory.cs`, `ILanguageService.cs`, ассеты Localization — `Assets/_Project/Localization/`; тесты `ContentPackTests`, `ContentDataTests`, `ContentSyncRuleTests`, эталонный пакет `Tests/EditMode/Fixtures/sample_pack/` |
 | **Целостность и защита (ревизия v28)** | канонический логин — `CharacterPersistence.Canonical`; атомарная запись — `GameServer.Committed`, `ServerContext.Commit`, `ICommitStore` (`Persistence/Interfaces.cs`), `FileStorage.Commit` / журнал `commit.json`, `CommitRecord` (`MarketRecords.cs`); `null` после `JsonUtility` — `ItemRecords.NullIfEmpty`; сеть — `config.MaxCommandsPerTick`, `HelloTimeoutSeconds` (`ServerNetworkHost.Poll`), очередь приёма — `NetConnection`; движение `NaN` — `GameServer.Handle`; тесты — `Tests/EditMode/IntegrityTests.cs`, JSON как в Unity — `Tests/EditMode/JsonUtilityLike.cs` |

@@ -244,11 +244,7 @@ namespace Game.Client.UI.Windows
             for (int i = 0; i < BagSlots; i++)
             {
                 int index = _bagFirst + i;
-                SlotView view = _bag[i];
-                bool filled = index < _bagItems.Count;
-                view.SetFilled(filled);
-                view.SetCaption(filled ? MarketUi.ItemLine(Ctx, _bagItems[index]) : string.Empty, filled ? MarketUi.ItemColor(Ctx, _bagItems[index]) : HudPalette.Text);
-                view.SetCount(filled && _bagItems[index].Count > 1 ? _bagItems[index].Count.ToString() : string.Empty);
+                ItemSlots.Show(Ctx, _bag[i], index < _bagItems.Count ? _bagItems[index] : default);
             }
         }
 

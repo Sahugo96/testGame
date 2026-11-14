@@ -172,14 +172,10 @@ namespace Game.Client.UI.Windows
             for (int i = 0; i < BagSlots; i++)
             {
                 bool filled = i < _bagItems.Count;
-                _bag[i].SetCaption(filled ? MarketUi.ItemLine(Ctx, _bagItems[i]) : string.Empty, filled ? MarketUi.ItemColor(Ctx, _bagItems[i]) : HudPalette.Text);
+                ItemSlots.Show(Ctx, _bag[i], filled ? _bagItems[i] : default);
                 if (filled && _bagItems[i].InstanceId == _chosen)
                 {
                     _bag[i].SetTint(HudPalette.Cast);
-                }
-                else
-                {
-                    _bag[i].SetFilled(filled);
                 }
             }
         }

@@ -5,36 +5,47 @@ using UnityEngine;
 namespace Game.EditorTools
 {
     /// <summary>
-    /// Creates Assets/_Project/Resources/Materials/WorldLit.mat (URP Lit) when the editor loads, if it is missing. The world's
-    /// placeholder shapes use it (Game.Client.World.WorldPrimitives): a player build has no URP default material for
-    /// CreatePrimitive. Being in Resources, the material and its shader always get into the build.
+    /// Creates the materials of the world's shapes in Assets/_Project/Resources/Materials when the editor loads, if they
+    /// are missing: WorldLit.mat (URP Lit) and WorldUnlit.mat (URP Unlit, for parts that glow). The shapes use them
+    /// through Game.Client.World.WorldPrimitives: a player build has no URP default material for CreatePrimitive. Being
+    /// in Resources, the materials and their shaders always get into the build.
     /// </summary>
     [InitializeOnLoad]
     public static class WorldMaterialAsset
     {
         private const string Folder = "Assets/_Project/Resources/Materials";
-        private const string AssetPath = Folder + "/WorldLit.mat";
-        private const string ShaderName = "Universal Render Pipeline/Lit";
+        private const string LitName = "WorldLit";
+        private const string LitShader = "Universal Render Pipeline/Lit";
+        private const string UnlitName = "WorldUnlit";
+        private const string UnlitShader = "Universal Render Pipeline/Unlit";
 
         static WorldMaterialAsset() => EditorApplication.delayCall += () => Ensure();
 
-        /// <summary>True if the material exists (or was just created).</summary>
+        /// <summary>True if both materials exist (or were just created).</summary>
         public static bool Ensure()
         {
-            if (AssetDatabase.LoadAssetAtPath<Material>(AssetPath) != null)
+            bool lit = Ensure(LitName, LitShader);
+            bool unlit = Ensure(UnlitName, UnlitShader);
+            return lit && unlit;
+        }
+
+        private static bool Ensure(string name, string shaderName)
+        {
+            string path = Folder + "/" + name + ".mat";
+            if (AssetDatabase.LoadAssetAtPath<Material>(path) != null)
             {
                 return true;
             }
-            Shader shader = Shader.Find(ShaderName);
+            Shader shader = Shader.Find(shaderName);
             if (shader == null)
             {
-                Debug.LogError($"[Build] Shader '{ShaderName}' not found: is the URP package installed?");
+                Debug.LogError($"[Build] Shader '{shaderName}' not found: is the URP package installed?");
                 return false;
             }
             Directory.CreateDirectory(Folder);
-            AssetDatabase.CreateAsset(new Material(shader) { name = "WorldLit" }, AssetPath);
+            AssetDatabase.CreateAsset(new Material(shader) { name = name }, path);
             AssetDatabase.SaveAssets();
-            Debug.Log($"[Build] Created {AssetPath} (URP Lit material for the world's shapes). Commit it to git.");
+            Debug.Log($"[Build] Created {path} (material for the world's shapes). Commit it to git.");
             return true;
         }
     }

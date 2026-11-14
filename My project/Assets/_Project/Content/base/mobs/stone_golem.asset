@@ -23,7 +23,7 @@ MonoBehaviour:
     Defense: 0.25
     RespawnSeconds: 30
     VisualColor: '#6B6F78'
-    VisualShape: Capsule
+    VisualShape: Golem
     ExperienceReward: 70
     Drops:
     - ItemId: iron_ore

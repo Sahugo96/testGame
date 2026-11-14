@@ -23,7 +23,7 @@ MonoBehaviour:
     Defense: 0.05
     RespawnSeconds: 15
     VisualColor: '#7A6A55'
-    VisualShape: Capsule
+    VisualShape: Wolf
     ExperienceReward: 25
     Drops:
     - ItemId: iron_ore

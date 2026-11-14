@@ -12,13 +12,16 @@ namespace Game.Client.UI.Widgets
 {
     /// <summary>
     /// Bottom-center skill panels (02, 7.7 А): rows × slots from config. Row 1 is filled with the class skills and bound to
-    /// keys 1…=. Holding Shift/Ctrl previews the variant (mark ▲/▼, tooltip with its cost). A slot is tinted by the pool
-    /// that is short: main mana, reserve mana or health (when the health cost would kill).
+    /// keys 1…=. Holding Shift/Ctrl previews the variant (mark ▲/▼, tooltip with its cost). A slot and its picture are
+    /// tinted by the pool that is short: main mana, reserve mana or health (when the health cost would kill).
     /// </summary>
     public sealed class SkillBarWidget
     {
         private const string EmpoweredMark = "▲";
         private const string WeakenedMark = "▼";
+        /// <summary>How much of the short pool's colour goes into the slot frame and into the skill picture.</summary>
+        private const float ShortageFrameShade = 0.5f;
+        private const float ShortageIconShade = 0.85f;
 
         private readonly ClientContext _ctx;
         private readonly Tooltip _tooltip;
@@ -98,8 +101,11 @@ namespace Game.Client.UI.Widgets
             {
                 string skillId = _skillBySlot[i];
                 bool filled = skillId != null;
+                SkillDefinition skill = filled ? _ctx.Content.Skills[skillId] : null;
                 _slots[i].SetFilled(filled);
-                _slots[i].SetCaption(filled ? _ctx.Text.Get(_ctx.Content.Skills[skillId].NameKey) : string.Empty, HudPalette.Text);
+                _slots[i].SetCaption(filled ? _ctx.Text.Get(skill.NameKey) : string.Empty, HudPalette.Text);
+                _slots[i].SetIcon(filled ? _ctx.Icons.Skill(skill.Icon) : null);
+                _slots[i].SetIconTint(Color.white);
                 _slots[i].SetCooldown(0f);
                 _slots[i].SetMark(string.Empty);
             }
@@ -126,7 +132,9 @@ namespace Game.Client.UI.Widgets
                 SlotView slot = _slots[i];
                 slot.SetMark(kind == SkillVariantKind.Empowered ? EmpoweredMark : kind == SkillVariantKind.Weakened ? WeakenedMark : string.Empty);
                 slot.SetCooldown(CooldownFraction(state, skill));
-                slot.SetTint(ShortageColor(state, variant));
+                bool shortage = ShortPool(state, variant, out Color pool);
+                slot.SetTint(shortage ? Shade(pool, ShortageFrameShade) : HudPalette.SlotFilled);
+                slot.SetIconTint(shortage ? Shade(pool, ShortageIconShade) : Color.white);
             }
             if (_hovered >= 0 && modifier != _lastModifier)
             {
@@ -165,25 +173,30 @@ namespace Game.Client.UI.Widgets
             return fraction;
         }
 
-        private static Color ShortageColor(PlayerStateSnapshot state, SkillVariant variant)
+        /// <summary>True when the variant cannot be paid; `pool` is the colour of the pool that is short.</summary>
+        private static bool ShortPool(PlayerStateSnapshot state, SkillVariant variant, out Color pool)
         {
             CostTotals totals = CostMath.Sum(variant.Costs, state.MaxMainMana, state.MaxReserveMana, state.MaxHealth);
             if (state.MainMana < totals.Main)
             {
-                return Dim(HudPalette.MainMana);
+                pool = HudPalette.MainMana;
+                return true;
             }
             if (!CostMath.CanPay(totals, state.MainMana, state.ReserveMana))
             {
-                return Dim(HudPalette.ReserveMana);
+                pool = HudPalette.ReserveMana;
+                return true;
             }
             if (totals.Health > 0f && totals.Health >= state.Health)
             {
-                return Dim(HudPalette.Health);
+                pool = HudPalette.Health;
+                return true;
             }
-            return HudPalette.SlotFilled;
+            pool = default;
+            return false;
         }
 
-        private static Color Dim(Color color) => new Color(color.r * 0.5f, color.g * 0.5f, color.b * 0.5f, 0.95f);
+        private static Color Shade(Color color, float shade) => new Color(color.r * shade, color.g * shade, color.b * shade, HudPalette.SlotFilled.a);
 
         private static SkillStateSnapshot FindSkill(PlayerStateSnapshot state, string skillId)
         {

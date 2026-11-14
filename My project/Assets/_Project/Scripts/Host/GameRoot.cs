@@ -34,7 +34,6 @@ namespace Game.Host
     public sealed class GameRoot : MonoBehaviour
     {
         private const string BuiltinFontName = "LegacyRuntime.ttf";
-        private const float PlaneSizeUnits = 10f;
         private const int DedicatedFrameRateFactor = 2;
         private const string ConnectingKey = "menu.connecting";
         private const string ConnectFailedKey = "menu.error_connect";
@@ -198,7 +197,7 @@ namespace Game.Host
 
         private void BuildClient()
         {
-            CreateGround(_content.Config.WorldHalfSize);
+            WorldScenery.Build(_content.Config.WorldHalfSize);
             Camera camera = Camera.main;
             if (camera == null)
             {
@@ -583,15 +582,6 @@ namespace Game.Host
                 // No DNS: leave the list empty.
             }
             return string.Join(", ", addresses);
-        }
-
-        private static void CreateGround(float halfSize)
-        {
-            GameObject ground = WorldPrimitives.Create(PrimitiveType.Plane);
-            ground.name = "Ground";
-            float scale = halfSize * 2f / PlaneSizeUnits;
-            ground.transform.localScale = new Vector3(scale, 1f, scale);
-            ground.GetComponent<Renderer>().material.color = WorldPalette.Ground;
         }
     }
 }

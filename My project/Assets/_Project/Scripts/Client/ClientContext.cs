@@ -18,6 +18,8 @@ namespace Game.Client
         /// <summary>Languages to choose from (Settings → Game); module 4, question 81.</summary>
         public ILanguageService Languages;
         public Font Font;
+        /// <summary>Pictures of items, skills, statuses and window buttons.</summary>
+        public readonly UI.IconLibrary Icons = new UI.IconLibrary();
         /// <summary>Drag and drop between windows and panels (module 18).</summary>
         public readonly UI.DragDropService Drag = new UI.DragDropService();
         public Camera Camera;

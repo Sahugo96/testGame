@@ -155,19 +155,7 @@ namespace Game.Client.UI.Windows
             }
         }
 
-        private void Show(SlotView view, ItemSlotSnapshot slot)
-        {
-            if (slot.DefinitionId == null || !Ctx.Content.Items.TryGetValue(slot.DefinitionId, out ItemDefinition item))
-            {
-                view.SetFilled(false);
-                view.SetCaption(string.Empty, HudPalette.Text);
-                view.SetCount(string.Empty);
-                return;
-            }
-            view.SetFilled(true);
-            view.SetCaption(TooltipText.ItemName(Ctx, item, slot.UpgradeLevel), HudPalette.ForRarity(item.Rarity));
-            view.SetCount(slot.Count > 1 ? slot.Count.ToString() : string.Empty);
-        }
+        private void Show(SlotView view, ItemSlotSnapshot slot) => ItemSlots.Show(Ctx, view, slot);
 
         private bool Offered(string instanceId)
         {

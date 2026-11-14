@@ -9,17 +9,20 @@ using UnityEngine.UI;
 namespace Game.Client.UI.Widgets
 {
     /// <summary>
-    /// A row of status chips (03, 7.12 UI): short name, stacks and seconds left; buffs and debuffs differ by colour; a
-    /// tooltip shows the description. Icons arrive with art; the number of chips is limited.
+    /// A row of status chips (03, 7.12 UI): picture, short name, stacks and seconds left; buffs and debuffs differ by
+    /// colour; a tooltip shows the description. A status without art is shown by its name only; the number of chips is limited.
     /// </summary>
     public sealed class StatusRowWidget
     {
-        private static readonly Vector2 ChipSize = new Vector2(96f, 22f);
+        private static readonly Vector2 ChipSize = new Vector2(104f, 24f);
+        private const float IconInset = 1f;
+        private const int MinFont = 9;
 
         private readonly ClientContext _ctx;
         private readonly Tooltip _tooltip;
         private readonly Image[] _chips;
         private readonly Text[] _labels;
+        private readonly Image[] _icons;
         private readonly string[] _ids;
         private readonly StringBuilder _sb = new StringBuilder();
 
@@ -30,6 +33,7 @@ namespace Game.Client.UI.Widgets
             _tooltip = tooltip;
             _chips = new Image[maxChips];
             _labels = new Text[maxChips];
+            _icons = new Image[maxChips];
             _ids = new string[maxChips];
             for (int i = 0; i < maxChips; i++)
             {
@@ -37,8 +41,15 @@ namespace Game.Client.UI.Widgets
                 Image chip = UiFactory.Panel($"Status_{i}", parent, HudPalette.StatusBuff);
                 var cell = new Vector2((i % columns) * (ChipSize.x + HudLayout.Gap), -(i / columns) * (ChipSize.y + HudLayout.Gap));
                 UiFactory.Place(chip.rectTransform, anchor, new Vector2(0f, 1f), offset + cell, ChipSize);
+                Image icon = UiFactory.Panel("Icon", chip.transform, Color.white, false);
+                float iconSize = ChipSize.y - IconInset * 2f;
+                UiFactory.Place(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(IconInset, 0f), new Vector2(iconSize, iconSize));
                 Text label = UiFactory.Label("Label", chip.transform, ctx.Font, HudLayout.FontSmall, TextAnchor.MiddleCenter, HudPalette.Text);
                 UiFactory.Stretch(label.rectTransform);
+                label.resizeTextForBestFit = true;
+                label.resizeTextMinSize = MinFont;
+                label.resizeTextMaxSize = HudLayout.FontSmall;
+                _icons[i] = icon;
                 HoverTrigger hover = chip.gameObject.AddComponent<HoverTrigger>();
                 hover.Entered = () => ShowTooltip(index);
                 hover.Exited = _tooltip.Hide;
@@ -64,6 +75,14 @@ namespace Game.Client.UI.Widgets
                 _ids[i] = status.StatusId;
                 bool known = _ctx.Content.StatusEffects.TryGetValue(status.StatusId, out StatusEffectDefinition definition);
                 _chips[i].color = known && definition.Kind == StatusKind.Debuff ? HudPalette.StatusDebuff : HudPalette.StatusBuff;
+                Sprite sprite = known ? _ctx.Icons.Status(definition.Icon) : null;
+                if (_icons[i].sprite != sprite || _icons[i].enabled != (sprite != null))
+                {
+                    _icons[i].sprite = sprite;
+                    _icons[i].enabled = sprite != null;
+                    // The text gives way to the picture.
+                    _labels[i].rectTransform.offsetMin = new Vector2(sprite != null ? ChipSize.y : 0f, 0f);
+                }
                 _sb.Clear().Append(known ? _ctx.Text.Get(definition.NameKey) : status.StatusId);
                 if (status.Stacks > 1)
                 {

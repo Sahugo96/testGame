@@ -29,6 +29,15 @@ namespace Game.Client.UI
         public static readonly Color Backdrop = new Color(0f, 0f, 0f, 0.75f);
         public static readonly Color StatusBuff = new Color(0.12f, 0.35f, 0.16f, 0.9f);
         public static readonly Color StatusDebuff = new Color(0.45f, 0.12f, 0.1f, 0.9f);
+        public static readonly Color TextOutline = new Color(0f, 0f, 0f, 0.9f);
+        /// <summary>Tint of an icon that cannot be used now (none left in the bag).</summary>
+        public static readonly Color IconUnavailable = new Color(0.35f, 0.35f, 0.38f);
+        /// <summary>Frame of a slot with an ordinary (common) item.</summary>
+        public static readonly Color FrameCommon = new Color(0.34f, 0.33f, 0.38f, 0.95f);
+
+        /// <summary>Frame colour of an item slot: the rarity colour, a quiet grey for common items.</summary>
+        public static Color FrameForRarity(Game.Shared.Content.Rarity rarity) =>
+            rarity == Game.Shared.Content.Rarity.Common ? FrameCommon : ForRarity(rarity);
 
         public static Color ForRarity(Game.Shared.Content.Rarity rarity)
         {

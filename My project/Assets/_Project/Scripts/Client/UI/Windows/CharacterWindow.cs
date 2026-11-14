@@ -68,8 +68,7 @@ namespace Game.Client.UI.Windows
             UiFactory.Place(_title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), Vector2.zero,
                 new Vector2(EquipmentWidth - 2f * (SlotSize + HudLayout.Gap), TitleHeight));
 
-            _preview = CharacterPreview.Create();
-            _preview.SetBodyColor(WorldPalette.LocalPlayer);
+            _preview = CharacterPreview.Create(WorldPalette.LocalPlayer);
             RectTransform portrait = UiFactory.Rect("Portrait", _equipmentArea);
             portrait.anchorMin = Vector2.zero;
             portrait.anchorMax = Vector2.one;
@@ -152,14 +151,12 @@ namespace Game.Client.UI.Windows
                 {
                     ItemDefinition item = Ctx.Content.Items[slot.DefinitionId];
                     _equipped[slot.SlotId] = slot.DefinitionId;
-                    view.SetFilled(true);
-                    view.SetCaption(TooltipText.ItemName(Ctx, item, slot.UpgradeLevel), HudPalette.ForRarity(item.Rarity));
+                    ItemSlots.Show(Ctx, view, item, slot.UpgradeLevel, 1);
                     previewParts.Add(new KeyValuePair<string, Color>(slotDefinition.SlotType, HudPalette.ForRarity(item.Rarity)));
                 }
                 else
                 {
-                    view.SetFilled(false);
-                    view.SetCaption(text.Get(slotDefinition.NameKey), HudPalette.TextDim);
+                    ItemSlots.Clear(view, text.Get(slotDefinition.NameKey));
                 }
             }
             string previewKey = string.Join("|", _equipped.Values);

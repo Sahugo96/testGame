@@ -22,12 +22,18 @@ namespace Game.Tests
         /// <summary>Test data packs (Tests/EditMode/Fixtures).</summary>
         public static string FixturesRoot => Path.Combine(Application.dataPath, "_Project", "Tests", "EditMode", "Fixtures");
 
+        /// <summary>Pictures of items, skills, statuses and window buttons (Resources/Icons).</summary>
+        public static string IconsRoot => Path.Combine(Application.dataPath, "_Project", "Resources", "Icons");
+
         public static object Parse(string json, System.Type type) => JsonUtility.FromJson(json, type);
 #else
         public static string Root => Path.Combine(AppContext.BaseDirectory, ContentPacks.Folder);
 
         /// <summary>Test data packs (copied next to the test assembly by sim-tests).</summary>
         public static string FixturesRoot => Path.Combine(AppContext.BaseDirectory, "Fixtures");
+
+        /// <summary>Pictures (copied next to the test assembly by sim-tests).</summary>
+        public static string IconsRoot => Path.Combine(AppContext.BaseDirectory, "Icons");
 
         public static object Parse(string json, Type type) => JsonUtilityLike.Parse(json, type);
 #endif

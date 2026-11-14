@@ -91,7 +91,7 @@
       "X": -6,
       "Z": -5,
       "VisualColor": "#8A8F96",
-      "VisualShape": "Cylinder"
+      "VisualShape": "Whetstone"
     },
     {
       "Id": "anvil_1",
@@ -100,7 +100,7 @@
       "X": 6,
       "Z": -5,
       "VisualColor": "#3E4248",
-      "VisualShape": "Cube"
+      "VisualShape": "Anvil"
     },
     {
       "Id": "market_1",
@@ -109,7 +109,7 @@
       "X": -10,
       "Z": 8,
       "VisualColor": "#D9B44A",
-      "VisualShape": "Cube"
+      "VisualShape": "Market"
     },
     {
       "Id": "mailbox_1",
@@ -118,7 +118,7 @@
       "X": -6,
       "Z": 8,
       "VisualColor": "#3A6FB0",
-      "VisualShape": "Cube"
+      "VisualShape": "Mailbox"
     },
     {
       "Id": "shop_spot_1",
@@ -127,7 +127,7 @@
       "X": 4,
       "Z": 10,
       "VisualColor": "#A08C6A",
-      "VisualShape": "Cylinder"
+      "VisualShape": "ShopSpot"
     },
     {
       "Id": "shop_spot_2",
@@ -136,7 +136,7 @@
       "X": 8,
       "Z": 10,
       "VisualColor": "#A08C6A",
-      "VisualShape": "Cylinder"
+      "VisualShape": "ShopSpot"
     },
     {
       "Id": "shop_spot_3",
@@ -145,7 +145,7 @@
       "X": 12,
       "Z": 10,
       "VisualColor": "#A08C6A",
-      "VisualShape": "Cylinder"
+      "VisualShape": "ShopSpot"
     },
     {
       "Id": "shop_spot_4",
@@ -154,7 +154,7 @@
       "X": 16,
       "Z": 10,
       "VisualColor": "#A08C6A",
-      "VisualShape": "Cylinder"
+      "VisualShape": "ShopSpot"
     }
   ],
   "MerchantVisual": {
@@ -164,6 +164,6 @@
     "X": 0,
     "Z": 0,
     "VisualColor": "#C9A227",
-    "VisualShape": "Cube"
+    "VisualShape": "Merchant"
   }
 }

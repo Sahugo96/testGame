@@ -23,7 +23,7 @@ MonoBehaviour:
     Defense: 0.5
     RespawnSeconds: 8
     VisualColor: '#8064A2'
-    VisualShape: Capsule
+    VisualShape: Dummy
     ExperienceReward: 0
     Drops: []
     AiProfile: passive

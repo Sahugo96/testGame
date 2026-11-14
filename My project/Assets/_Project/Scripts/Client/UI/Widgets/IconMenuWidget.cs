@@ -10,8 +10,8 @@ namespace Game.Client.UI.Widgets
 {
     /// <summary>
     /// Square window buttons to the left of the skill panel (developer reference: character, backpack, talents, map).
-    /// Built from the window registry entries of one menu zone; caption is a short localized name (no icons yet),
-    /// the tooltip shows the full name and hotkey.
+    /// Built from the window registry entries of one menu zone; the button shows the window's picture (a short
+    /// localized name when there is no art), the tooltip shows the full name and hotkey.
     /// </summary>
     public sealed class IconMenuWidget
     {
@@ -37,6 +37,7 @@ namespace Game.Client.UI.Widgets
                     new Vector2(HudLayout.SkillSlotSize, HudLayout.SkillSlotSize));
                 slot.SetFilled(true);
                 slot.SetCaption(ctx.Text.Get(window.NameKey + ShortSuffix), HudPalette.Text);
+                slot.SetIcon(ctx.Icons.Window(window.Icon));
                 slot.SetHotkey(GameInput.WindowKey(ctx, window));
                 if (ctx.Settings != null)
                 {

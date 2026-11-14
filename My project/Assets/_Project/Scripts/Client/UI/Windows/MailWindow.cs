@@ -249,9 +249,7 @@ namespace Game.Client.UI.Windows
                 _attachments[i].Rect.gameObject.SetActive(filled);
                 if (filled)
                 {
-                    _attachments[i].SetFilled(true);
-                    _attachments[i].SetCaption(MarketUi.ItemLine(Ctx, items[i]), MarketUi.ItemColor(Ctx, items[i]));
-                    _attachments[i].SetCount(items[i].Count > 1 ? items[i].Count.ToString() : string.Empty);
+                    ItemSlots.Show(Ctx, _attachments[i], items[i]);
                 }
             }
             bool attached = has && (items.Length > 0 || mail.Gold > 0);
@@ -301,10 +299,7 @@ namespace Game.Client.UI.Windows
             for (int i = 0; i < views.Length; i++)
             {
                 int index = first + i;
-                bool filled = index < items.Count;
-                views[i].SetFilled(filled);
-                views[i].SetCaption(filled ? MarketUi.ItemLine(Ctx, items[index]) : string.Empty, filled ? MarketUi.ItemColor(Ctx, items[index]) : HudPalette.Text);
-                views[i].SetCount(filled && items[index].Count > 1 ? items[index].Count.ToString() : string.Empty);
+                ItemSlots.Show(Ctx, views[i], index < items.Count ? items[index] : default);
             }
         }
 

@@ -59,6 +59,7 @@ namespace Game.Client.UI.Widgets
                 {
                     view.SetFilled(false);
                     view.SetCaption(string.Empty, HudPalette.Text);
+                    view.SetIcon(null);
                     view.SetCount(string.Empty);
                     view.SetCooldown(0f);
                     continue;
@@ -66,6 +67,8 @@ namespace Game.Client.UI.Widgets
                 int total = TotalCount(state, itemId);
                 view.SetFilled(total > 0);
                 view.SetCaption(_ctx.Text.Get(item.NameKey), total > 0 ? HudPalette.Text : HudPalette.TextDim);
+                view.SetIcon(_ctx.Icons.Item(item.Icon));
+                view.SetIconTint(total > 0 ? Color.white : HudPalette.IconUnavailable);
                 view.SetCount(total.ToString());
                 ConsumableComponent consumable = item.Get<ConsumableComponent>();
                 view.SetCooldown(consumable != null ? GroupCooldown(state, consumable) : 0f);

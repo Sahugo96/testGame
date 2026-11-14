@@ -12,7 +12,6 @@ namespace Game.Client.World
         private static readonly Vector3 StagePosition = new Vector3(0f, -500f, 0f);
         private static readonly Vector3 CameraOffset = new Vector3(0f, 1.1f, 3.6f);
         private static readonly Color Background = new Color(0.12f, 0.11f, 0.1f, 1f);
-        private const float ModelCenterHeight = 1f;
         private const float CameraFieldOfView = 40f;
         private const float RotationDegreesPerSecond = 25f;
         private const int TextureSize = 512;
@@ -21,21 +20,19 @@ namespace Game.Client.World
         private readonly List<GameObject> _attachments = new List<GameObject>();
         private Camera _camera;
         private Transform _model;
-        private Renderer _body;
 
         public RenderTexture Texture { get; private set; }
 
-        public static CharacterPreview Create()
+        /// <summary>`bodyColor` — the colour of the character's clothes (the same as in the world).</summary>
+        public static CharacterPreview Create(Color bodyColor)
         {
             var go = new GameObject("CharacterPreview");
             CharacterPreview preview = go.AddComponent<CharacterPreview>();
-            preview.Build();
+            preview.Build(bodyColor);
             return preview;
         }
 
         public void SetVisible(bool visible) => _camera.enabled = visible;
-
-        public void SetBodyColor(Color color) => _body.material.color = color;
 
         /// <summary>Rebuilds placeholder parts: one entry per equipped item (slot type and color).</summary>
         public void ShowEquipment(IEnumerable<KeyValuePair<string, Color>> equipped)
@@ -65,17 +62,16 @@ namespace Game.Client.World
             }
         }
 
-        private void Build()
+        private void Build(Color bodyColor)
         {
             transform.position = StagePosition;
-            GameObject model = new GameObject("Model");
-            _model = model.transform;
+            // The same figure as in the world, without class gear: equipped items are shown as parts on top of it.
+            _model = WorldFigures.Build(WorldFigures.Humanoid, bodyColor).Model;
             _model.SetParent(transform, false);
-
-            GameObject body = WorldPrimitives.Create(PrimitiveType.Capsule);
-            Prepare(body, _model);
-            body.transform.localPosition = new Vector3(0f, ModelCenterHeight, 0f);
-            _body = body.GetComponent<Renderer>();
+            foreach (Transform part in _model.GetComponentsInChildren<Transform>())
+            {
+                part.gameObject.layer = RenderLayers.Preview;
+            }
 
             Texture = new RenderTexture(TextureSize, TextureSize, DepthBits);
             var cameraObject = new GameObject("PreviewCamera");
@@ -93,19 +89,9 @@ namespace Game.Client.World
 
         private void Spawn(PrimitiveType shape, Vector3 position, Vector3 scale, Color color)
         {
-            GameObject part = WorldPrimitives.Create(shape);
-            Prepare(part, _model);
-            part.transform.localPosition = position;
-            part.transform.localScale = scale;
-            part.GetComponent<Renderer>().material.color = color;
+            GameObject part = WorldPrimitives.Part("Equipment", _model, shape, position, scale, Vector3.zero, WorldPrimitives.Colored(color)).gameObject;
+            part.layer = RenderLayers.Preview;
             _attachments.Add(part);
-        }
-
-        private static void Prepare(GameObject go, Transform parent)
-        {
-            go.layer = RenderLayers.Preview;
-            Destroy(go.GetComponent<Collider>());
-            go.transform.SetParent(parent, false);
         }
 
         private void Update()
