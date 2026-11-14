@@ -50,6 +50,22 @@ namespace Game.Shared.Content
             {
                 errors.Add("config: SkillBarRows, SkillBarSlotsPerRow, ConsumableBarSlots, LoadoutCount must be > 0");
             }
+            if (cfg.EmoteCooldownSeconds < 0f)
+            {
+                errors.Add("config: EmoteCooldownSeconds must be ≥ 0");
+            }
+            var emoteIds = new HashSet<string>();
+            foreach (EmoteDto emote in cfg.Emotes ?? new EmoteDto[0])
+            {
+                if (string.IsNullOrEmpty(emote.Id) || string.IsNullOrEmpty(emote.NameKey))
+                {
+                    errors.Add("config: an emote needs Id and NameKey");
+                }
+                else if (!emoteIds.Add(emote.Id))
+                {
+                    errors.Add($"config: emote '{emote.Id}' is listed twice");
+                }
+            }
             if (cfg.MaxCommandsPerTick <= 0 || cfg.HelloTimeoutSeconds <= 0f)
             {
                 errors.Add("config: MaxCommandsPerTick and HelloTimeoutSeconds must be > 0");

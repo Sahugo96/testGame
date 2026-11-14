@@ -168,6 +168,7 @@ namespace Game.Client.Localization
         public const string DragStack = "ui.drag_stack";
         /// <summary>Module 18: dragging onto a panel; equipment loadouts in the character window.</summary>
         public const string DragSkill = "ui.drag_to_panel";
+        public const string EmoteHint = "ui.emote_hint";
         public const string LoadoutsHeader = "ui.loadouts";
         public const string LoadoutName = "ui.loadout_name";
         public const string LoadoutItems = "ui.loadout_items";

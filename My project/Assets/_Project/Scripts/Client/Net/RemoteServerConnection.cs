@@ -70,6 +70,7 @@ namespace Game.Client.Net
                     case UpgradeOrdersMessage _:
                     case AccountSettingsMessage _:
                     case PanelsMessage _:
+                    case EmoteMessage _:
                         ReplyReceived?.Invoke(message);
                         break;
                     case NotificationMessage notification:

@@ -39,6 +39,7 @@ namespace Game.Shared.Protocol
         public const string NotIngredient = "error.not_ingredient";
         public const string NotEnoughGold = "error.not_enough_gold";
         public const string ChatTooFast = "error.chat_too_fast";
+        public const string EmoteTooFast = "error.emote_too_fast";
         public const string ChatNoSuchPlayer = "error.chat_no_such_player";
         public const string ChatBadChannel = "error.chat_bad_channel";
         public const string FriendInvalid = "error.friend_invalid";

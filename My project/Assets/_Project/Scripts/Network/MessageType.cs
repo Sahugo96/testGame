@@ -77,5 +77,7 @@ namespace Game.Network
         SaveLoadout = 79,
         ApplyLoadout = 80,
         Panels = 81,
+        PlayEmote = 82,
+        Emote = 83,
     }
 }

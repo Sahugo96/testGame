@@ -26,6 +26,15 @@
   "SkillBarSlotsPerRow": 12,
   "ConsumableBarSlots": 8,
   "LoadoutCount": 5,
+  "Emotes": [
+    {
+      "Id": "taunt",
+      "NameKey": "emote.taunt",
+      "Icon": "taunt",
+      "Animation": "taunt"
+    }
+  ],
+  "EmoteCooldownSeconds": 2,
   "HostileFactions": [
     {
       "A": "Players",

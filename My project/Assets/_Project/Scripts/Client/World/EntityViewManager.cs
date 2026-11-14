@@ -5,6 +5,7 @@ using Game.Shared.Core;
 using Game.Shared.Protocol;
 using Game.Client.UI;
 using Game.Shared.Content.Items;
+using Game.Client.World.Motion;
 using UnityEngine;
 using EntityId = Game.Shared.Core.EntityId;
 
@@ -22,6 +23,7 @@ namespace Game.Client.World
         private readonly Dictionary<EntityId, EntityView> _views = new Dictionary<EntityId, EntityView>();
         private readonly Dictionary<Collider, EntityId> _byCollider = new Dictionary<Collider, EntityId>();
         private readonly List<EntityId> _stale = new List<EntityId>();
+        private readonly HumanClipLibrary _clips = new HumanClipLibrary();
         private ClientContext _ctx;
         private float _interval;
         private Transform _targetMarker;
@@ -34,6 +36,7 @@ namespace Game.Client.World
             _interval = tickInterval;
             ctx.State.WorldChanged += OnWorldChanged;
             ctx.State.PlayerChanged += OnPlayerChanged;
+            ctx.State.Emote += OnEmote;
             _targetMarker = WorldPrimitives.Part("TargetMarker", transform, PrimitiveType.Cylinder, Vector3.zero,
                 new Vector3(TargetMarkerMinDiameter, TargetMarkerThickness, TargetMarkerMinDiameter), Vector3.zero, WorldPrimitives.Glow(WorldPalette.TargetMarker));
             _targetMarker.gameObject.SetActive(false);
@@ -73,6 +76,7 @@ namespace Game.Client.World
             }
             _ctx.State.WorldChanged -= OnWorldChanged;
             _ctx.State.PlayerChanged -= OnPlayerChanged;
+            _ctx.State.Emote -= OnEmote;
         }
 
         private void OnWorldChanged()
@@ -100,6 +104,23 @@ namespace Game.Client.World
                 _byCollider.Remove(view.Collider);
                 _views.Remove(id);
                 Destroy(view.gameObject);
+            }
+        }
+
+        /// <summary>An entity in view started an emote: its figure plays the emote's motion clip.</summary>
+        private void OnEmote(EmoteMessage message)
+        {
+            if (!_views.TryGetValue(message.EntityId, out EntityView view))
+            {
+                return;
+            }
+            foreach (EmoteDto emote in _ctx.Content.Config.Emotes ?? new EmoteDto[0])
+            {
+                if (emote.Id == message.EmoteId)
+                {
+                    view.PlayClip(_clips.Get(emote.Animation));
+                    return;
+                }
             }
         }
 

@@ -437,6 +437,15 @@ namespace Game.Network
                     w.Write((byte)MessageType.SetAutoLoot);
                     w.Write(m.Enabled);
                     break;
+                case EmoteCommand m:
+                    w.Write((byte)MessageType.PlayEmote);
+                    Str(w, m.EmoteId);
+                    break;
+                case EmoteMessage m:
+                    w.Write((byte)MessageType.Emote);
+                    Id(w, m.EntityId);
+                    Str(w, m.EmoteId);
+                    break;
                 case WorldSnapshot m:
                     w.Write((byte)MessageType.World);
                     WriteWorld(w, m, null);
@@ -652,6 +661,10 @@ namespace Game.Network
                     return new PickUpLootCommand { LootId = Id(r) };
                 case MessageType.SetAutoLoot:
                     return new SetAutoLootCommand { Enabled = r.ReadBoolean() };
+                case MessageType.PlayEmote:
+                    return new EmoteCommand { EmoteId = Str(r) };
+                case MessageType.Emote:
+                    return new EmoteMessage { EntityId = Id(r), EmoteId = Str(r) };
                 case MessageType.World:
                     return ReadWorld(r);
                 case MessageType.PlayerState:

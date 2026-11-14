@@ -2863,6 +2863,18 @@
   {
    "Key": "notify.loadout_armour_in_combat",
    "Value": "В бою меняется только оружие: броня ({0}) — после боя"
+  },
+  {
+   "Key": "emote.taunt",
+   "Value": "Насмешка"
+  },
+  {
+   "Key": "ui.emote_hint",
+   "Value": "Щелчок — показать эмоцию тем, кто рядом"
+  },
+  {
+   "Key": "error.emote_too_fast",
+   "Value": "Эмоции — не так часто"
   }
  ]
 }

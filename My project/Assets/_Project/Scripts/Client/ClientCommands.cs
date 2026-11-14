@@ -124,6 +124,8 @@ namespace Game.Client
 
         public void CancelTrade() => _connection.Send(new TradeCancelCommand());
 
+        public void PlayEmote(string emoteId) => _connection.Send(new EmoteCommand { EmoteId = emoteId });
+
         public void SetAutoLoot(bool enabled) => _connection.Send(new SetAutoLootCommand { Enabled = enabled });
 
         public void PickUpLoot(EntityId lootId) => _connection.Send(new PickUpLootCommand { LootId = lootId });

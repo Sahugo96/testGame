@@ -53,6 +53,8 @@ namespace Game.Client.State
         public PanelsMessage Panels { get; private set; }
 
         public event Action<PanelsMessage> PanelsChanged;
+        /// <summary>An entity in view started an emote.</summary>
+        public event Action<EmoteMessage> Emote;
 
         public void Bind(IServerConnection connection)
         {
@@ -146,6 +148,9 @@ namespace Game.Client.State
                     break;
                 case AccountSettingsMessage settings:
                     AccountSettings?.Invoke(settings.Settings);
+                    return;
+                case EmoteMessage emote:
+                    Emote?.Invoke(emote);
                     return;
                 case PanelsMessage panels:
                     Panels = panels;

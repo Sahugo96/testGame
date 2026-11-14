@@ -43,6 +43,7 @@ namespace Game.Server
         private readonly UpgradeOrderSystem _orders;
         private readonly SettingsSystem _settings;
         private readonly PanelSystem _panels;
+        private readonly EmoteSystem _emotes;
         private float _marketCheckTimer;
         /// <summary>Shop, mail and order expiry is checked this often (real-time deadlines of hours and days).</summary>
         private const float MarketCheckSeconds = 1f;
@@ -104,6 +105,7 @@ namespace Game.Server
             _orders = new UpgradeOrderSystem(_ctx, _market, _wallet, _inventory, _upgrades, _mail, _friends);
             _settings = new SettingsSystem(_ctx);
             _panels = new PanelSystem(_ctx, _inventory);
+            _emotes = new EmoteSystem(_ctx);
             _settings.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
             _groups.SystemMessage += (groupId, key) => _chat.SystemToGroup(groupId, key, null);
             _friends.Changed += player => AccountSettingsChanged?.Invoke(player.EntityId);
@@ -392,6 +394,7 @@ namespace Game.Server
             _chat.OnPlayerRemoved(id);
             _shops.OnPlayerRemoved(id);
             _mail.OnPlayerRemoved(id);
+            _emotes.OnPlayerRemoved(id);
             _ctx.RemovePlayerName(_ctx.Players[id]);
             _ctx.Players.Remove(id);
             foreach (PlayerCharacter other in _ctx.Players.Values)
@@ -675,6 +678,9 @@ namespace Game.Server
                     break;
                 case PickUpLootCommand pickUp:
                     _loot.PickUp(player, pickUp.LootId);
+                    break;
+                case EmoteCommand emote:
+                    _emotes.Play(player, emote.EmoteId);
                     break;
                 case SetAutoLootCommand autoLoot:
                     player.AutoLoot = autoLoot.Enabled;

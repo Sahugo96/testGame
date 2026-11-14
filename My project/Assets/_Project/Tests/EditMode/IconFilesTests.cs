@@ -38,6 +38,10 @@ namespace Game.Tests
             {
                 Check("windows", window.Icon, "window " + window.Id, missing);
             }
+            foreach (EmoteDto emote in db.Config.Emotes ?? new EmoteDto[0])
+            {
+                Check("emotes", emote.Icon, "emote " + emote.Id, missing);
+            }
             Assert.That(missing, Is.Empty, "No picture for:\n" + string.Join("\n", missing));
         }
 

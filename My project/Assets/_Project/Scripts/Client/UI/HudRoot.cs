@@ -108,6 +108,7 @@ namespace Game.Client.UI
             };
             Windows = new WindowManager(windowLayer, canvas, ctx, _tooltip);
             new IconMenuWidget(bottomCenter, ctx, _tooltip, MenuZones.SkillBarLeft, -SkillBar.RowWidth * 0.5f - HudLayout.Gap, Windows.Toggle);
+            new EmoteBarWidget(bottomCenter, ctx, _tooltip, SkillBar.RowWidth * 0.5f + HudLayout.Gap);
             new MenuBarWidget(bottomLeft, ctx, MenuZones.BottomLeft, false, Windows.Toggle);
             new MenuBarWidget(bottomRight, ctx, MenuZones.BottomRight, true, Windows.Toggle);
             _experience = new ExperienceBarWidget(bottomRight, ctx, HudLayout.MenuButtonHeight + HudLayout.Gap);

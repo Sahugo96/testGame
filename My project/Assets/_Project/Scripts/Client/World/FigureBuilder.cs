@@ -35,6 +35,22 @@ namespace Game.Client.World
             return joint;
         }
 
+        /// <summary>An empty joint inside another joint (null — inside the model); following shapes are its children.</summary>
+        public Transform Bone(string name, Transform parent, Vector3 position)
+        {
+            var joint = new GameObject(name).transform;
+            joint.SetParent(parent != null ? parent : Figure.Model, false);
+            joint.localPosition = position;
+            _parent = joint;
+            return joint;
+        }
+
+        /// <summary>Following shapes are children of this joint.</summary>
+        public void In(Transform joint) => _parent = joint;
+
+        /// <summary>Marks an existing joint as one that swings while walking.</summary>
+        public void Swing(Transform joint, float sign) => Figure.Limbs.Add(new Figure.Limb { Joint = joint, Sign = sign });
+
         /// <summary>A joint that swings while walking (a leg, an arm).</summary>
         public Transform Limb(string name, Vector3 position, float sign)
         {

@@ -1,8 +1,8 @@
-"""Icon generator of the game (items, skills, statuses, window buttons).
+"""Icon generator of the game (items, skills, statuses, window buttons, emotes).
 
 Every icon is drawn here as SVG (own art, no third-party assets) and rendered to a 128x128 opaque PNG by render.js.
 Run:  python3 tools/IconGen/icons.py  &&  node tools/IconGen/render.js
-Output: My project/Assets/_Project/Resources/Icons/<group>/<id>.png   (group: items, skills, statuses, windows)
+Output: My project/Assets/_Project/Resources/Icons/<group>/<id>.png   (group: items, skills, statuses, windows, emotes)
 To add an icon: write a function returning SVG shapes and register it in ICONS under the content's Icon id.
 """
 import hashlib
@@ -567,6 +567,21 @@ def w_orders():
             f'<rect x="62" y="24" width="48" height="26" rx="5" fill="{g(lin(IRON))}" {OUTLINE}/></g>')
 
 
+# ---------- emotes ----------
+def e_taunt():
+    face = g(rad([(0, "#fff3a0"), (0.6, "#f6c632"), (1, "#c98a10")], 0.4, 0.35, 0.8))
+    tongue = g(lin([(0, "#ff8a9a"), (1, "#d8304a")]))
+    return (f'<circle cx="64" cy="64" r="50" fill="{face}" {OUTLINE}/>'
+            f'<path d="M30 40 L54 46" stroke="{INK}" stroke-width="6" stroke-linecap="round"/>'
+            f'<path d="M74 38 C82 30 94 30 100 38" stroke="{INK}" stroke-width="6" fill="none" stroke-linecap="round"/>'
+            f'<path d="M34 58 C40 52 48 52 54 58" stroke="{INK}" stroke-width="6" fill="none" stroke-linecap="round"/>'
+            f'<ellipse cx="86" cy="54" rx="9" ry="11" fill="#ffffff" {THIN}/><circle cx="88" cy="56" r="5" fill="{INK}"/>'
+            f'<path d="M36 78 C50 92 78 92 94 74" stroke="{INK}" stroke-width="6" fill="none" stroke-linecap="round"/>'
+            f'<path d="M56 86 C56 110 82 110 80 84 Z" fill="{tongue}" {OUTLINE}/>'
+            f'<path d="M68 90 L68 102" stroke="{INK}" stroke-width="2.5" opacity="0.6" stroke-linecap="round"/>'
+            f'<path d="M30 50 C24 60 24 72 30 82" stroke="#ffffff88" stroke-width="4" fill="none" stroke-linecap="round"/>')
+
+
 def frame(bg, shapes, glow=None):
     """Icon factory: collects the gradients the shape functions registered (shapes is a callable)."""
     def build():
@@ -633,6 +648,9 @@ ICONS = {
         "regen": frame(BG_BUFF, regen, "#5ad86a"),
         "iron_skin": frame(BG_BUFF, iron_skin, "#c0d0e0"),
         "fury": frame(BG_BUFF, fury, "#ff5a2a"),
+    },
+    "emotes": {
+        "taunt": frame(BG_FIRE, e_taunt, "#ffb347"),
     },
     "windows": {
         "character": frame(BG_WINDOW, w_character),

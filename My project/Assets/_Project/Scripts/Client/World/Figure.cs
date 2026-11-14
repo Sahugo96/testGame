@@ -19,6 +19,9 @@ namespace Game.Client.World
         /// <summary>False for things that do not fall over when "dead" (none yet; stations and drops never die).</summary>
         public bool FallsWhenDead = true;
 
+        /// <summary>The skeleton, if the figure is a humanoid: motion clips (emotes) can be played on it. Null otherwise.</summary>
+        public HumanRig Rig;
+
         public readonly List<Limb> Limbs = new List<Limb>();
         public readonly List<Spinner> Spinners = new List<Spinner>();
         public readonly List<Bobber> Bobbers = new List<Bobber>();

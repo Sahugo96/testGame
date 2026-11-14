@@ -1,3 +1,4 @@
+using Game.Client.World.Motion;
 using Game.Shared.Core;
 using UnityEngine;
 using EntityId = Game.Shared.Core.EntityId;
@@ -22,6 +23,7 @@ namespace Game.Client.World
         private float _interval;
         private Figure _figure;
         private FigureMotion _motion;
+        private HumanClipPlayer _clipPlayer;
         private Renderer[] _renderers;
         private Material[] _aliveMaterials;
         private Material _deadMaterial;
@@ -61,6 +63,16 @@ namespace Game.Client.World
             }
             _deadMaterial = WorldPrimitives.Colored(deadColor);
             _motion = new FigureMotion(figure);
+            _clipPlayer = figure.Rig != null ? new HumanClipPlayer(figure.Rig) : null;
+        }
+
+        /// <summary>Plays a motion clip (an emote) once; a step or death ends it. Figures without a skeleton ignore it.</summary>
+        public void PlayClip(HumanClip clip)
+        {
+            if (_clipPlayer != null && clip != null && !_isDead)
+            {
+                _clipPlayer.Play(clip);
+            }
         }
 
         public void SetInterval(float interval) => _interval = interval;
@@ -113,9 +125,18 @@ namespace Game.Client.World
                 _figure.Model.localRotation = _modelFacing * Quaternion.Euler(FallDegrees * _fall, 0f, 0f);
                 _figure.Model.localPosition = new Vector3(0f, -_heightOffset + _figure.LieHeight * _fall, 0f);
             }
+            bool posed = _clipPlayer != null && _clipPlayer.IsPlaying;
+            if (posed)
+            {
+                if (_isDead || FigureMotion.IsMoving(moved, deltaTime))
+                {
+                    _clipPlayer.Stop();
+                }
+                _clipPlayer.Tick(deltaTime, _figure.Model.rotation);
+            }
             if (!_isDead)
             {
-                _motion.Tick(moved, deltaTime);
+                _motion.Tick(moved, deltaTime, !posed);
             }
         }
 

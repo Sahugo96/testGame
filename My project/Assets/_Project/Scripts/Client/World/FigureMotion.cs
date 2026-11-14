@@ -25,16 +25,26 @@ namespace Game.Client.World
             _figure = figure;
         }
 
-        /// <summary>`movedMetres` — how far the figure moved over the ground this frame.</summary>
-        public void Tick(float movedMetres, float deltaTime)
+        /// <summary>True if the figure covers ground fast enough to be walking.</summary>
+        public static bool IsMoving(float movedMetres, float deltaTime) => deltaTime > 0f && movedMetres / deltaTime > MovingMetresPerSecond;
+
+        /// <summary>
+        /// `movedMetres` — how far the figure moved over the ground this frame; `limbsFree` is false while something else
+        /// poses the limbs (a motion clip).
+        /// </summary>
+        public void Tick(float movedMetres, float deltaTime, bool limbsFree)
         {
             if (deltaTime <= 0f)
             {
                 return;
             }
-            if (_figure.Limbs.Count > 0)
+            if (!limbsFree)
             {
-                bool moving = movedMetres / deltaTime > MovingMetresPerSecond;
+                _blend = 0f;
+            }
+            else if (_figure.Limbs.Count > 0)
+            {
+                bool moving = IsMoving(movedMetres, deltaTime);
                 if (moving || _blend > 0f)
                 {
                     _phase = Mathf.Repeat(_phase + movedMetres * RadiansPerMetre, FullTurn);

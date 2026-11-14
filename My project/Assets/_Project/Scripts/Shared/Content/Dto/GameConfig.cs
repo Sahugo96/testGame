@@ -137,6 +137,13 @@ namespace Game.Shared.Content.Dto
         public int ConsumableBarSlots;
         /// <summary>Equipment loadouts per character (02, 7.7 В; ДЕФОЛТ 5).</summary>
         public int LoadoutCount;
+        /// <summary>
+        /// Emotes a player may show (02, 7.7 Г). Temporary (DEFAULT, question 89): the list lives in the config until the
+        /// emoji set of module 18 (question 13) gets its own content file.
+        /// </summary>
+        public EmoteDto[] Emotes;
+        /// <summary>A player's emotes are at least this far apart (02, 7.7 Г; ДЕФОЛТ 2 s).</summary>
+        public float EmoteCooldownSeconds;
         public FactionRelationDto[] HostileFactions;
     }
 }
