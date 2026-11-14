@@ -27,6 +27,8 @@ namespace Game.EditorTools.Content
         public const string CardsRoot = "Assets/_Project/Content";
         private const string StatePath = CardsRoot + "/sync_state.json";
         private const string ConflictFolder = "Library/ContentConflicts";
+        /// <summary>The text of each file as last synced on this computer (not in git): see <see cref="LastSyncedHash"/>.</summary>
+        private const string LastSyncedFolder = "Library/ContentSync";
         private const string LogPrefix = "[Content] ";
         /// <summary>Card edits are written to JSON this long after the last change (typing in the inspector is not a sync per key).</summary>
         private const double DebounceSeconds = 1.5;
@@ -227,6 +229,39 @@ namespace Game.EditorTools.Content
             return hash.Finish();
         }
 
+        /// <summary>
+        /// Hash of the last synced version, read through the current DTO classes. When a field is added to a DTO, the cards'
+        /// text gains it with its default value; compared with the old hash the cards would look edited (and, if the JSON got
+        /// the new field too, a false conflict). Re-reading the last synced text with the current classes gives it the same
+        /// default, so only real edits count. Without that text (a fresh clone) the shared hash is used.
+        /// </summary>
+        private static string LastSyncedHash(ContentSyncTarget target, string key, SyncState state)
+        {
+            string path = LastSyncedPath(key);
+            if (!File.Exists(path))
+            {
+                return state.Get(key);
+            }
+            try
+            {
+                return Hash(Canonical(target, File.ReadAllText(path, Encoding.UTF8)));
+            }
+            catch (Exception)
+            {
+                return state.Get(key);
+            }
+        }
+
+        private static void Remember(string key, string text, string hash, SyncState state)
+        {
+            state.Set(key, hash);
+            string path = LastSyncedPath(key);
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            File.WriteAllText(path, text, new UTF8Encoding(false));
+        }
+
+        private static string LastSyncedPath(string key) => Path.Combine(LastSyncedFolder, key.Replace('/', '_') + FileContentSource.Extension);
+
         private static void SyncFile(string pack, ContentSyncTarget target, SyncState state, ref bool jsonWritten, ref bool cardsChanged)
         {
             string key = ContentPacks.PathOf(pack, target.Name);
@@ -237,17 +272,17 @@ namespace Game.EditorTools.Content
             string jsonCanonical = Canonical(target, jsonText);
             string jsonHash = Hash(jsonCanonical);
             string cardsHash = Hash(cardsText);
-            switch (ContentSyncRule.Decide(jsonHash, cardsHash, state.Get(key)))
+            switch (ContentSyncRule.Decide(jsonHash, cardsHash, LastSyncedHash(target, key, state)))
             {
                 case ContentSyncAction.Nothing:
                     return;
                 case ContentSyncAction.InSync:
-                    state.Set(key, jsonHash);
+                    Remember(key, jsonCanonical, jsonHash, state);
                     return;
                 case ContentSyncAction.Export:
                     Directory.CreateDirectory(Path.GetDirectoryName(jsonPath));
                     File.WriteAllText(jsonPath, cardsText, new UTF8Encoding(false));
-                    state.Set(key, cardsHash);
+                    Remember(key, cardsText, cardsHash, state);
                     jsonWritten = true;
                     return;
                 case ContentSyncAction.Conflict:
@@ -259,7 +294,7 @@ namespace Game.EditorTools.Content
                     break;
             }
             ImportCards(pack, target, JsonUtility.FromJson(jsonText, target.FileType), cards);
-            state.Set(key, jsonHash);
+            Remember(key, jsonCanonical, jsonHash, state);
             cardsChanged = true;
         }
 
